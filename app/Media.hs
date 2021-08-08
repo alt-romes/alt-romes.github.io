@@ -19,7 +19,7 @@ class Media a where
 
     mediaTable :: [a] -> Html
     mediaTable (m:ms) =
-        H.div ! class_ "table-container" $
+        H.section ! class_ "text-center" $
         H.div ! class_ "table-border" $
         table $ do
             let attr_names = mediaAttrNames m
