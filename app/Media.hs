@@ -1,14 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Media where
 
-import Data.Text as T
+import qualified Data.Text as T
 import Data.Time
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 import Control.Monad
 
 class Media a where
-    mediaAttrNames :: a -> [Text]
+    mediaAttrNames :: a -> [T.Text]
     mediaAttrs :: a -> [Html]
 
     mediaRow :: a -> Html
@@ -18,6 +18,7 @@ class Media a where
             mapM_ td attrs
 
     mediaTable :: [a] -> Html
+    mediaTable [] = H.section ! class_ "text-center" $ ""
     mediaTable (m:ms) =
         H.section ! class_ "text-center" $
         H.div ! class_ "table-border" $
@@ -40,3 +41,9 @@ class Media a where
         body $ do
             mediaTable ms
 
+    getDate :: a -> Day
+
+    filterMonth :: Day -> [a] -> [a]
+    filterMonth today ms = filter thisMonthF ms
+        where
+            thisMonthF m = (\(a,b,_) (a',b',_) -> a == a' && b == b') (toGregorian $ getDate m) (toGregorian today)

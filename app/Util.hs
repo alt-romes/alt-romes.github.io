@@ -7,10 +7,10 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 
 mdtoNode :: T.Text -> Node
-mdtoNode = commonmarkToNode [optSmart] [extStrikethrough]
+mdtoNode = commonmarkToNode [optUnsafe] [extStrikethrough]
 
 nodetoHtml :: Node -> T.Text
-nodetoHtml = nodeToHtml [optSmart, optUnsafe] [extStrikethrough]
+nodetoHtml = nodeToHtml [optUnsafe] [extStrikethrough]
 
 editNodeM :: (Monad m, Applicative m) => (Node -> m Node) -> Node -> m Node
 editNodeM f (Node x nt nodes) = f . Node x nt =<< mapM (editNodeM f) nodes

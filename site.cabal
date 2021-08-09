@@ -48,6 +48,7 @@ executable site
         Index,
         Media,
         Movies,
+        Albums,
         Animes,
         Series,
         Util

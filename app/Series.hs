@@ -30,5 +30,5 @@ instance Media Serie where
         toHtml year,
         toHtml creator
                                                        ]
-
+    getDate s = date s
 

@@ -30,5 +30,5 @@ instance Media Anime where
         toHtml year,
         toHtml studio
                                                        ]
-
+    getDate a = date a
 

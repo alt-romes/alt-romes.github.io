@@ -29,4 +29,5 @@ instance Media Movie where
         toHtml title,
         toHtml year,
         toHtml director
-                                                         ]
+                                                         ] 
+    getDate m = date m
