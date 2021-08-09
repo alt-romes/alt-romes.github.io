@@ -16,6 +16,7 @@ import Data.Time
 import Index
 import Media
 import Movies
+import Albums
 import Animes
 import Series
 import Util
@@ -66,6 +67,10 @@ main = do
     -- Series
     Right srs <- decodeFileEither "data/series.yaml"
     BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
+
+    -- Albums
+    Right abs <- decodeFileEither "data/albums.yaml"
+    BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
 
     -- Index
     indexMD <- TIO.readFile "data/index.md"

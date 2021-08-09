@@ -13,33 +13,20 @@ import Media
 
 data Album = Album {
     title    :: Text,
-    yearNew     :: Integer,
-    artistNew   :: Text,
+    year     :: Integer,
+    artist   :: Text,
     date     :: Day
-} deriving (Show, Eq, Generic)
-
-data AlbumOld = AlbumOld {
-    name    :: Text,
-    artist    :: Text,
-    cover     :: Integer,
-    year   :: Text,
-    month   :: Integer,
-    day     :: Day
 } deriving (Show, Eq, Generic)
 
 instance ToJSON Album
 instance FromJSON Album
 
-instance ToJSON AlbumOld
-instance FromJSON AlbumOld
-
 instance Media Album where
     mediaAttrNames _ = ["year", "title", "artist"]
     mediaAttrs (Album title year artist date) = [
-        toHtml year,
+        H.span ! class_ "yellow" $ toHtml year,
         toHtml title,
         toHtml artist
                                                 ]
-    getDate a = date a
 
-convert :: 
+    getDate a = date a
