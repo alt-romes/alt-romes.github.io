@@ -15,6 +15,7 @@ data Album = Album {
     title    :: Text,
     year     :: Integer,
     artist   :: Text,
+    mark     :: Bool,
     date     :: Day
 } deriving (Show, Eq, Generic)
 
@@ -22,8 +23,9 @@ instance ToJSON Album
 instance FromJSON Album
 
 instance Media Album where
-    mediaAttrNames _ = ["year", "title", "artist"]
-    mediaAttrs (Album title year artist date) = [
+    mediaAttrNames _ = ["*", "year", "title", "artist"]
+    mediaAttrs (Album title year artist mark date) = [
+        H.span ! class_ "purple" $ toHtml (if mark then "*" else " " :: Text),
         H.span ! class_ "yellow" $ toHtml year,
         toHtml title,
         toHtml artist

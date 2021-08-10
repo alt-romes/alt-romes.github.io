@@ -1,308 +1,385 @@
-- year: 1991
-  title: loveless
+- title: loveless
+  year: 1991
   date: 2021-03-01
   artist: my bloody valentine
-- year: 1991
-  title: Just for a Day
+  mark: true
+- title: Just for a Day
+  year: 1991
   date: 2021-03-01
   artist: Slowdive
-- year: 1988
-  title: Surfer Rosa
+  mark: true
+- title: Surfer Rosa
+  year: 1988
   date: 2021-03-01
   artist: Pixies
-- year: 2012
-  title: ep's 1988-1991 and rare tracks
+  mark: true
+- title: ep's 1988-1991 and rare tracks
+  year: 2012
   date: 2021-03-01
   artist: my bloody valentine
-- year: 2001
-  title: Gorillaz
+  mark: true
+- title: Gorillaz
+  year: 2001
   date: 2021-03-01
   artist: Gorillaz
-- year: 2020
-  title: Seabed Eden
+  mark: false
+- title: Seabed Eden
+  year: 2020
   date: 2021-03-01
   artist: Ichiko Aoba
-- year: 1999
-  title: Happy Bivouac
+  mark: false
+- title: Happy Bivouac
+  year: 1999
   date: 2021-01-04
   artist: the pillows
-- year: 2009
-  title: Okurimono
+  mark: true
+- title: Okurimono
+  year: 2009
   date: 2021-01-04
   artist: Hyakkei
-- year: 2018
-  title: Этажи
+  mark: false
+- title: Этажи
+  year: 2018
   date: 2021-01-04
   artist: Molchat Doma
-- year: 1996
-  title: Außen Top Hits, Innen Geschmack
+  mark: true
+- title: Außen Top Hits, Innen Geschmack
+  year: 1996
   date: 2021-01-04
   artist: Fettes Brot
-- year: 2005
-  title: Rosenrot
+  mark: false
+- title: Rosenrot
+  year: 2005
   date: 2021-01-04
   artist: Rammstein
-- year: 2017
-  title: Bunka
+  mark: false
+- title: Bunka
+  year: 2017
   date: 2021-01-04
   artist: Eve
-- year: 2015
-  title: Litourgiya
+  mark: false
+- title: Litourgiya
+  year: 2015
   date: 2021-01-04
   artist: Batushka
-- year: 2020
-  title: CATHARSIS
+  mark: false
+- title: CATHARSIS
+  year: 2020
   date: 2020-11-04
   artist: ANGELXII
-- year: 2004
-  title: Bom Dia
+  mark: false
+- title: Bom Dia
+  year: 2004
   date: 2020-11-01
   artist: Pluto
-- year: 2013
-  title: mbv
+  mark: false
+- title: mbv
+  year: 2013
   date: 2020-11-01
   artist: My Bloody Valentine
-- year: 1994
-  title: Split
+  mark: false
+- title: Split
+  year: 1994
   date: 2020-11-01
   artist: Lush
-- year: 1985
-  title: The Head On the Door
+  mark: true
+- title: The Head On the Door
+  year: 1985
   date: 2020-10-01
   artist: The Cure
-- year: 1977
-  title: Talking Heads 77
+  mark: false
+- title: Talking Heads 77
+  year: 1977
   date: 2020-10-01
   artist: Talking Heads
-- year: 2020
-  title: Ferric Oxide (Demos 1997 – 2001)
+  mark: true
+- title: Ferric Oxide (Demos 1997 – 2001)
+  year: 2020
   date: 2020-10-01
   artist: Panchiko
-- year: 2000
-  title: D>E>a>T>H>M>E>T>a>L
+  mark: false
+- title: D>E>a>T>H>M>E>T>a>L
+  year: 2000
   date: 2020-10-01
   artist: Panchiko
-- year: 2001
-  title: Twilight
+  mark: false
+- title: Twilight
+  year: 2001
   date: 2020-10-01
   artist: Boa
-- year: 1979
-  title: Fear of Music
+  mark: false
+- title: Fear of Music
+  year: 1979
   date: 2020-10-01
   artist: Talking Heads
-- year: 2007
-  title: Party Girl
+  mark: true
+- title: Party Girl
+  year: 2007
   date: 2020-10-01
   artist: Michelle Gurevich
-- year: 1969
-  title: In the Court of the Crimson King
+  mark: false
+- title: In the Court of the Crimson King
+  year: 1969
   date: 2020-09-06
   artist: King Crimson
-- year: 1997
-  title: Es Ist Egal, Aber
+  mark: false
+- title: Es Ist Egal, Aber
+  year: 1997
   date: 2020-09-06
   artist: Tocotronic
-- year: 1976
-  title: Scenery
+  mark: true
+- title: Scenery
+  year: 1976
   date: 2020-09-06
   artist: Ryo Fukui
-- year: 2007
-  title: Soundso
+  mark: true
+- title: Soundso
+  year: 2007
   date: 2020-09-06
   artist: Wir sind Helden
-- year: 2018
-  title: Linda Martini
+  mark: false
+- title: Linda Martini
+  year: 2018
   date: 2020-09-06
   artist: Linda Martini
-- year: 2005
-  title: The Book About My Idle Plot On A Vague Anxiety
+  mark: true
+- title: The Book About My Idle Plot On A Vague Anxiety
+  year: 2005
   date: 2020-09-04
   artist: toe
-- year: 2013
-  title: T H E
+  mark: false
+- title: T H E
+  year: 2013
   date: 2020-09-06
   artist: tricot
-- year: 1986
-  title: The Queen Is Dead
+  mark: false
+- title: The Queen Is Dead
+  year: 1986
   date: 2020-09-06
   artist: The Smiths
-- year: 2014
-  title: Buena Vista
+  mark: true
+- title: Buena Vista
+  year: 2014
   date: 2020-09-06
   artist: Senri Kawaguchi
-- year: 1993
-  title: 4AD Presents the 13 Year Itch
+  mark: false
+- title: 4AD Presents the 13 Year Itch
+  year: 1993
   date: 2020-08-03
   artist: Various Artists
-- year: 1985
-  title: Psychocandy
+  mark: false
+- title: Psychocandy
+  year: 1985
   date: 2020-08-03
   artist: The Jesus and Mary Chain
-- year: 1987
-  title: Sister
+  mark: true
+- title: Sister
+  year: 1987
   date: 2020-08-03
   artist: Sonic Youth
-- year: 1994
-  title: Animal Park
+  mark: false
+- title: Animal Park
+  year: 1994
   date: 2020-08-03
   artist: Unrest
-- year: 1998
-  title: Stratosphere
+  mark: false
+- title: Stratosphere
+  year: 1998
   date: 2020-08-03
   artist: Duster
-- year: 2018
-  title: Primavera Negra
+  mark: false
+- title: Primavera Negra
+  year: 2018
   date: 2020-08-03
   artist: Linda Guilala
-- year: 1996
-  title: Among My Swan
+  mark: false
+- title: Among My Swan
+  year: 1996
   date: 2020-07-01
   artist: Mazzy Star
-- year: 2013
-  title: Ceres & Calypso in the Deep Time
+  mark: true
+- title: Ceres & Calypso in the Deep Time
+  year: 2013
   date: 2020-07-01
   artist: Candy Claws
-- year: 1976
-  title: Mother Earth's Plantasia
+  mark: true
+- title: Mother Earth's Plantasia
+  year: 1976
   date: 2020-07-01
   artist: Mort Garson
-- year: 1990
-  title: Goo
+  mark: true
+- title: Goo
+  year: 1990
   date: 2020-07-01
   artist: Sonic Youth
-- year: 1980
-  title: Closer
+  mark: true
+- title: Closer
+  year: 1980
   date: 2020-06-05
   artist: Joy Division
-- year: 1996
-  title: Lovelife
+  mark: true
+- title: Lovelife
+  year: 1996
   date: 2020-06-05
   artist: Lush
-- year: 1995
-  title: Ask Me Tomorrow
+  mark: false
+- title: Ask Me Tomorrow
+  year: 1995
   date: 2020-06-05
   artist: Mojave 3
-- year: 1983
-  title: Violent Femmes
+  mark: false
+- title: Violent Femmes
+  year: 1983
   date: 2020-06-05
   artist: Violent Femmes
-- year: 2015
-  title: Sometimes I Sit and Think, and Sometimes I Just Sit
+  mark: true
+- title: Sometimes I Sit and Think, and Sometimes I Just Sit
+  year: 2015
   date: 2020-05-05
   artist: Courtney Barnett
-- year: 1990
-  title: Aion
+  mark: false
+- title: Aion
+  year: 1990
   date: 2020-05-05
   artist: Dead Can Dance
-- year: 1994
-  title: Let Love In
+  mark: false
+- title: Let Love In
+  year: 1994
   date: 2020-05-05
   artist: Nick Cave & The Bad Seeds
-- year: 2012
-  title: Ser Sólidário
+  mark: false
+- title: Ser Sólidário
+  year: 2012
   date: 2020-05-05
   artist: José Mário Branco
-- year: 2020
-  title: Waking Life
+  mark: false
+- title: Waking Life
+  year: 2020
   date: 2020-05-05
   artist: Romes
-- year: 2011
-  title: 'A I A: Alien Observer'
+  mark: false
+- title: 'A I A: Alien Observer'
+  year: 2011
   date: 2020-04-06
   artist: Grouper
-- year: 2020
-  title: Every Bad
+  mark: true
+- title: Every Bad
+  year: 2020
   date: 2020-04-06
   artist: Porridge Radio
-- year: 2001
-  title: Vespertine
+  mark: false
+- title: Vespertine
+  year: 2001
   date: 2020-03-04
   artist: Björk
-- year: 1990
-  title: Breathe
+  mark: true
+- title: Breathe
+  year: 1990
   date: 2020-03-04
   artist: Eternal
-- year: 1997
-  title: Fantasma
+  mark: false
+- title: Fantasma
+  year: 1997
   date: 2020-03-04
   artist: Cornelius
-- year: 1984
-  title: It'll End in Tears
+  mark: true
+- title: It'll End in Tears
+  year: 1984
   date: 2020-02-01
   artist: This Mortal Coil
-- year: 1998
-  title: Mezzanine
+  mark: false
+- title: Mezzanine
+  year: 1998
   date: 2020-02-06
   artist: Massive Attack
-- year: 1973
-  title: Tubular Bells
+  mark: true
+- title: Tubular Bells
+  year: 1973
   date: 2020-02-03
   artist: Mike Oldfield
-- year: 2020
-  title: Ununited
+  mark: true
+- title: Ununited
+  year: 2020
   date: 2020-02-03
   artist: Romes
-- year: 1996
-  title: Placebo
+  mark: false
+- title: Placebo
+  year: 1996
   date: 2020-02-03
   artist: Placebo
-- year: 2004
-  title: Misery Is A Butterfly
+  mark: true
+- title: Misery Is A Butterfly
+  year: 2004
   date: 2020-01-06
   artist: Blonde Redhead
-- year: 1998
-  title: Without You I'm Nothing
+  mark: true
+- title: Without You I'm Nothing
+  year: 1998
   date: 2020-01-02
   artist: Placebo
-- year: 2018
-  title: Fábulas
+  mark: true
+- title: Fábulas
+  year: 2018
   date: 2020-01-06
   artist: Reis Da República
-- year: 1988
-  title: Blue Bell Knoll
+  mark: false
+- title: Blue Bell Knoll
+  year: 1988
   date: 2019-11-05
   artist: Cocteau Twins
-- year: 1990
-  title: Pod
+  mark: true
+- title: Pod
+  year: 1990
   date: 2019-11-05
   artist: The Breeders
-- year: 1996
-  title: Milk & Kisses
+  mark: true
+- title: Milk & Kisses
+  year: 1996
   date: 2019-11-05
   artist: Cocteau Twins
-- year: 1986
-  title: The Moon And The Melodies
+  mark: false
+- title: The Moon And The Melodies
+  year: 1986
   date: 2019-11-05
   artist: Cocteau Twins & Harold Budd
-- year: 1990
-  title: The Comforts Of Madness
+  mark: false
+- title: The Comforts Of Madness
+  year: 1990
   date: 2019-10-05
   artist: Pale Saints
-- year: 2012
-  title: Visions
+  mark: false
+- title: Visions
+  year: 2012
   date: 2019-10-05
   artist: Grimes
-- year: 1970
-  title: The Madcap Laughs
+  mark: true
+- title: The Madcap Laughs
+  year: 1970
   date: 2019-10-05
   artist: Syd Barret
-- year: 1997
-  title: Chants Of India
+  mark: false
+- title: Chants Of India
+  year: 1997
   date: 2019-10-05
   artist: Ravi Shankar
-- year: 1995
-  title: Digital Ist Besser
+  mark: true
+- title: Digital Ist Besser
+  year: 1995
   date: 2019-09-05
   artist: Tocotronic
-- year: 2011
-  title: Inéditos/Raridades
+  mark: true
+- title: Inéditos/Raridades
+  year: 2011
   date: 2019-09-05
   artist: Ornatos Violeta
-- year: 1999
-  title: O Monstro Precisa de Amigos
+  mark: false
+- title: O Monstro Precisa de Amigos
+  year: 1999
   date: 2019-09-05
   artist: Ornatos Violeta
-- year: 1997
-  title: Cão!
+  mark: true
+- title: Cão!
+  year: 1997
   date: 2019-09-05
   artist: Ornatos Violeta
+  mark: true
