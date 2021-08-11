@@ -38,7 +38,8 @@ executable site
         time ^>=1.9.3,
         yaml ^>=0.11.5.0,
         cmark-gfm ^>=0.2.2,
-        mtl ^>=2.2.2
+        mtl ^>=2.2.2,
+        haskeline ^>=0.8.2
 
 
 

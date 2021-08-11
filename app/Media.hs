@@ -43,7 +43,9 @@ class Media a where
 
     getDate :: a -> Day
 
+    -- TODO: Filter for last 30 days instead
     filterMonth :: Day -> [a] -> [a]
     filterMonth today ms = filter thisMonthF ms
         where
             thisMonthF m = (\(a,b,_) (a',b',_) -> a == a' && b == b') (toGregorian $ getDate m) (toGregorian today)
+

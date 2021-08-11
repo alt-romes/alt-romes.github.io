@@ -1,6 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Control.Applicative
+import Data.Either
+import qualified Text.Read as TR
+import Data.Maybe
+import Control.Monad.Trans
+import Control.Monad
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as BL
 import Text.Blaze.Html.Renderer.Pretty as P
@@ -12,6 +18,7 @@ import Data.Yaml
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Data.Time
+import System.Console.Haskeline
 
 import Index
 import Media
@@ -53,28 +60,115 @@ mainLayout is_translation main_content = docTypeHtml $ do
 
 
 main :: IO ()
-main = do
-    today <- utctDay <$> getCurrentTime
+main = runInputT defaultSettings loop
+    where
+    loop :: InputT IO ()
+    loop = do
+        minput <- getInputLine "romes> "
+        case minput of
+          Nothing -> return ()
+          Just ":q" -> return ()
+          Just "" -> loop
+          Just "help" -> do
+              outputStrLn "help:\n    add\n    make\n    help"
+              loop
+          Just "add" -> do
+              outputStrLn "add:\n    add movie\n    add anime\n    add serie\n    add album"
+              loop
+          Just "make" -> do
+            today <- lift $ utctDay <$> getCurrentTime
 
-    -- Movies
-    Right mvs <- decodeFileEither "data/movies.yaml"
-    BL.writeFile "docs/movies.html" $ U.renderHtml $ mediaToHtml (mvs :: [Movie])
+            -- Movies
+            outputStrLn "Building movies..."
+            Right mvs <- lift $ decodeFileEither "data/movies.yaml"
+            lift $ BL.writeFile "docs/movies.html" $ U.renderHtml $ mediaToHtml (mvs :: [Movie])
 
-    -- Animes
-    Right ams <- decodeFileEither "data/animes.yaml"
-    BL.writeFile "docs/animes.html" $ U.renderHtml $ mediaToHtml (ams :: [Anime])
+            -- Animes
+            outputStrLn "Building animes..."
+            Right ams <- lift $ decodeFileEither "data/animes.yaml"
+            lift $ BL.writeFile "docs/animes.html" $ U.renderHtml $ mediaToHtml (ams :: [Anime])
 
-    -- Series
-    Right srs <- decodeFileEither "data/series.yaml"
-    BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
+            -- Series
+            outputStrLn "Building series..."
+            Right srs <- lift $ decodeFileEither "data/series.yaml"
+            lift $ BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
 
-    -- Albums
-    Right abs <- decodeFileEither "data/albums.yaml"
-    BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
+            -- Albums
+            outputStrLn "Building albums..."
+            Right abs <- lift $ decodeFileEither "data/albums.yaml"
+            lift $ BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
 
-    -- Index
-    indexMD <- TIO.readFile "data/index.md"
-    BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout False $ indexHtml today mvs (mdtoNode indexMD)
+            -- Index
+            outputStrLn "Building index..."
+            indexMD <- lift $ TIO.readFile "data/index.md"
+            lift $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout False $ indexHtml today mvs (mdtoNode indexMD)
 
-    indexMD <- TIO.readFile "data/de/index.md"
-    BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+            indexMD <- lift $ TIO.readFile "data/de/index.md"
+            lift $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+
+            outputStrLn "Done."
+            loop
+
+          Just "add movie" -> do
+            today <- lift $ utctDay <$> getCurrentTime
+            inputsEither <- mapM (\f -> do
+                    outputStrLn $ "Movie " <> f
+                    minput <- getInputLine "movie> "
+                    case minput of
+                      Nothing -> return $ Left ()
+                      Just "" -> return $ Left ()
+                      Just field -> return $ Right field
+                ) ["title:", "release year:", "director:", "rating (1-10):"]
+            if any isLeft inputsEither
+              then void (outputStrLn "Failed - input can't be empty!") >> loop
+              else
+                let inputs = rights inputsEither in
+                if any isNothing [TR.readMaybe $ inputs !! 1 :: Maybe Integer, TR.readMaybe $ inputs !! 3 :: Maybe Integer]
+                then void (outputStrLn "Failed - year and rating should be numeric.") >> loop
+                else do
+                  outputStrLn "Writing new movie to list..."
+                  let new_movie = Movie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
+                  Right mvs <- lift $ decodeFileEither "data/movies.yaml"
+                  lift $ encodeFile "data/movies.yaml" (new_movie:mvs)
+                  outputStrLn "Done."
+                  loop
+            -- outputStrLn "Movie title:"
+            -- minput <- getInputLine "movie> "
+            -- case minput of
+            --   Nothing -> return ()
+            --   Just title -> do
+            --     outputStrLn "Movie release year:"
+            --     minput <- getInputLine "movie> "
+            --     case minput of
+            --       Nothing -> return ()
+            --       Just year -> do
+            --         outputStrLn "Movie director:"
+            --         minput <- getInputLine "movie> "
+            --         case minput of
+            --           Nothing -> return ()
+            --           Just director -> do
+            --             outputStrLn "Movie rating (1-10):"
+            --             minput <- getInputLine "movie> "
+            --             case minput of
+            --               Nothing -> return ()
+            --               Just rating -> do
+            --                 outputStrLn "Writing new movie to list..."
+            --                 let new_movie = Movie (T.pack title) (read year) (T.pack director) (read rating) today
+            --                 Right mvs <- lift $ decodeFileEither "data/movies.yaml"
+            --                 lift $ encodeFile "data/movies.yaml" (new_movie:mvs)
+            --                 outputStrLn "Done."
+            --                 loop
+
+          Just input -> do
+            outputStrLn $ "Unknown command \"" ++ input ++ "\"."
+            loop
+
+
+
+
+
+
+
+
+
+
