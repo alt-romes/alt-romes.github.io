@@ -2,6 +2,7 @@
 module Main where
 
 import Control.Applicative
+import Control.Monad.Trans.Maybe
 import Data.Either
 import qualified Text.Read as TR
 import Data.Maybe
@@ -27,6 +28,9 @@ import Albums
 import Animes
 import Series
 import Util
+
+
+
 
 
 
@@ -76,88 +80,72 @@ main = runInputT defaultSettings loop
               outputStrLn "add:\n    add movie\n    add anime\n    add serie\n    add album"
               loop
           Just "make" -> do
-            today <- lift $ utctDay <$> getCurrentTime
+            today <- liftIO $ utctDay <$> getCurrentTime
 
             -- Movies
             outputStrLn "Building movies..."
-            Right mvs <- lift $ decodeFileEither "data/movies.yaml"
-            lift $ BL.writeFile "docs/movies.html" $ U.renderHtml $ mediaToHtml (mvs :: [Movie])
+            Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
+            liftIO $ BL.writeFile "docs/movies.html" $ U.renderHtml $ mediaToHtml (mvs :: [Movie])
 
             -- Animes
             outputStrLn "Building animes..."
-            Right ams <- lift $ decodeFileEither "data/animes.yaml"
-            lift $ BL.writeFile "docs/animes.html" $ U.renderHtml $ mediaToHtml (ams :: [Anime])
+            Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
+            liftIO $ BL.writeFile "docs/animes.html" $ U.renderHtml $ mediaToHtml (ams :: [Anime])
 
             -- Series
             outputStrLn "Building series..."
-            Right srs <- lift $ decodeFileEither "data/series.yaml"
-            lift $ BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
+            Right srs <- liftIO $ decodeFileEither "data/series.yaml"
+            liftIO $ BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
 
             -- Albums
             outputStrLn "Building albums..."
-            Right abs <- lift $ decodeFileEither "data/albums.yaml"
-            lift $ BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
+            Right abs <- liftIO $ decodeFileEither "data/albums.yaml"
+            liftIO $ BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
 
             -- Index
             outputStrLn "Building index..."
-            indexMD <- lift $ TIO.readFile "data/index.md"
-            lift $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout False $ indexHtml today mvs (mdtoNode indexMD)
+            indexMD <- liftIO $ TIO.readFile "data/index.md"
+            liftIO $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout False $ indexHtml today mvs (mdtoNode indexMD)
 
-            indexMD <- lift $ TIO.readFile "data/de/index.md"
-            lift $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+            indexMD <- liftIO $ TIO.readFile "data/de/index.md"
+            liftIO $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
 
             outputStrLn "Done."
             loop
 
           Just "add movie" -> do
-            today <- lift $ utctDay <$> getCurrentTime
-            inputsEither <- mapM (\f -> do
-                    outputStrLn $ "Movie " <> f
-                    minput <- getInputLine "movie> "
-                    case minput of
-                      Nothing -> return $ Left ()
-                      Just "" -> return $ Left ()
-                      Just field -> return $ Right field
-                ) ["title:", "release year:", "director:", "rating (1-10):"]
-            if any isLeft inputsEither
+            today <- liftIO $ utctDay <$> getCurrentTime
+            maybeInputs <- mapM (\f -> getUserInput ("Movie " <> f) "movie> ") ["title:", "year:", "director:", "rating (1-10):"]
+            if any isNothing maybeInputs
               then void (outputStrLn "Failed - input can't be empty!") >> loop
               else
-                let inputs = rights inputsEither in
+                let inputs = catMaybes maybeInputs in
                 if any isNothing [TR.readMaybe $ inputs !! 1 :: Maybe Integer, TR.readMaybe $ inputs !! 3 :: Maybe Integer]
                 then void (outputStrLn "Failed - year and rating should be numeric.") >> loop
                 else do
                   outputStrLn "Writing new movie to list..."
                   let new_movie = Movie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-                  Right mvs <- lift $ decodeFileEither "data/movies.yaml"
-                  lift $ encodeFile "data/movies.yaml" (new_movie:mvs)
+                  Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
+                  liftIO $ encodeFile "data/movies.yaml" (new_movie:mvs)
                   outputStrLn "Done."
                   loop
-            -- outputStrLn "Movie title:"
-            -- minput <- getInputLine "movie> "
-            -- case minput of
-            --   Nothing -> return ()
-            --   Just title -> do
-            --     outputStrLn "Movie release year:"
-            --     minput <- getInputLine "movie> "
-            --     case minput of
-            --       Nothing -> return ()
-            --       Just year -> do
-            --         outputStrLn "Movie director:"
-            --         minput <- getInputLine "movie> "
-            --         case minput of
-            --           Nothing -> return ()
-            --           Just director -> do
-            --             outputStrLn "Movie rating (1-10):"
-            --             minput <- getInputLine "movie> "
-            --             case minput of
-            --               Nothing -> return ()
-            --               Just rating -> do
-            --                 outputStrLn "Writing new movie to list..."
-            --                 let new_movie = Movie (T.pack title) (read year) (T.pack director) (read rating) today
-            --                 Right mvs <- lift $ decodeFileEither "data/movies.yaml"
-            --                 lift $ encodeFile "data/movies.yaml" (new_movie:mvs)
-            --                 outputStrLn "Done."
-            --                 loop
+
+          Just "add anime" -> do
+            today <- liftIO $ utctDay <$> getCurrentTime
+            maybeInputs <- mapM (\f -> getUserInput ("Anime " <> f) "anime> ") ["title:", "year:", "studio:", "rating (1-10):"]
+            if any isNothing maybeInputs
+              then void (outputStrLn "Failed - input can't be empty!") >> loop
+              else
+                let inputs = catMaybes maybeInputs in
+                if any isNothing [TR.readMaybe $ inputs !! 1 :: Maybe Integer, TR.readMaybe $ inputs !! 3 :: Maybe Integer]
+                then void (outputStrLn "Failed - year and rating should be numeric.") >> loop
+                else do
+                  outputStrLn "Writing new anime to list..."
+                  let new_anime = Anime (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
+                  Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
+                  liftIO $ encodeFile "data/animes.yaml" (new_anime:ams)
+                  outputStrLn "Done."
+                  loop
 
           Just input -> do
             outputStrLn $ "Unknown command \"" ++ input ++ "\"."
