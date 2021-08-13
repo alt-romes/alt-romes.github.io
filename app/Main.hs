@@ -40,23 +40,24 @@ mainLayout is_translation main_content = docTypeHtml $ do
         meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
         H.title "romes"
         link ! rel "stylesheet" ! href (relPathFix "style.css") ! media "all" ! type_ "text/css"
-    body ! class_ "index-container" $ do
-
-        nav $ do
-            p ! class_  "logo" $ "romes" 
+    body ! class_ "main-body" $ do
+        H.div ! class_ "main-container" $ do
+            nav $ do
+                p ! class_  "logo" $ "romes" 
+                ul $ do
+                    li $ a ! href "index.html" $ "index"
+                    li "posts"
+                    li "music"
+                    -- li "poetry"
+                    li $ a ! href "https://github.com/alt-romes" $ "github"
+                    -- br
+            main_content
+        footer ! class_ "main-footer" $ do
             ul $ do
-                li $ a ! href "index.html" $ "index"
-                li $ a ! href "posts.html" $ "posts"
-                li $ a ! href "" $ "music"
-                -- li "poetry"
-                li $ a ! href "https://github.com/alt-romes" $ "github"
-                -- br
-                -- li "-------"
-                -- li $ "|" <> (a ! href (relPathFix "index.html") $ "en") <> "|" <> (a ! href (relPathFix "de/index.html") $ "de") <> "|"
-                -- li "-------"
-                -- li $ "|" <> (a ! href (relPathFix "ja/index.html") $ "ja") <> "|" <> (a ! href (relPathFix "ru/index.html") $ "ru") <> "|"
-                -- li "-------"
-        main_content
+                li $ a ! href (relPathFix "index.html") $ "en"
+                li $ a ! href (relPathFix "de/index.html") $ "de"
+                li $ a ! href (relPathFix "ja/index.html") $ "ja"
+                li $ a ! href (relPathFix "ru/index.html") $ "ru"
 
     where
         relPathFix = if is_translation then ("../" <>) else Prelude.id
@@ -109,6 +110,12 @@ main = runInputT defaultSettings loop
 
             indexMD <- liftIO $ TIO.readFile "data/de/index.md"
             liftIO $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+
+            indexMD <- liftIO $ TIO.readFile "data/ja/index.md"
+            liftIO $ BL.writeFile "docs/ja/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+
+            indexMD <- liftIO $ TIO.readFile "data/ru/index.md"
+            liftIO $ BL.writeFile "docs/ru/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
 
             outputStrLn "Done."
             loop
