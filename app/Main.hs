@@ -46,16 +46,16 @@ mainLayout is_translation main_content = docTypeHtml $ do
             p ! class_  "logo" $ "romes" 
             ul $ do
                 li $ a ! href "index.html" $ "index"
-                li "blog"
-                li "music"
-                li "poetry"
-                li "github"
-                br
-                li "-------"
-                li $ "|" <> (a ! href (relPathFix "index.html") $ "en") <> "|" <> (a ! href (relPathFix "de/index.html") $ "de") <> "|"
-                li "-------"
-                li $ "|" <> (a ! href (relPathFix "ja/index.html") $ "ja") <> "|" <> (a ! href (relPathFix "ru/index.html") $ "ru") <> "|"
-                li "-------"
+                li $ a ! href "posts.html" $ "posts"
+                li $ a ! href "" $ "music"
+                -- li "poetry"
+                li $ a ! href "https://github.com/alt-romes" $ "github"
+                -- br
+                -- li "-------"
+                -- li $ "|" <> (a ! href (relPathFix "index.html") $ "en") <> "|" <> (a ! href (relPathFix "de/index.html") $ "de") <> "|"
+                -- li "-------"
+                -- li $ "|" <> (a ! href (relPathFix "ja/index.html") $ "ja") <> "|" <> (a ! href (relPathFix "ru/index.html") $ "ru") <> "|"
+                -- li "-------"
         main_content
 
     where
@@ -113,39 +113,10 @@ main = runInputT defaultSettings loop
             outputStrLn "Done."
             loop
 
-          Just "add movie" -> do
-            today <- liftIO $ utctDay <$> getCurrentTime
-            maybeInputs <- mapM (\f -> getUserInput ("Movie " <> f) "movie> ") ["title:", "year:", "director:", "rating (1-10):"]
-            if any isNothing maybeInputs
-              then void (outputStrLn "Failed - input can't be empty!") >> loop
-              else
-                let inputs = catMaybes maybeInputs in
-                if any isNothing [TR.readMaybe $ inputs !! 1 :: Maybe Integer, TR.readMaybe $ inputs !! 3 :: Maybe Integer]
-                then void (outputStrLn "Failed - year and rating should be numeric.") >> loop
-                else do
-                  outputStrLn "Writing new movie to list..."
-                  let new_movie = Movie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-                  Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
-                  liftIO $ encodeFile "data/movies.yaml" (new_movie:mvs)
-                  outputStrLn "Done."
-                  loop
-
-          Just "add anime" -> do
-            today <- liftIO $ utctDay <$> getCurrentTime
-            maybeInputs <- mapM (\f -> getUserInput ("Anime " <> f) "anime> ") ["title:", "year:", "studio:", "rating (1-10):"]
-            if any isNothing maybeInputs
-              then void (outputStrLn "Failed - input can't be empty!") >> loop
-              else
-                let inputs = catMaybes maybeInputs in
-                if any isNothing [TR.readMaybe $ inputs !! 1 :: Maybe Integer, TR.readMaybe $ inputs !! 3 :: Maybe Integer]
-                then void (outputStrLn "Failed - year and rating should be numeric.") >> loop
-                else do
-                  outputStrLn "Writing new anime to list..."
-                  let new_anime = Anime (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-                  Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
-                  liftIO $ encodeFile "data/animes.yaml" (new_anime:ams)
-                  outputStrLn "Done."
-                  loop
+          Just "add movie" -> addMovie
+          Just "add anime" -> addAnime
+          Just "add serie" -> addSerie
+          Just "add album" -> addAlbum
 
           Just input -> do
             outputStrLn $ "Unknown command \"" ++ input ++ "\"."
@@ -156,7 +127,59 @@ main = runInputT defaultSettings loop
 
 
 
+    validateInputs :: [Maybe String] -> [Int] -> ([String] -> InputT IO ()) -> InputT IO ()
+    validateInputs maybeInputs toIntegerIndexes successFun =
+        if any isNothing maybeInputs
+          then void (outputStrLn "Failed - input can't be empty!") >> loop
+          else
+            let inputs = catMaybes maybeInputs in
+            if any isNothing (Prelude.map (TR.readMaybe . (inputs !!)) toIntegerIndexes :: [Maybe Integer])
+            then void (outputStrLn $ "Failed - fields " <> show toIntegerIndexes <> " must be numeric.") >> loop
+            else successFun inputs
 
 
 
+    addMovie, addAnime, addSerie, addAlbum :: InputT IO ()
+    addMovie = do
+        today <- liftIO $ utctDay <$> getCurrentTime
+        maybeInputs <- mapM (\f -> getUserInput ("Movie " <> f) "movie> ") ["title:", "year:", "director:", "rating (1-10):"]
+        validateInputs maybeInputs [1, 3] $ \inputs -> do
+              outputStrLn "Writing new movie to list..."
+              let new_movie = Movie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
+              Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
+              liftIO $ encodeFile "data/movies.yaml" (new_movie:mvs)
+              outputStrLn "Done."
+              loop
 
+    addAnime = do
+        today <- liftIO $ utctDay <$> getCurrentTime
+        maybeInputs <- mapM (\f -> getUserInput ("Anime " <> f) "anime> ") ["title:", "year:", "studio:", "rating (1-10):"]
+        validateInputs maybeInputs [1, 3] $ \inputs -> do
+              outputStrLn "Writing new anime to list..."
+              let new_anime = Anime (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
+              Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
+              liftIO $ encodeFile "data/animes.yaml" (new_anime:ams)
+              outputStrLn "Done."
+              loop
+
+    addSerie = do
+        today <- liftIO $ utctDay <$> getCurrentTime
+        maybeInputs <- mapM (\f -> getUserInput ("Serie " <> f) "serie> ") ["title:", "year:", "creator:", "rating (1-10):"]
+        validateInputs maybeInputs [1, 3] $ \inputs -> do
+              outputStrLn "Writing new serie to list..."
+              let new_serie = Serie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
+              Right srs <- liftIO $ decodeFileEither "data/series.yaml"
+              liftIO $ encodeFile "data/series.yaml" (new_serie:srs)
+              outputStrLn "Done."
+              loop
+
+    addAlbum = do
+        today <- liftIO $ utctDay <$> getCurrentTime
+        maybeInputs <- mapM (\f -> getUserInput ("Album " <> f) "album> ") ["title:", "year:", "artist:", "mark? (y/n)"]
+        validateInputs maybeInputs [1] $ \inputs -> do
+              outputStrLn "Writing new album to list..."
+              let new_album = Album (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (let mark = T.toLower $ T.pack $ inputs !! 3 in mark == "yes" || mark == "y") today
+              Right abs <- liftIO $ decodeFileEither "data/albums.yaml"
+              liftIO $ encodeFile "data/albums.yaml" (new_album:abs)
+              outputStrLn "Done."
+              loop
