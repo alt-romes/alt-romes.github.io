@@ -3,6 +3,7 @@ module Main where
 
 import Control.Applicative
 import Control.Monad.Trans.Maybe
+import Data.List as L
 import Data.Either
 import qualified Text.Read as TR
 import Data.Maybe
@@ -20,6 +21,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import Data.Time
 import System.Console.Haskeline
+import System.Directory
 
 import Index
 import Media
@@ -34,33 +36,34 @@ import Util
 
 
 
-mainLayout :: Bool -> Html -> Html
-mainLayout is_translation main_content = docTypeHtml $ do
+mainLayout :: Int -> Html -> Html
+mainLayout depth main_content = docTypeHtml $ do
     H.head $ do
         meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
         H.title "romes"
-        link ! rel "stylesheet" ! href (relPathFix "style.css") ! media "all" ! type_ "text/css"
+        link ! rel "stylesheet" ! relHref "style.css" ! media "all" ! type_ "text/css"
     body ! class_ "main-body" $ do
         H.div ! class_ "main-container" $ do
             nav $ do
-                p ! class_  "logo" $ "romes" 
                 ul $ do
-                    li $ a ! href "index.html" $ "index"
-                    li "posts"
+                    li ! class_  "logo" $ a ! relHref "index.html" $ "romes"
+                    -- li $ a ! relHref "index.html" $ "index"
+                    li $ a ! relHref "posts.html" $ "posts"
                     li "music"
                     -- li "poetry"
-                    li $ a ! href "https://github.com/alt-romes" $ "github"
+                    li $ a ! href "https://github.com/alt-romes" ! target "_blank" $ "github"
                     -- br
-            main_content
+            htmlMain main_content
         footer ! class_ "main-footer" $ do
             ul $ do
-                li $ a ! href (relPathFix "index.html") $ "en"
-                li $ a ! href (relPathFix "de/index.html") $ "de"
-                li $ a ! href (relPathFix "ja/index.html") $ "ja"
-                li $ a ! href (relPathFix "ru/index.html") $ "ru"
+                li $ a ! relHref "index.html" $ "en"
+                li $ a ! relHref "de/index.html" $ "de"
+                li $ a ! relHref "ja/index.html" $ "ja"
+                li $ a ! relHref "ru/index.html" $ "ru"
 
     where
-        relPathFix = if is_translation then ("../" <>) else Prelude.id
+        relHref :: AttributeValue -> Attribute
+        relHref path = if depth > 0 then href (foldl (<>) "" (replicate depth "../") <> path) else href path
 
 
 
@@ -103,19 +106,36 @@ main = runInputT defaultSettings loop
             Right abs <- liftIO $ decodeFileEither "data/albums.yaml"
             liftIO $ BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
 
+            -- Posts
+            outputStrLn "Building posts..."
+            posts <- filter (isSuffixOf ".md") <$> liftIO (getDirectoryContents "data/posts")
+            forM_ posts $ \postPath -> do
+                outputStrLn $ "Building " <> postPath
+                post <- liftIO $ TIO.readFile $ "data/posts/" <> postPath
+                liftIO $ BL.writeFile ("docs/posts/" <> dropSuffix ".md" postPath <> ".html") $ U.renderHtml $ mainLayout 1 $ preEscapedToHtml $ mdtoHtml post
+
+            -- Posts index
+            outputStrLn "Building posts index..."
+            liftIO $ BL.writeFile "docs/posts.html" $ U.renderHtml $ mainLayout 0 $ do
+                p "index:"
+                ul ! class_ "posts-index" $ forM_ posts $ \post -> do
+                    li $ a ! href (stringValue $ "posts/" <> dropSuffix ".md" post <> ".html") $ toHtml $ L.map (\x -> if x == '-' then ' ' else x) $ dropSuffix ".md" post
+                    br
+
             -- Index
             outputStrLn "Building index..."
             indexMD <- liftIO $ TIO.readFile "data/index.md"
-            liftIO $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout False $ indexHtml today mvs (mdtoNode indexMD)
+            liftIO $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout 0 $ indexHtml today mvs (mdtoNode indexMD)
 
             indexMD <- liftIO $ TIO.readFile "data/de/index.md"
-            liftIO $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+            liftIO $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
 
             indexMD <- liftIO $ TIO.readFile "data/ja/index.md"
-            liftIO $ BL.writeFile "docs/ja/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+            liftIO $ BL.writeFile "docs/ja/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
 
             indexMD <- liftIO $ TIO.readFile "data/ru/index.md"
-            liftIO $ BL.writeFile "docs/ru/index.html" $ U.renderHtml $ mainLayout True $ indexHtml today mvs (mdtoNode indexMD)
+            liftIO $ BL.writeFile "docs/ru/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
+
 
             outputStrLn "Done."
             loop
@@ -128,7 +148,6 @@ main = runInputT defaultSettings loop
           Just input -> do
             outputStrLn $ "Unknown command \"" ++ input ++ "\"."
             loop
-
 
 
 
