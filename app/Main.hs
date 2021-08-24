@@ -47,19 +47,14 @@ mainLayout depth main_content = docTypeHtml $ do
             nav $ do
                 ul $ do
                     li ! class_  "logo" $ a ! relHref "index.html" $ "romes"
-                    -- li $ a ! relHref "index.html" $ "index"
                     li $ a ! relHref "posts.html" $ "posts"
                     li "music"
-                    -- li "poetry"
                     li $ a ! href "https://github.com/alt-romes" ! target "_blank" $ "github"
-                    -- br
             htmlMain main_content
-        footer ! class_ "main-footer" $ do
-            ul $ do
-                li $ a ! relHref "index.html" $ "en"
-                li $ a ! relHref "de/index.html" $ "de"
-                li $ a ! relHref "ja/index.html" $ "ja"
-                li $ a ! relHref "ru/index.html" $ "ru"
+        -- footer ! class_ "main-footer" $ do
+        --     ul $ do
+        --         li $ a ! relHref "index.html" $ "en"
+        --         li $ a ! relHref "de/index.html" $ "de"
 
     where
         relHref :: AttributeValue -> Attribute
@@ -117,7 +112,7 @@ main = runInputT defaultSettings loop
             -- Posts index
             outputStrLn "Building posts index..."
             liftIO $ BL.writeFile "docs/posts.html" $ U.renderHtml $ mainLayout 0 $ do
-                p "index:"
+                p "---"
                 ul ! class_ "posts-index" $ forM_ posts $ \post -> do
                     li $ a ! href (stringValue $ "posts/" <> dropSuffix ".md" post <> ".html") $ toHtml $ L.map (\x -> if x == '-' then ' ' else x) $ dropSuffix ".md" post
                     br
@@ -127,15 +122,9 @@ main = runInputT defaultSettings loop
             indexMD <- liftIO $ TIO.readFile "data/index.md"
             liftIO $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout 0 $ indexHtml today mvs (mdtoNode indexMD)
 
-            indexMD <- liftIO $ TIO.readFile "data/de/index.md"
-            liftIO $ BL.writeFile "docs/de/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
-
-            indexMD <- liftIO $ TIO.readFile "data/ja/index.md"
-            liftIO $ BL.writeFile "docs/ja/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
-
-            indexMD <- liftIO $ TIO.readFile "data/ru/index.md"
-            liftIO $ BL.writeFile "docs/ru/index.html" $ U.renderHtml $ mainLayout 1 $ indexHtml today mvs (mdtoNode indexMD)
-
+            -- Style
+            outputStrLn "Adding style..."
+            liftIO (TIO.readFile "assets/style.css" >>= TIO.writeFile "docs/style.css")
 
             outputStrLn "Done."
             loop
