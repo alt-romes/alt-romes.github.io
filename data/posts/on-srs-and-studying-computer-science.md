@@ -1,7 +1,9 @@
 # On SRS and studying Computer Science
 
-## SRS (Spaced Repetition Systems)
+## SRS (Spaced Repetition System)
 
-## Studying Computer Science
 
-## Combining SRS and Computer Science
+
+<!-- ## Studying Computer Science -->
+
+<!-- ## Combining SRS and Computer Science -->
