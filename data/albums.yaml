@@ -53,11 +53,6 @@
   date: 2021-09-06
   artist: Life Without Buildings
   mark: false
-- title: Be the Cowboy
-  year: 2018
-  date: 2021-09-06
-  artist: Mitski
-  mark: false
 - title: '13'
   year: 1998
   date: 2021-09-06
@@ -152,6 +147,11 @@
   year: 1996
   date: 2021-01-04
   artist: Fettes Brot
+  mark: false
+- title: Be the Cowboy
+  year: 2018
+  date: 2021-09-06
+  artist: Mitski
   mark: false
 - title: Rosenrot
   year: 2005
