@@ -1,495 +1,500 @@
-- rating: 6
-  title: Outbreak
-  director: Wolfgang Petersen
-  year: 1995
-  date: 2021-09-19
-- rating: 7
-  title: The Sixth Sense
-  director: M. Night Shyamalan
-  year: 1999
-  date: 2021-08-11
-- rating: 5
-  title: Fun with Dick and Jane
-  director: Dean Parisot
-  year: 2019
-  date: 2021-05-15
-- rating: 6
-  title: Gente que Vai e Volta
-  director: Patricia Font
-  year: 2019
-  date: 2021-05-07
-- rating: 6
-  title: 'X-Men: First Class'
-  director: Matthew Vaughn
-  year: 2011
-  date: 2021-04-25
-- rating: 7
-  title: The Year Earth Changed
-  director: Tom Beard
-  year: 2021
-  date: 2021-04-24
-- rating: 8
-  title: Сталкер
-  director: Андрей Тарковский
-  year: 1979
-  date: 2021-04-23
-- rating: 8
-  title: Реальная жизнь в Северной Корее / Ложь и правда Ким Чен Ына
-  director: Антона Лядова
-  year: 2019
-  date: 2021-04-09
-- rating: 6
-  title: Two Distant Strangers
-  director: Travon Free
-  year: 2020
-  date: 2021-04-09
-- rating: 6
-  title: Tower Heist
-  director: Brett Ratner
-  year: 2011
-  date: 2021-02-10
-- rating: 6
-  title: Seungriho
-  director: Sung-hee Jo
-  year: 2021
-  date: 2021-02-06
-- rating: 8
-  title: The Red Turtle
-  director: Michaël Dudok de Wit
-  year: 2016
-  date: 2020-09-22
-- rating: 7
-  title: The Gentlemen
-  director: Guy Ritchie
-  year: 2019
-  date: 2020-08-27
-- rating: 7
-  title: The End of Evangelion
-  director: Hideaki Anno +
-  year: 1997
-  date: 2020-08-22
-- rating: 7
-  title: Les Statues Meurent Aussi
-  director: Alain Resnais & Chris Marker
-  year: 1953
-  date: 2020-08-18
-- rating: 7
-  title: Spiderman
-  director: Sam Raimi
-  year: 2002
-  date: 2020-08-12
-- rating: 8
-  title: Back to the Future
-  director: Robert Zemeckis
-  year: 1985
-  date: 2020-07-26
-- rating: 8
-  title: Return of the Jedi
-  director: Richard Marquand
-  year: 1983
-  date: 2020-07-05
-- rating: 10
-  title: The Empire Strikes Back
-  director: Irvin Kershner
-  year: 1980
-  date: 2020-06-27
-- rating: 10
-  title: A New Hope
-  director: George Lucas
-  year: 1977
-  date: 2020-06-27
-- rating: 7
-  title: 'Solo: A Star Wars Story'
-  director: Ron Howard
-  year: 2018
-  date: 2020-06-25
-- rating: 9
-  title: Revenge of the Sith
-  director: George Lucas
-  year: 2005
-  date: 2020-06-23
-- rating: 6
-  title: The Clone Wars
-  director: Dave Filoni
-  year: 2008
-  date: 2020-06-21
-- rating: 6
-  title: Attack of the Clones
-  director: George Lucas
-  year: 2002
-  date: 2020-06-21
-- rating: 6
-  title: The Phantom Menace
-  director: George Lucas
-  year: 1999
-  date: 2020-06-20
-- rating: 6
-  title: The Nice Guys
-  director: Shane Black
-  year: 2016
-  date: 2020-06-19
-- rating: 5
-  title: Angels & Demons
-  director: Ron Howard
-  year: 2009
-  date: 2020-06-11
-- rating: 9
-  title: Judoka
-  director: Josef Reeve
-  year: 1966
-  date: 2020-05-29
-- rating: 9
-  title: The Art Of Mixing
-  director: David Gibson
-  year: 1997
-  date: 2020-05-06
-- rating: 5
-  title: Scary Movie 5
-  director: Malcolm D. Lee
-  year: 2013
-  date: 2020-02-28
-- rating: 9
-  title: The Hateful Eight
-  director: Quentin Tarantino
-  year: 2015
-  date: 2020-02-17
-- rating: 7
-  title: The Good, the Bad and the Ugly
-  director: Sergio Leone
-  year: 1966
-  date: 2020-01-22
-- rating: 9
-  title: Adaptation
-  director: Spike Jonze written by Charlie Kaufman
-  year: 2002
-  date: 2020-01-21
-- rating: 6
-  title: Kids
-  director: Larry Clark
-  year: 1995
-  date: 2020-01-09
-- rating: 9
-  title: The Double Life of Veronique
-  director: Krzysztof Kieślowski
-  year: 1991
-  date: 2020-01-08
-- rating: 6
-  title: Burning
-  director: Lee Chang-dong
-  year: 2018
-  date: 2020-01-08
-- rating: 7
-  title: The Butterfly Effect
-  director: E. Bress, J. Gruber
-  year: 2004
-  date: 2020-01-07
-- rating: 5
-  title: Moon
-  director: Duncan Jones
-  year: 2009
-  date: 2020-01-06
-- rating: 7
-  title: Risky Business
-  director: Paul Brickman
-  year: 1983
-  date: 2020-01-06
-- rating: 7
-  title: Snatch
-  director: Guy Ritchie
-  year: 2000
-  date: 2020-01-06
-- rating: 7
-  title: Her
-  director: Spike Jonze
-  year: 2013
-  date: 2020-01-06
-- rating: 7
-  title: Punch-Drunk Love
-  director: Paul T. Anderson
-  year: 2002
-  date: 2020-01-04
-- rating: 7
-  title: The Iron Giant
-  director: Brad Bird
-  year: 1999
-  date: 2020-01-03
-- rating: 9
-  title: Full Metal Jacket
-  director: Stanley Kubrick
-  year: 1987
-  date: 2020-01-03
-- rating: 9
-  title: 'Laputa: Castle in the Sky'
-  director: Hayao Miyazaki music by Joe Hisaishi
-  year: 1986
-  date: 2019-12-24
-- rating: 9
-  title: Mulholland Drive
-  director: David Lynch
-  year: 2001
-  date: 2019-12-23
-- rating: 6
-  title: The Mule
-  director: Clint Eastwood
-  year: 2018
-  date: 2019-12-23
-- rating: 7
-  title: Source Code
-  director: Duncan Jones
-  year: 2011
-  date: 2019-12-21
-- rating: 6
-  title: Minority Report
-  director: Steven Spielberg
-  year: 2002
-  date: 2019-12-20
-- rating: 8
-  title: The Dreamers
-  director: Bernardo Bertolucci
+- date: 2021-10-30
+  director: Wolfgang Becker
+  rating: 8
+  title: Good Bye, Lenin!
   year: 2003
-  date: 2019-12-15
-- rating: 7
-  title: Eyes Wide Shut
-  director: Stanley Kubrick
-  year: 1999
-  date: 2019-12-03
-- rating: 4
-  title: Vampire Academy
-  director: Mark Waters
-  year: 2014
-  date: 2019-12-02
-- rating: 7
-  title: A Silent Voice
-  director: Naoko Yamada
-  year: 2016
-  date: 2019-10-21
-- rating: 5
-  title: Downsizing
-  director: Alexander Payne
-  year: 2017
-  date: 2019-09-29
-- rating: 10
-  title: Garden State
-  director: Zach Braff
-  year: 2004
-  date: 2019-09-17
-- rating: 6
-  title: 'Austin Powers: International Man of Mystery'
-  director: Jay Roach
-  year: 1997
-  date: 2019-09-17
-- rating: 7
-  title: 10 Things I Hate About You
-  director: Gil Junger
-  year: 1999
-  date: 2019-09-17
-- rating: 10
-  title: The Matrix
-  director: Wachowskis
-  year: 1999
-  date: 2019-09-05
-- rating: 6
-  title: Shazam!
-  director: David Sandberg
-  year: 2019
-  date: 2019-09-05
-- rating: 7
-  title: Stand By Me
-  director: Rob Reiner
-  year: 1986
-  date: 2019-07-29
-- rating: 5
-  title: The Internship
-  director: Shawn Levy
-  year: 2013
-  date: 2019-07-26
-- rating: 7
-  title: Green Book
-  director: Peter Farrelly
-  year: 2018
-  date: 2019-07-13
-- rating: 4
-  title: White Chicks
-  director: Keenen I. Wayans
-  year: 2004
-  date: 2019-07-13
-- rating: 7
-  title: Kung Fu Panda
-  director: Mark Osborne, John Stevenson
-  year: 2008
-  date: 2019-07-12
-- rating: 4
-  title: Pineapple Express
-  director: David G. Green
-  year: 2008
-  date: 2019-07-12
-- rating: 5
-  title: Life After Beth
-  director: Jeff Baena
-  year: 2014
-  date: 2019-07-11
-- rating: 9
-  title: ANIMA
-  director: Paul T. Anderson
-  year: 2019
-  date: 2019-07-06
-- rating: 9
-  title: The Fly
-  director: David Cronenberg
-  year: 1986
-  date: 2019-07-05
-- rating: 10
-  title: The Breakfast Club
-  director: John Hughes
-  year: 1985
-  date: 2019-07-04
-- rating: 7
-  title: Julieta
-  director: Pedro Almodóvar
-  year: 2016
-  date: 2019-07-04
-- rating: 6
-  title: Eight Grade
-  director: Bo Burnham
-  year: 2018
-  date: 2019-06-30
-- rating: 10
-  title: Clerks
-  director: Kevin Smith
-  year: 1994
-  date: 2019-06-28
-- rating: 7
-  title: The Social Network
-  director: David Fincher
-  year: 2010
-  date: 2019-06-27
-- rating: 6
-  title: 50 First Dates
-  director: Peter Segal
-  year: 2004
-  date: 2019-06-25
-- rating: 9
-  title: Django Unchained
-  director: Quentin Tarantino
-  year: 2012
-  date: 2019-06-24
-- rating: 4
-  title: 'Mission: Impossible 2'
-  director: John Woo
-  year: 2000
-  date: 2019-06-23
-- rating: 7
-  title: Life of Pi
-  director: Ang Lee
-  year: 2012
-  date: 2019-06-22
-- rating: 7
-  title: Annie Hall
-  director: Woody Allen
-  year: 1977
-  date: 2019-06-19
-- rating: 8
-  title: Being John Malkovich
-  director: Spike Jonze screenplay by Charlie Kaufman
-  year: 1999
-  date: 2019-06-17
-- rating: 9
-  title: Eternal Sunshine Of The Spotless Mind
-  director: Michel Gondry screenplay by Charlie Kaufman
-  year: 2004
-  date: 2019-06-14
-- rating: 9
-  title: Synecdoche, New York
-  director: Charlie Kaufman
-  year: 2008
-  date: 2019-06-13
-- rating: 6
-  title: Death At A Funeral
-  director: Frank Oz
-  year: 2007
-  date: 2019-06-03
-- rating: 4
-  title: Blended
-  director: Frank Coraci
-  year: 2014
-  date: 2019-06-03
-- rating: 9
-  title: Into The Wild
-  director: Sean Penn
-  year: 2007
-  date: 2019-06-02
-- rating: 5
-  title: Honey, I Shrunk the Kids
-  director: Joe Johnston
-  year: 1989
-  date: 2019-06-01
-- rating: 7
-  title: Pi
-  director: Darren Aronofsky
-  year: 1998
-  date: 2019-05-26
-- rating: 10
-  title: Memento
-  director: Christopher Nolan
-  year: 2000
-  date: 2019-05-18
-- rating: 6
-  title: Playtime
-  director: Jacques Tati
-  year: 1967
-  date: 2019-05-17
-- rating: 4
-  title: Tabu
-  director: Miguel Gomes
-  year: 2012
-  date: 2019-05-05
-- rating: 10
-  title: Amélie
-  director: Jean-Pierre Jeunet
-  year: 2001
-  date: 2019-05-04
-- rating: 4
-  title: Grown Ups 2
-  director: Dennis Dugan
-  year: 2013
-  date: 2019-05-01
-- rating: 7
-  title: Dark Star
-  director: John Carpenter
-  year: 1974
-  date: 2019-05-01
-- rating: 7
-  title: Monsters, Inc.
-  director: Pete Docter
-  year: 2001
-  date: 2019-04-29
-- rating: 5
-  title: High Life
-  director: Claire Denis
-  year: 2018
-  date: 2019-04-28
-- rating: 7
-  title: Ghost In The Shell
-  director: Mamoru Oshii
+- date: 2021-09-19
+  director: Wolfgang Petersen
+  rating: 6
+  title: Outbreak
   year: 1995
-  date: 2019-04-26
-- rating: 9
-  title: Waking Life
-  director: Richard Linklater
-  year: 2001
-  date: 2019-04-23
-- rating: 6
-  title: Forbidden Planet
-  director: Fred M. Wilcox
-  year: 1956
-  date: 2019-04-22
-- rating: 7
-  title: La Femme Nikita
-  director: Luc Besson
-  year: 1990
-  date: 2019-04-21
-- rating: 7
-  title: The Fifth Element
-  director: Luc Besson
+- date: 2021-08-11
+  director: M. Night Shyamalan
+  rating: 7
+  title: The Sixth Sense
+  year: 1999
+- date: 2021-05-15
+  director: Dean Parisot
+  rating: 5
+  title: Fun with Dick and Jane
+  year: 2019
+- date: 2021-05-07
+  director: Patricia Font
+  rating: 6
+  title: Gente que Vai e Volta
+  year: 2019
+- date: 2021-04-25
+  director: Matthew Vaughn
+  rating: 6
+  title: 'X-Men: First Class'
+  year: 2011
+- date: 2021-04-24
+  director: Tom Beard
+  rating: 7
+  title: The Year Earth Changed
+  year: 2021
+- date: 2021-04-23
+  director: Андрей Тарковский
+  rating: 8
+  title: Сталкер
+  year: 1979
+- date: 2021-04-09
+  director: Антона Лядова
+  rating: 8
+  title: Реальная жизнь в Северной Корее / Ложь и правда Ким Чен Ына
+  year: 2019
+- date: 2021-04-09
+  director: Travon Free
+  rating: 6
+  title: Two Distant Strangers
+  year: 2020
+- date: 2021-02-10
+  director: Brett Ratner
+  rating: 6
+  title: Tower Heist
+  year: 2011
+- date: 2021-02-06
+  director: Sung-hee Jo
+  rating: 6
+  title: Seungriho
+  year: 2021
+- date: 2020-09-22
+  director: Michaël Dudok de Wit
+  rating: 8
+  title: The Red Turtle
+  year: 2016
+- date: 2020-08-27
+  director: Guy Ritchie
+  rating: 7
+  title: The Gentlemen
+  year: 2019
+- date: 2020-08-22
+  director: Hideaki Anno +
+  rating: 7
+  title: The End of Evangelion
   year: 1997
-  date: 2019-04-19
+- date: 2020-08-18
+  director: Alain Resnais & Chris Marker
+  rating: 7
+  title: Les Statues Meurent Aussi
+  year: 1953
+- date: 2020-08-12
+  director: Sam Raimi
+  rating: 7
+  title: Spiderman
+  year: 2002
+- date: 2020-07-26
+  director: Robert Zemeckis
+  rating: 8
+  title: Back to the Future
+  year: 1985
+- date: 2020-07-05
+  director: Richard Marquand
+  rating: 8
+  title: Return of the Jedi
+  year: 1983
+- date: 2020-06-27
+  director: Irvin Kershner
+  rating: 10
+  title: The Empire Strikes Back
+  year: 1980
+- date: 2020-06-27
+  director: George Lucas
+  rating: 10
+  title: A New Hope
+  year: 1977
+- date: 2020-06-25
+  director: Ron Howard
+  rating: 7
+  title: 'Solo: A Star Wars Story'
+  year: 2018
+- date: 2020-06-23
+  director: George Lucas
+  rating: 9
+  title: Revenge of the Sith
+  year: 2005
+- date: 2020-06-21
+  director: Dave Filoni
+  rating: 6
+  title: The Clone Wars
+  year: 2008
+- date: 2020-06-21
+  director: George Lucas
+  rating: 6
+  title: Attack of the Clones
+  year: 2002
+- date: 2020-06-20
+  director: George Lucas
+  rating: 6
+  title: The Phantom Menace
+  year: 1999
+- date: 2020-06-19
+  director: Shane Black
+  rating: 6
+  title: The Nice Guys
+  year: 2016
+- date: 2020-06-11
+  director: Ron Howard
+  rating: 5
+  title: Angels & Demons
+  year: 2009
+- date: 2020-05-29
+  director: Josef Reeve
+  rating: 9
+  title: Judoka
+  year: 1966
+- date: 2020-05-06
+  director: David Gibson
+  rating: 9
+  title: The Art Of Mixing
+  year: 1997
+- date: 2020-02-28
+  director: Malcolm D. Lee
+  rating: 5
+  title: Scary Movie 5
+  year: 2013
+- date: 2020-02-17
+  director: Quentin Tarantino
+  rating: 9
+  title: The Hateful Eight
+  year: 2015
+- date: 2020-01-22
+  director: Sergio Leone
+  rating: 7
+  title: The Good, the Bad and the Ugly
+  year: 1966
+- date: 2020-01-21
+  director: Spike Jonze written by Charlie Kaufman
+  rating: 9
+  title: Adaptation
+  year: 2002
+- date: 2020-01-09
+  director: Larry Clark
+  rating: 6
+  title: Kids
+  year: 1995
+- date: 2020-01-08
+  director: Krzysztof Kieślowski
+  rating: 9
+  title: The Double Life of Veronique
+  year: 1991
+- date: 2020-01-08
+  director: Lee Chang-dong
+  rating: 6
+  title: Burning
+  year: 2018
+- date: 2020-01-07
+  director: E. Bress, J. Gruber
+  rating: 7
+  title: The Butterfly Effect
+  year: 2004
+- date: 2020-01-06
+  director: Duncan Jones
+  rating: 5
+  title: Moon
+  year: 2009
+- date: 2020-01-06
+  director: Paul Brickman
+  rating: 7
+  title: Risky Business
+  year: 1983
+- date: 2020-01-06
+  director: Guy Ritchie
+  rating: 7
+  title: Snatch
+  year: 2000
+- date: 2020-01-06
+  director: Spike Jonze
+  rating: 7
+  title: Her
+  year: 2013
+- date: 2020-01-04
+  director: Paul T. Anderson
+  rating: 7
+  title: Punch-Drunk Love
+  year: 2002
+- date: 2020-01-03
+  director: Brad Bird
+  rating: 7
+  title: The Iron Giant
+  year: 1999
+- date: 2020-01-03
+  director: Stanley Kubrick
+  rating: 9
+  title: Full Metal Jacket
+  year: 1987
+- date: 2019-12-24
+  director: Hayao Miyazaki music by Joe Hisaishi
+  rating: 9
+  title: 'Laputa: Castle in the Sky'
+  year: 1986
+- date: 2019-12-23
+  director: David Lynch
+  rating: 9
+  title: Mulholland Drive
+  year: 2001
+- date: 2019-12-23
+  director: Clint Eastwood
+  rating: 6
+  title: The Mule
+  year: 2018
+- date: 2019-12-21
+  director: Duncan Jones
+  rating: 7
+  title: Source Code
+  year: 2011
+- date: 2019-12-20
+  director: Steven Spielberg
+  rating: 6
+  title: Minority Report
+  year: 2002
+- date: 2019-12-15
+  director: Bernardo Bertolucci
+  rating: 8
+  title: The Dreamers
+  year: 2003
+- date: 2019-12-03
+  director: Stanley Kubrick
+  rating: 7
+  title: Eyes Wide Shut
+  year: 1999
+- date: 2019-12-02
+  director: Mark Waters
+  rating: 4
+  title: Vampire Academy
+  year: 2014
+- date: 2019-10-21
+  director: Naoko Yamada
+  rating: 7
+  title: A Silent Voice
+  year: 2016
+- date: 2019-09-29
+  director: Alexander Payne
+  rating: 5
+  title: Downsizing
+  year: 2017
+- date: 2019-09-17
+  director: Zach Braff
+  rating: 10
+  title: Garden State
+  year: 2004
+- date: 2019-09-17
+  director: Jay Roach
+  rating: 6
+  title: 'Austin Powers: International Man of Mystery'
+  year: 1997
+- date: 2019-09-17
+  director: Gil Junger
+  rating: 7
+  title: 10 Things I Hate About You
+  year: 1999
+- date: 2019-09-05
+  director: Wachowskis
+  rating: 10
+  title: The Matrix
+  year: 1999
+- date: 2019-09-05
+  director: David Sandberg
+  rating: 6
+  title: Shazam!
+  year: 2019
+- date: 2019-07-29
+  director: Rob Reiner
+  rating: 7
+  title: Stand By Me
+  year: 1986
+- date: 2019-07-26
+  director: Shawn Levy
+  rating: 5
+  title: The Internship
+  year: 2013
+- date: 2019-07-13
+  director: Peter Farrelly
+  rating: 7
+  title: Green Book
+  year: 2018
+- date: 2019-07-13
+  director: Keenen I. Wayans
+  rating: 4
+  title: White Chicks
+  year: 2004
+- date: 2019-07-12
+  director: Mark Osborne, John Stevenson
+  rating: 7
+  title: Kung Fu Panda
+  year: 2008
+- date: 2019-07-12
+  director: David G. Green
+  rating: 4
+  title: Pineapple Express
+  year: 2008
+- date: 2019-07-11
+  director: Jeff Baena
+  rating: 5
+  title: Life After Beth
+  year: 2014
+- date: 2019-07-06
+  director: Paul T. Anderson
+  rating: 9
+  title: ANIMA
+  year: 2019
+- date: 2019-07-05
+  director: David Cronenberg
+  rating: 9
+  title: The Fly
+  year: 1986
+- date: 2019-07-04
+  director: John Hughes
+  rating: 10
+  title: The Breakfast Club
+  year: 1985
+- date: 2019-07-04
+  director: Pedro Almodóvar
+  rating: 7
+  title: Julieta
+  year: 2016
+- date: 2019-06-30
+  director: Bo Burnham
+  rating: 6
+  title: Eight Grade
+  year: 2018
+- date: 2019-06-28
+  director: Kevin Smith
+  rating: 10
+  title: Clerks
+  year: 1994
+- date: 2019-06-27
+  director: David Fincher
+  rating: 7
+  title: The Social Network
+  year: 2010
+- date: 2019-06-25
+  director: Peter Segal
+  rating: 6
+  title: 50 First Dates
+  year: 2004
+- date: 2019-06-24
+  director: Quentin Tarantino
+  rating: 9
+  title: Django Unchained
+  year: 2012
+- date: 2019-06-23
+  director: John Woo
+  rating: 4
+  title: 'Mission: Impossible 2'
+  year: 2000
+- date: 2019-06-22
+  director: Ang Lee
+  rating: 7
+  title: Life of Pi
+  year: 2012
+- date: 2019-06-19
+  director: Woody Allen
+  rating: 7
+  title: Annie Hall
+  year: 1977
+- date: 2019-06-17
+  director: Spike Jonze screenplay by Charlie Kaufman
+  rating: 8
+  title: Being John Malkovich
+  year: 1999
+- date: 2019-06-14
+  director: Michel Gondry screenplay by Charlie Kaufman
+  rating: 9
+  title: Eternal Sunshine Of The Spotless Mind
+  year: 2004
+- date: 2019-06-13
+  director: Charlie Kaufman
+  rating: 9
+  title: Synecdoche, New York
+  year: 2008
+- date: 2019-06-03
+  director: Frank Oz
+  rating: 6
+  title: Death At A Funeral
+  year: 2007
+- date: 2019-06-03
+  director: Frank Coraci
+  rating: 4
+  title: Blended
+  year: 2014
+- date: 2019-06-02
+  director: Sean Penn
+  rating: 9
+  title: Into The Wild
+  year: 2007
+- date: 2019-06-01
+  director: Joe Johnston
+  rating: 5
+  title: Honey, I Shrunk the Kids
+  year: 1989
+- date: 2019-05-26
+  director: Darren Aronofsky
+  rating: 7
+  title: Pi
+  year: 1998
+- date: 2019-05-18
+  director: Christopher Nolan
+  rating: 10
+  title: Memento
+  year: 2000
+- date: 2019-05-17
+  director: Jacques Tati
+  rating: 6
+  title: Playtime
+  year: 1967
+- date: 2019-05-05
+  director: Miguel Gomes
+  rating: 4
+  title: Tabu
+  year: 2012
+- date: 2019-05-04
+  director: Jean-Pierre Jeunet
+  rating: 10
+  title: Amélie
+  year: 2001
+- date: 2019-05-01
+  director: Dennis Dugan
+  rating: 4
+  title: Grown Ups 2
+  year: 2013
+- date: 2019-05-01
+  director: John Carpenter
+  rating: 7
+  title: Dark Star
+  year: 1974
+- date: 2019-04-29
+  director: Pete Docter
+  rating: 7
+  title: Monsters, Inc.
+  year: 2001
+- date: 2019-04-28
+  director: Claire Denis
+  rating: 5
+  title: High Life
+  year: 2018
+- date: 2019-04-26
+  director: Mamoru Oshii
+  rating: 7
+  title: Ghost In The Shell
+  year: 1995
+- date: 2019-04-23
+  director: Richard Linklater
+  rating: 9
+  title: Waking Life
+  year: 2001
+- date: 2019-04-22
+  director: Fred M. Wilcox
+  rating: 6
+  title: Forbidden Planet
+  year: 1956
+- date: 2019-04-21
+  director: Luc Besson
+  rating: 7
+  title: La Femme Nikita
+  year: 1990
+- date: 2019-04-19
+  director: Luc Besson
+  rating: 7
+  title: The Fifth Element
+  year: 1997
