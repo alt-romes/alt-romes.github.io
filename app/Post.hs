@@ -11,18 +11,19 @@ import Control.Monad
 import Util
 import Page
 
-data Post = Post String -- Post path
-                 T.Text -- Post content
+type Content = T.Text
 
-newtype Posts = Posts [Post]
+data Post = Post FilePath Content
 
 instance Page Post where
     makeMain (Post _ content) = preEscapedToHtml $ mdtoHtml content
     pageDepth _ = 1
+    makePageMethod = makePageWithNav
 
--- Posts index
-instance Page Posts where
-    makeMain (Posts posts) = do
+newtype PostsIndex = PostsIndex [Post]
+
+instance Page PostsIndex where
+    makeMain (PostsIndex posts) = do
         p "---"
         ul ! class_ "posts-index" $ forM_ posts $ \(Post postPath _) -> do
             li $ a ! href (stringValue $ "posts/" <> dropSuffix ".md" postPath <> ".html") $
@@ -30,3 +31,4 @@ instance Page Posts where
             br
 
     pageDepth _ = 0
+    makePageMethod = makePageWithNav

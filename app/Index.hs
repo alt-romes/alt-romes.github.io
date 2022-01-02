@@ -42,3 +42,4 @@ instance Page Index where
         preEscapedToHtml $ nodetoHtml $ makeTablesUrl today movies (mdtoNode content)
 
     pageDepth _ = 0
+    makePageMethod = makePageWithNav

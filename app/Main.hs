@@ -54,44 +54,37 @@ main = runInputT defaultSettings loop
           Just "make" -> do
             today <- liftIO $ utctDay <$> getCurrentTime
 
-            -- Movies
             outputStrLn "Building movies..."
-            Right mvs <- decodeFileIO "data/movies.yaml"
-            writeHtmlFileIO "docs/movies.html" $ makePage (mvs :: [Movie])
+            mvs <- decodeFileIO "data/movies.yaml"
+            writeHtmlPageIO "docs/movies.html" (mvs :: [Movie])
 
-            -- Animes
             outputStrLn "Building animes..."
-            Right ams <- decodeFileIO "data/animes.yaml"
-            writeHtmlFileIO "docs/animes.html" $ makePage (ams :: [Anime])
+            ams <- decodeFileIO "data/animes.yaml"
+            writeHtmlPageIO "docs/animes.html" (ams :: [Anime])
 
-            -- Series
             outputStrLn "Building series..."
-            Right srs <- decodeFileIO "data/series.yaml"
-            writeHtmlFileIO "docs/series.html" $ makePage (srs :: [Serie])
+            srs <- decodeFileIO "data/series.yaml"
+            writeHtmlPageIO "docs/series.html" (srs :: [Serie])
 
-            -- Albums
             outputStrLn "Building albums..."
-            Right abs <- decodeFileIO "data/albums.yaml"
-            writeHtmlFileIO "docs/albums.html" $ makePage (abs :: [Album])
+            abs <- decodeFileIO "data/albums.yaml"
+            writeHtmlPageIO "docs/albums.html" (abs :: [Album])
 
-            -- Posts
             outputStrLn "Building posts..."
             postsPaths <- filter (isSuffixOf ".md") <$> liftIO (getDirectoryContents "data/posts")
-            posts <- Posts <$> forM postsPaths (\postPath -> do
+            posts <- PostsIndex <$> forM postsPaths (\postPath -> do
                 outputStrLn $ "Building " <> postPath
                 post <- Post postPath <$> liftIO (TIO.readFile $ "data/posts/" <> postPath)
-                writeHtmlFileIO ("docs/posts/" <> dropSuffix ".md" postPath <> ".html") $ makePageWithNav post
+                writeHtmlPageIO ("docs/posts/" <> dropSuffix ".md" postPath <> ".html") post
                 return post)
 
-            -- Posts index
             outputStrLn "Building posts index..."
-            writeHtmlFileIO "docs/posts.html" $ makePageWithNav posts
-            -- Index
+            writeHtmlPageIO "docs/posts.html" posts
+
             outputStrLn "Building index..."
             indexMD <- liftIO $ TIO.readFile "data/index.md"
-            writeHtmlFileIO "docs/index.html" $ makePageWithNav $ Index today mvs indexMD
+            writeHtmlPageIO "docs/index.html" $ Index today mvs indexMD
 
-            -- Style
             outputStrLn "Adding style..."
             liftIO (TIO.readFile "assets/style.css" >>= TIO.writeFile "docs/style.css")
 
@@ -106,11 +99,6 @@ main = runInputT defaultSettings loop
           Just input -> do
             outputStrLn $ "Unknown command \"" ++ input ++ "\"."
             loop
-
-
-    decodeFileIO filePath = liftIO $ decodeFileEither filePath
-    writeHtmlFileIO :: String -> Html -> InputT IO ()
-    writeHtmlFileIO filePath html = liftIO $ BL.writeFile filePath $ U.renderHtml html
 
 
     validateInputs :: [Maybe String] -> [Int] -> ([String] -> InputT IO ()) -> InputT IO ()
@@ -131,7 +119,7 @@ main = runInputT defaultSettings loop
         validateInputs maybeInputs [1, 3] $ \inputs -> do
               outputStrLn "Writing new movie to list..."
               let new_movie = Movie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-              Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
+              mvs <- decodeFileIO "data/movies.yaml"
               liftIO $ encodeFile "data/movies.yaml" (new_movie:mvs)
               outputStrLn "Done."
               loop
@@ -142,7 +130,7 @@ main = runInputT defaultSettings loop
         validateInputs maybeInputs [1, 3] $ \inputs -> do
               outputStrLn "Writing new anime to list..."
               let new_anime = Anime (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-              Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
+              ams <- decodeFileIO "data/animes.yaml"
               liftIO $ encodeFile "data/animes.yaml" (new_anime:ams)
               outputStrLn "Done."
               loop
@@ -153,7 +141,7 @@ main = runInputT defaultSettings loop
         validateInputs maybeInputs [1, 3] $ \inputs -> do
               outputStrLn "Writing new serie to list..."
               let new_serie = Serie (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (read $ inputs !! 3) today
-              Right srs <- liftIO $ decodeFileEither "data/series.yaml"
+              srs <- decodeFileIO "data/series.yaml"
               liftIO $ encodeFile "data/series.yaml" (new_serie:srs)
               outputStrLn "Done."
               loop
@@ -164,7 +152,11 @@ main = runInputT defaultSettings loop
         validateInputs maybeInputs [1] $ \inputs -> do
               outputStrLn "Writing new album to list..."
               let new_album = Album (T.pack $ Prelude.head inputs) (read $ inputs !! 1) (T.pack $ inputs !! 2) (let mark = T.toLower $ T.pack $ inputs !! 3 in mark == "yes" || mark == "y") today
-              Right abs <- liftIO $ decodeFileEither "data/albums.yaml"
+              abs <- decodeFileIO "data/albums.yaml"
               liftIO $ encodeFile "data/albums.yaml" (new_album:abs)
               outputStrLn "Done."
               loop
+
+    decodeFileIO filePath = fromRight (error ("Error decoding file " <> filePath)) <$> liftIO (decodeFileEither filePath)
+    writeHtmlPageIO path page = liftIO $ writeHtmlPage path page
+

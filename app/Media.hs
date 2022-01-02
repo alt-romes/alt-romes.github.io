@@ -46,3 +46,4 @@ class Media a where
 instance Media a => Page [a] where
     makeMain = mediaTable
     pageDepth _ = 0
+    makePageMethod = makePage

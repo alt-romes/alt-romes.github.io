@@ -1,6 +1,8 @@
 {-# LANGUAGE UndecidableInstances, FlexibleInstances, OverloadedStrings #-}
 module Page where
 
+import qualified Data.ByteString.Lazy.Char8 as BL
+import Text.Blaze.Html.Renderer.Utf8 as U
 import qualified Data.Text as T
 import Data.Time
 import Text.Blaze.Html5 as H
@@ -10,6 +12,7 @@ import Control.Monad
 class Page a where
     makeMain :: a -> Html
     pageDepth :: a -> Int
+    makePageMethod :: a -> Html
 
     makePage :: a -> Html
     makePage page = docTypeHtml $ do
@@ -42,3 +45,6 @@ class Page a where
         where
             relHref :: AttributeValue -> Attribute
             relHref path = if pageDepth page > 0 then href (foldl (<>) "" (replicate (pageDepth page) "../") <> path) else href path
+
+    writeHtmlPage :: FilePath -> a -> IO ()
+    writeHtmlPage filePath page = BL.writeFile filePath $ U.renderHtml $ makePageMethod page
