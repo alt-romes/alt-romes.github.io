@@ -44,6 +44,3 @@ getUserInput lin prompt = do
     outputStrLn lin
     getInputLine prompt
 
-
----- Blaze-Html ----------
-htmlMain = H.main -- re-export H.main to be useable in Main.hs without conflict and without needing to qualify the import there.

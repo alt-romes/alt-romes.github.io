@@ -7,6 +7,8 @@ import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 import Control.Monad
 
+import Page
+
 class Media a where
     mediaAttrNames :: a -> [T.Text]
     mediaAttrs :: a -> [Html]
@@ -32,20 +34,15 @@ class Media a where
             tbody $
                 mapM_ mediaRow (m:ms)
 
-    mediaToHtml :: [a] -> Html
-    mediaToHtml ms = docTypeHtml $ do
-        H.head $ do
-            meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
-            H.title "romes"
-            link ! rel "stylesheet" ! href "style.css" ! media "all" ! type_ "text/css"
-        body $ do
-            mediaTable ms
-
     getDate :: a -> Day
 
     -- TODO: Filter for last 30 days instead
     filterMonth :: Day -> [a] -> [a]
-    filterMonth today ms = filter thisMonthF ms
+    filterMonth today = filter thisMonthF
         where
             thisMonthF m = (\(a,b,_) (a',b',_) -> a == a' && b == b') (toGregorian $ getDate m) (toGregorian today)
 
+
+instance Media a => Page [a] where
+    makeMain = mediaTable
+    pageDepth _ = 0

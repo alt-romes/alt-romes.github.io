@@ -1,3 +1,4 @@
+.PHONY: run build clean
 run:
 	cabal run
 
@@ -7,6 +8,3 @@ build:
 clean:
 	rm -rf dist-newstyle
 	find docs -type f -delete
-
-site:
-	echo make | make run

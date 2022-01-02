@@ -55,5 +55,7 @@ executable control-site
         Albums,
         Animes,
         Series,
-        Util
+        Util,
+        Page,
+        Post
 

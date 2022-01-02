@@ -30,5 +30,4 @@ instance Media Album where
         toHtml title,
         toHtml artist
                                                 ]
-
     getDate a = date a

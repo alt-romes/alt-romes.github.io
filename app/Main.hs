@@ -14,7 +14,7 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import Text.Blaze.Html.Renderer.Pretty as P
 import Text.Blaze.Html.Renderer.Utf8 as U
 import Text.Blaze.Html
-import Text.Blaze.Html5 as H hiding (main)
+import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 import Data.Yaml
 import qualified Data.Text as T
@@ -30,35 +30,8 @@ import Albums
 import Animes
 import Series
 import Util
-
-
-
-
-
-
-mainLayout :: Int -> Html -> Html
-mainLayout depth main_content = docTypeHtml $ do
-    H.head $ do
-        meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
-        H.title "romes"
-        link ! rel "stylesheet" ! relHref "style.css" ! media "all" ! type_ "text/css"
-    body ! class_ "main-body" $ do
-        H.div ! class_ "main-container" $ do
-            nav $ do
-                ul $ do
-                    li ! class_  "logo" $ a ! relHref "index.html" $ "romes"
-                    li $ a ! relHref "posts.html" $ "posts"
-                    li "music"
-                    li $ a ! href "https://github.com/alt-romes" ! target "_blank" $ "github"
-            htmlMain main_content
-        -- footer ! class_ "main-footer" $ do
-        --     ul $ do
-        --         li $ a ! relHref "index.html" $ "en"
-        --         li $ a ! relHref "de/index.html" $ "de"
-
-    where
-        relHref :: AttributeValue -> Attribute
-        relHref path = if depth > 0 then href (foldl (<>) "" (replicate depth "../") <> path) else href path
+import Page
+import Post
 
 
 
@@ -83,44 +56,40 @@ main = runInputT defaultSettings loop
 
             -- Movies
             outputStrLn "Building movies..."
-            Right mvs <- liftIO $ decodeFileEither "data/movies.yaml"
-            liftIO $ BL.writeFile "docs/movies.html" $ U.renderHtml $ mediaToHtml (mvs :: [Movie])
+            Right mvs <- decodeFileIO "data/movies.yaml"
+            writeHtmlFileIO "docs/movies.html" $ makePage (mvs :: [Movie])
 
             -- Animes
             outputStrLn "Building animes..."
-            Right ams <- liftIO $ decodeFileEither "data/animes.yaml"
-            liftIO $ BL.writeFile "docs/animes.html" $ U.renderHtml $ mediaToHtml (ams :: [Anime])
+            Right ams <- decodeFileIO "data/animes.yaml"
+            writeHtmlFileIO "docs/animes.html" $ makePage (ams :: [Anime])
 
             -- Series
             outputStrLn "Building series..."
-            Right srs <- liftIO $ decodeFileEither "data/series.yaml"
-            liftIO $ BL.writeFile "docs/series.html" $ U.renderHtml $ mediaToHtml (srs :: [Serie])
+            Right srs <- decodeFileIO "data/series.yaml"
+            writeHtmlFileIO "docs/series.html" $ makePage (srs :: [Serie])
 
             -- Albums
             outputStrLn "Building albums..."
-            Right abs <- liftIO $ decodeFileEither "data/albums.yaml"
-            liftIO $ BL.writeFile "docs/albums.html" $ U.renderHtml $ mediaToHtml (abs :: [Album])
+            Right abs <- decodeFileIO "data/albums.yaml"
+            writeHtmlFileIO "docs/albums.html" $ makePage (abs :: [Album])
 
             -- Posts
             outputStrLn "Building posts..."
-            posts <- filter (isSuffixOf ".md") <$> liftIO (getDirectoryContents "data/posts")
-            forM_ posts $ \postPath -> do
+            postsPaths <- filter (isSuffixOf ".md") <$> liftIO (getDirectoryContents "data/posts")
+            posts <- Posts <$> forM postsPaths (\postPath -> do
                 outputStrLn $ "Building " <> postPath
-                post <- liftIO $ TIO.readFile $ "data/posts/" <> postPath
-                liftIO $ BL.writeFile ("docs/posts/" <> dropSuffix ".md" postPath <> ".html") $ U.renderHtml $ mainLayout 1 $ preEscapedToHtml $ mdtoHtml post
+                post <- Post postPath <$> liftIO (TIO.readFile $ "data/posts/" <> postPath)
+                writeHtmlFileIO ("docs/posts/" <> dropSuffix ".md" postPath <> ".html") $ makePageWithNav post
+                return post)
 
             -- Posts index
             outputStrLn "Building posts index..."
-            liftIO $ BL.writeFile "docs/posts.html" $ U.renderHtml $ mainLayout 0 $ do
-                p "---"
-                ul ! class_ "posts-index" $ forM_ posts $ \post -> do
-                    li $ a ! href (stringValue $ "posts/" <> dropSuffix ".md" post <> ".html") $ toHtml $ L.map (\x -> if x == '-' then ' ' else x) $ dropSuffix ".md" post
-                    br
-
+            writeHtmlFileIO "docs/posts.html" $ makePageWithNav posts
             -- Index
             outputStrLn "Building index..."
             indexMD <- liftIO $ TIO.readFile "data/index.md"
-            liftIO $ BL.writeFile "docs/index.html" $ U.renderHtml $ mainLayout 0 $ indexHtml today mvs (mdtoNode indexMD)
+            writeHtmlFileIO "docs/index.html" $ makePageWithNav $ Index today mvs indexMD
 
             -- Style
             outputStrLn "Adding style..."
@@ -139,7 +108,9 @@ main = runInputT defaultSettings loop
             loop
 
 
-
+    decodeFileIO filePath = liftIO $ decodeFileEither filePath
+    writeHtmlFileIO :: String -> Html -> InputT IO ()
+    writeHtmlFileIO filePath html = liftIO $ BL.writeFile filePath $ U.renderHtml html
 
 
     validateInputs :: [Maybe String] -> [Int] -> ([String] -> InputT IO ()) -> InputT IO ()
@@ -151,7 +122,6 @@ main = runInputT defaultSettings loop
             if any isNothing (Prelude.map (TR.readMaybe . (inputs !!)) toIntegerIndexes :: [Maybe Integer])
             then void (outputStrLn $ "Failed - fields " <> show toIntegerIndexes <> " must be numeric.") >> loop
             else successFun inputs
-
 
 
     addMovie, addAnime, addSerie, addAlbum :: InputT IO ()

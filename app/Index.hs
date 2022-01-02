@@ -14,7 +14,9 @@ import Util
 import Media
 import Movies
 import Animes
+import Page
 
+data Index = Index Day [Movie] T.Text
 
 makeTablesUrl :: Day -> [Movie] -> Node -> Node
 makeTablesUrl today mvs = editNode editImages
@@ -35,8 +37,8 @@ makeTablesUrl today mvs = editNode editImages
           | otherwise = H.span ""
 
 
+instance Page Index where
+    makeMain (Index today movies content) =
+        preEscapedToHtml $ nodetoHtml $ makeTablesUrl today movies (mdtoNode content)
 
-
-indexHtml :: Day -> [Movie] -> Node -> Html
-indexHtml today movies content = do
-    preEscapedToHtml $ nodetoHtml $ makeTablesUrl today movies content
+    pageDepth _ = 0
