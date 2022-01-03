@@ -101,6 +101,10 @@ a {
     margin-bottom: 1em;
 }
 
+.description {
+    margin-top: -1em;
+}
+
 
 /*----Posts Index----------------*/
 .posts-index > li {

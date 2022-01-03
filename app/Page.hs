@@ -20,7 +20,7 @@ class Page a where
             meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
             H.title "romes"
             link ! rel "stylesheet" ! href "style.css" ! media "all" ! type_ "text/css"
-        body $ H.main $ makeMain page
+        body $ makeMain page
 
     makePageWithNav :: a -> Html
     makePageWithNav page =  docTypeHtml $ do
