@@ -71,7 +71,7 @@ main = runInputT defaultSettings loop
             writeHtmlPageIO "docs/albums.html" (abs :: [Album])
 
             outputStrLn "Building posts..."
-            postsPaths <- filter (isSuffixOf ".md") <$> liftIO (getDirectoryContents "data/posts")
+            postsPaths <- filter (isSuffixOf ".md") <$> liftIO (listDirectory "data/posts")
             posts <- PostsIndex <$> forM postsPaths (\postPath -> do
                 outputStrLn $ "Building " <> postPath
                 post <- Post postPath <$> liftIO (TIO.readFile $ "data/posts/" <> postPath)
@@ -85,8 +85,11 @@ main = runInputT defaultSettings loop
             indexMD <- liftIO $ TIO.readFile "data/index.md"
             writeHtmlPageIO "docs/index.html" $ Index today mvs indexMD
 
-            outputStrLn "Adding style..."
-            liftIO (TIO.readFile "assets/style.css" >>= TIO.writeFile "docs/style.css")
+            outputStrLn "Adding assets..."
+            assets <- liftIO (listDirectory "assets")
+            forM_ assets $ \asset -> do
+                outputStrLn ("Adding " <> asset <> "...")
+                liftIO (BL.readFile ("assets/" <> asset) >>= BL.writeFile ("docs/" <> asset))
 
             outputStrLn "Done."
             loop

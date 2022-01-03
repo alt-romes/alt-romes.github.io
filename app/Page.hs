@@ -29,6 +29,8 @@ class Page a where
             H.title "romes"
             link ! rel "stylesheet" ! relHref "style.css" ! media "all" ! type_ "text/css"
         body ! class_ "main-body" $ do
+            H.div ! class_ "darker" $ H.span ""
+            -- $ H.div ! class_ "dark" $ H.div ! class_ "opacity" $ do
             H.div ! class_ "main-container" $ do
                 nav $ do
                     ul $ do

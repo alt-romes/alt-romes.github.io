@@ -28,16 +28,25 @@
 
 /*----General--------------------*/
 
+html {
+    height: 100%;
+}
+
 body {
     color: var(--white);
     background-color: #121212;
     margin: 0 auto;
 
-    padding: 4em 0em;
+    width: 100%;
+    height: 100%;
 
     font-family: "IBM Plex Mono", monospace;
 
     line-height: 1.3;
+
+    text-shadow: 2px 2px #000;
+    /* color: var(--orange); */
+
 }
 
 main {
@@ -67,6 +76,23 @@ a {
 
 /*----Main-----------------------*/
 
+.darker {
+    opacity: 0.15;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url(bg_darker_bw.png);
+    animation: darkestDown 121s linear infinite;
+}
+
+.dark {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-image: url(bg_dark_anim_0_08.gif);
+    animation: darkest 60s linear infinite;
+}
+
 .main-body {
     display: flex; 
     flex-flow: column nowrap;
@@ -74,6 +100,7 @@ a {
 }
 
 .main-container {
+    padding: 4em 0em;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
@@ -103,6 +130,7 @@ a {
 
 .description {
     margin-top: -1em;
+    /* color: var(--white); */
 }
 
 
@@ -145,4 +173,25 @@ tbody > tr:last-child > td { padding-bottom: 0.2em; }
 /*----Util-----------------------*/
 
 .text-center { text-align: center; }
+
+.underline { text-decoration: underline; }
+
+@keyframes darkest {
+    from {
+        background-position-y:1024px;
+    }
+    to {
+        background-position-x:-1024px;
+    }
+}
+
+
+@keyframes darkestDown {
+    from {
+        background-position-y:-1024px;
+    }
+    to {
+        background-position-x:1024px;
+    }
+}
 
