@@ -20,7 +20,7 @@ class Page a where
             meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
             H.title "romes"
             link ! rel "stylesheet" ! href "style.css" ! media "all" ! type_ "text/css"
-        body $ makeMain page
+        body $ H.div ! class_ "body-padding" $ makeMain page
 
     makePageWithNav :: a -> Html
     makePageWithNav page =  docTypeHtml $ do
@@ -28,10 +28,10 @@ class Page a where
             meta ! httpEquiv "content-type" ! content "text/html; charset=utf8"
             H.title "romes"
             link ! rel "stylesheet" ! relHref "style.css" ! media "all" ! type_ "text/css"
-        body ! class_ "main-body" $ do
-            H.div ! class_ "darker" $ H.span ""
+        body $ do
+            -- H.div ! class_ "darker" $ toHtml ("" :: String)
             -- $ H.div ! class_ "dark" $ H.div ! class_ "opacity" $ do
-            H.div ! class_ "main-container" $ do
+            H.div ! class_ "main-container body-padding" $ do
                 nav $ do
                     ul $ do
                         li ! class_  "logo" $ a ! relHref "index.html" $ "romes"
