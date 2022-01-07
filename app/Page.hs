@@ -29,13 +29,12 @@ class Page a where
             H.title "romes"
             link ! rel "stylesheet" ! relHref "style.css" ! media "all" ! type_ "text/css"
         body $ do
-            -- H.div ! class_ "darker" $ toHtml ("" :: String)
-            -- $ H.div ! class_ "dark" $ H.div ! class_ "opacity" $ do
             H.div ! class_ "main-container body-padding" $ do
                 nav $ do
                     ul $ do
                         li ! class_  "logo" $ a ! relHref "index.html" $ "romes"
                         li $ a ! relHref "posts.html" $ "posts"
+                        li $ a ! relHref "projects.html" $ "projects"
                         li "music"
                         li $ a ! href "https://github.com/alt-romes" ! target "_blank" $ "github"
                 H.main $ makeMain page

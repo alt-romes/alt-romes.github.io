@@ -1,0 +1,54 @@
+- title: .vim
+  description: Minimal and modern vim configuration
+  state: ongoing
+  url: https://github.com/alt-romes/.vim
+
+- title: Synthesis of Linear Functional Programs
+  description: Research on generating linear functional programs from type-based specifications
+  state: closed
+  url: https://github.com/alt-romes/slfl
+
+- title: Programmer Calculator
+  description: Terminal calculator made for close to the bits.
+  state: maintenence
+  url: https://github.com/alt-romes/programmer-calculator
+
+- title: C Compiler
+  description: Why am I writing another C to LLVM compiler?
+  state: development
+  url: https://github.com/alt-romes/c-compiler
+
+- title: Gameboy Emulator
+  description: Simple gameboy emulator in C that runs tetris
+  state: closed
+  url: https://github.com/alt-romes/gameboyemulator
+
+- title: LLVM-C Search
+  description: Terminal interface to search the LLVM-C API.
+  state: maintenence
+  url: https://github.com/alt-romes/llvm-c-search
+
+- title: Operating System
+  description: Kernel printf through the VGA text mode. Flat memory model.
+  state: halted
+  url: https://github.com/alt-romes/operating-system
+  
+- title: CHIP-8 Emulator
+  description: A chip8 emulator made in gameboy assembly for the gameboy.
+  state: halted
+  url: https://github.com/alt-romes/chip8-emulator-for-gameboy
+  
+- title: The Japanese Deck
+  description: Japanese flashcards deck for Anki
+  state: development
+  url: https://github.com/alt-romes/the-japanese-deck
+  
+- title: Calculator C Parser
+  description: A simple implementation of a calculator parser written in C
+  state: closed
+  url: https://github.com/alt-romes/calculator-c-parser
+  
+- title: Control
+  description: Setting up home, with extra steps
+  state: ongoing
+  url: https://github.com/alt-romes/control

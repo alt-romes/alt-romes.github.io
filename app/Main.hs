@@ -32,6 +32,7 @@ import Series
 import Util
 import Page
 import Post
+import Projects
 
 
 
@@ -69,6 +70,10 @@ main = runInputT defaultSettings loop
             outputStrLn "Building albums..."
             abs <- decodeFileIO "data/albums.yaml"
             writeHtmlPageIO "docs/albums.html" (abs :: [Album])
+
+            outputStrLn "Building projects..."
+            projs <- Projects <$> decodeFileIO "data/projects.yaml"
+            writeHtmlPageIO "docs/projects.html" projs
 
             outputStrLn "Building posts..."
             postsPaths <- filter (isSuffixOf ".md") <$> liftIO (listDirectory "data/posts")
