@@ -28,7 +28,7 @@ class Media a where
             let attr_names = mediaAttrNames m
             thead $ do
                 tr $
-                    mapM_ ((td ! class_ "green") . toHtml) attr_names
+                    mapM_ ((td ! class_ "orange") . toHtml) attr_names
                 tr $
                     mapM_ ((td ! class_ "grey") . toHtml . flip T.replicate "-" . T.length) attr_names
             tbody $

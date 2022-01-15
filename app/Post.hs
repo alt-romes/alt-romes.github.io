@@ -24,7 +24,7 @@ newtype PostsIndex = PostsIndex [Post]
 
 instance Page PostsIndex where
     makeMain (PostsIndex posts) = do
-        p ! class_ "purple" $ "---"
+        p ! class_ "orange" $ "---"
         ul ! class_ "posts-index" $ forM_ posts $ \(Post postPath _) -> do
             li $ a ! href (stringValue $ "posts/" <> dropSuffix ".md" postPath <> ".html") $
                 toHtml $ L.map (\x -> if x == '-' then ' ' else x) $ dropSuffix ".md" postPath

@@ -29,7 +29,7 @@ instance Page Projects where
         makeItem :: Project -> Html
         makeItem (Project title description state url) =
             p $ do
-                a ! href (textValue url) ! class_ "purple" $ toHtml title
+                a ! href (textValue url) ! class_ "orange" $ toHtml title
                 -- toHtml (" [" <> state <> "]")
                 blockquote ! class_ "description" $ toHtml description
 

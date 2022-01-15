@@ -38,6 +38,7 @@ class Page a where
                         li "music"
                         li $ a ! href "https://github.com/alt-romes" ! target "_blank" $ "github"
                 H.main $ makeMain page
+            H.script "opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha']; r = Math.floor(Math.random()*opt.length); Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);"
         -- footer ! class_ "main-footer" $ do
         --     ul $ do
         --         li $ a ! relHref "index.html" $ "en"
