@@ -62,22 +62,22 @@ body {
     justify-content: space-between;
 }
 
-body:before {
+/* body:before { */
     
-    content: ' '; 
+/*     content: ' '; */ 
 
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -500;
+/*     position: fixed; */
+/*     width: 100%; */
+/*     height: 100%; */
+/*     z-index: -500; */
 
-    background-image: url(bg_darker_bw.png);
-    animation: backgroundAnimation 84s linear infinite;
-    opacity: 0;
+/*     background-image: url(bg_darker_bw.png); */
+/*     animation: backgroundAnimation 84s linear infinite; */
+/*     opacity: 0; */
 
-    pointer-events: none;
+/*     pointer-events: none; */
 
-}
+/* } */
 
 nav {
     text-decoration: underline;
@@ -99,10 +99,10 @@ figure {
     padding: 0.5em;
 }
 
-figcaption {
-    text-align: center;
-    /* padding-top: 1em; */
-}
+/* figcaption { */
+/*     text-align: center; */
+/*     /1* padding-top: 1em; *1/ */
+/* } */
 
 a {
     text-decoration: none;
@@ -186,6 +186,20 @@ thead > tr:first-child > td { padding-top: 0.5em; }
 
 tbody > tr:last-child > td { padding-bottom: 0.2em; }
 
+/*----Heatmap--------------------*/
+
+#cal-heatmap .cal-heatmap-container {
+    margin: 0 auto;
+}
+
+#cal-heatmap .graph-label {
+    fill: var(--grey);
+    text-shadow: none;
+}
+
+#cal-heatmap .graph {
+    font-family: inherit;
+}
 
 /*----Util-----------------------*/
 

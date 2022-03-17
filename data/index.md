@@ -12,8 +12,31 @@ Lorem ipsum dolor sit amet, malis incorrupte et qui, modo alienum et eam. Stet v
 
 ![movies](romes://movies-month)
 
-<script>
-opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha'];
-r = Math.floor(Math.random()*opt.length);
-Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+<ul class="orange"><li>Languages :: (Deutsch, 日本語, Русский)</li></ul>
+
+<p></p>
+<br>
+
+<script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
+<div id="cal-heatmap"></div>
+<script type="text/javascript">
+	var cal = new CalHeatMap();
+	cal.init({
+        domain: "month",
+        subDomain: "day",
+        weekStartOnMonday: false,
+        range: 6,
+        cellSize: 10,
+        cellRadius: 4,
+        domainMargin: [1, 1, 1, 1],
+        domainGutter: 10,
+        domainLabelFormat: "%b '%y",
+        legendCellSize: 5,
+        legendCellPadding: 3,
+        legendHorizontalPosition: "right",
+        start: new Date()
+    });
 </script>
+<!-- tooltip: true -->
