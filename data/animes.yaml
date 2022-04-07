@@ -1,205 +1,230 @@
-- studio: 'Kinema Citrus '
-  title: The Rising of the Shield Hero
-  year: 2019
-  date: 2021-10-08
-  rating: 7
-- studio: Toei Animation
-  title: Mononoke
-  year: 2007
-  date: 2021-10-07
+- date: 2022-04-07
   rating: 8
-- studio: Kyoto Animation
+  studio: CloverWorks
+  title: Sono Bisque Doll wa Koi wo Suru
+  year: 2022
+- date: 2022-04-07
+  rating: 8
+  studio: Wit Studio
+  title: Ousama Ranking
+  year: 2021
+- date: 2022-04-07
+  rating: 6
+  studio: Production I.G
+  title: Ao Haru Ride
+  year: 2014
+- date: 2022-04-07
+  rating: 5
+  studio: OLM
+  title: Komi Can't Communicate
+  year: 2021
+- date: 2022-04-07
+  rating: 10
+  studio: Kyoto Animation
   title: Nichijou
   year: 2011
-  date: 2021-10-04
+- date: 2021-10-08
+  rating: 7
+  studio: 'Kinema Citrus '
+  title: The Rising of the Shield Hero
+  year: 2019
+- date: 2021-10-07
   rating: 8
-- studio: Science SARU
+  studio: Toei Animation
+  title: Mononoke
+  year: 2007
+- date: 2021-10-04
+  rating: 8
+  studio: Kyoto Animation
+  title: Nichijou
+  year: 2011
+- date: 2021-08-11
+  rating: 8
+  studio: Science SARU
   title: Nihon Chinbotsu 2020
   year: 2020
-  date: 2021-08-11
-  rating: 8
-- studio: J.C.Staff
+- date: 2021-08-11
+  rating: 7
+  studio: J.C.Staff
   title: Gokushufudou
   year: 2021
-  date: 2021-08-11
-  rating: 7
-- studio: Brain's Base
+- date: 2021-04-16
+  rating: 8
+  studio: Brain's Base
   title: Durarara!!
   year: 2010
-  date: 2021-04-16
+- date: 2021-02-03
   rating: 8
-- studio: ufotable
+  studio: ufotable
   title: Kimetsu no Yaiba
   year: 2019
-  date: 2021-02-03
-  rating: 8
-- studio: J.C. Staff
+- date: 2021-01-19
+  rating: 6
+  studio: J.C. Staff
   title: Nekojiru-sou
   year: 2001
-  date: 2021-01-19
-  rating: 6
-- studio: Triangle Staff
+- date: 2021-01-18
+  rating: 8
+  studio: Triangle Staff
   title: Lain
   year: 1998
-  date: 2021-01-18
-  rating: 8
-- studio: Madhouse
+- date: 2021-01-12
+  rating: 6
+  studio: Madhouse
   title: No Game No Life
   year: 2014
-  date: 2021-01-12
-  rating: 6
-- studio: Madhouse, J.C. Staff
+- date: 2020-12-25
+  rating: 7
+  studio: Madhouse, J.C. Staff
   title: One Punch Man
   year: 2012
-  date: 2020-12-25
-  rating: 7
-- studio: Tezuka Productions, MAPPA
+- date: 2020-11-04
+  rating: 8
+  studio: Tezuka Productions, MAPPA
   title: Kids on the Slope
   year: 2012
-  date: 2020-11-04
+- date: 2020-10-14
   rating: 8
-- studio: Bones
+  studio: Bones
   title: Mob Psycho 100
   year: 2016
-  date: 2020-10-14
-  rating: 8
-- studio: CloverWorks
+- date: 2020-09-29
+  rating: 6
+  studio: CloverWorks
   title: Rascal Does Not Dream of Bunny Girl Senpai
   year: 2018
-  date: 2020-09-29
-  rating: 6
-- studio: Madhouse
+- date: 2020-09-24
+  rating: 8
+  studio: Madhouse
   title: 'Rainbow: Nisha Rokubou no Shichinin'
   year: 2010
-  date: 2020-09-24
+- date: 2020-09-12
   rating: 8
-- studio: Science SARU
+  studio: Science SARU
   title: Keep Your Hands Off Eizouken!
   year: 2020
-  date: 2020-09-12
-  rating: 8
-- studio: J.C.Staff
+- date: 2020-08-31
+  rating: 7
+  studio: J.C.Staff
   title: Shimoneta
   year: 2015
-  date: 2020-08-31
-  rating: 7
-- studio: feel.
+- date: 2020-08-30
+  rating: 8
+  studio: feel.
   title: Hinamatsuri
   year: 2018
-  date: 2020-08-30
-  rating: 8
-- studio: Gainax
+- date: 2020-08-29
+  rating: 9
+  studio: Gainax
   title: Tengen Toppa Gurren Lagann
   year: 2007
-  date: 2020-08-29
-  rating: 9
-- studio: A-1 Pictures
+- date: 2020-08-27
+  rating: 6
+  studio: A-1 Pictures
   title: Shinsekai Yori
   year: 2012
-  date: 2020-08-27
-  rating: 6
-- studio: Lerche
+- date: 2020-08-24
+  rating: 8
+  studio: Lerche
   title: Asobi Asobase
   year: 2018
-  date: 2020-08-24
-  rating: 8
-- studio: Lerche
+- date: 2020-08-23
+  rating: 7
+  studio: Lerche
   title: Kuzu no Honkai
   year: 2017
-  date: 2020-08-23
-  rating: 7
-- studio: Gainax, Hideaki Anno
+- date: 2020-08-22
+  rating: 10
+  studio: Gainax, Hideaki Anno
   title: Neon Genesis Evangelion
   year: 1995
-  date: 2020-08-22
-  rating: 10
-- studio: J.C.Staff
+- date: 2020-08-21
+  rating: 6
+  studio: J.C.Staff
   title: Golden Time
   year: 2013
-  date: 2020-08-21
+- date: 2020-08-19
   rating: 6
-- studio: Gonzo
+  studio: Gonzo
   title: Afro Samurai
   year: 2007
-  date: 2020-08-19
-  rating: 6
-- studio: Zero-G
+- date: 2020-08-18
+  rating: 8
+  studio: Zero-G
   title: Grand Blue
   year: 2018
-  date: 2020-08-18
-  rating: 8
-- studio: Doga Kobo
+- date: 2020-08-17
+  rating: 6
+  studio: Doga Kobo
   title: Gekkan Shoujo Nozaki-kun
   year: 2014
-  date: 2020-08-17
+- date: 2020-08-16
   rating: 6
-- studio: J.C.Staff
+  studio: J.C.Staff
   title: Toradora!
   year: 2008
-  date: 2020-08-16
-  rating: 6
-- studio: J.C.Staff
+- date: 2020-08-12
+  rating: 10
+  studio: J.C.Staff
   title: Honey and Clover
   year: 2005
-  date: 2020-08-12
-  rating: 10
-- studio: J.C.Staff
+- date: 2020-08-05
+  rating: 7
+  studio: J.C.Staff
   title: Bakuman
   year: 2010
-  date: 2020-08-05
-  rating: 7
-- studio: Bones, Kinema Citrus
+- date: 2020-07-30
+  rating: 6
+  studio: Bones, Kinema Citrus
   title: Tokyo Magnitude 8.0
   year: 2009
-  date: 2020-07-30
-  rating: 6
-- studio: Telecom Animation Film
+- date: 2020-07-12
+  rating: 5
+  studio: Telecom Animation Film
   title: Tower of God
   year: 2020
-  date: 2020-07-12
-  rating: 5
-- studio: CloverWorks
+- date: 2020-07-10
+  rating: 7
+  studio: CloverWorks
   title: The Promised Neverland
   year: 2019
-  date: 2020-07-10
+- date: 2020-03-21
   rating: 7
-- studio: A-1 Pictures
+  studio: A-1 Pictures
   title: Love Is War
   year: 2019
-  date: 2020-03-21
+- date: 2020-03-14
   rating: 7
-- studio: J.C.Staff
+  studio: J.C.Staff
   title: Prison School
   year: 2016
-  date: 2020-03-14
-  rating: 7
-- studio: Madhouse
+- date: 2020-01-27
+  rating: 10
+  studio: Madhouse
   title: The Tatami Galaxy
   year: 2010
-  date: 2020-01-27
-  rating: 10
-- studio: Gonzo
+- date: 2020-01-21
+  rating: 8
+  studio: Gonzo
   title: Welcome to the N.H.K
   year: 2006
-  date: 2020-01-21
-  rating: 8
-- studio: FLCL P. Committee, K. Tsurumaki, Y. Enokido
+- date: 2020-01-04
+  rating: 10
+  studio: FLCL P. Committee, K. Tsurumaki, Y. Enokido
   title: FLCL
   year: 2003
-  date: 2020-01-04
+- date: 2019-11-07
   rating: 10
-- studio: Manglobe, Shinichirō Watanabe
+  studio: Manglobe, Shinichirō Watanabe
   title: Samurai Champloo
   year: 2004
-  date: 2019-11-07
-  rating: 10
-- studio: Kinema Citrus
+- date: 2019-10-18
+  rating: 7
+  studio: Kinema Citrus
   title: Made in Abyss
   year: 2017
-  date: 2019-10-18
-  rating: 7
-- studio: White Fox
+- date: 2019-10-15
+  rating: 9
+  studio: White Fox
   title: Steins;Gate
   year: 2011
-  date: 2019-10-15
-  rating: 9

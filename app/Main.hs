@@ -14,7 +14,7 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import Text.Blaze.Html.Renderer.Pretty as P
 import Text.Blaze.Html.Renderer.Utf8 as U
 import Text.Blaze.Html
-import Text.Blaze.Html5 as H
+import Text.Blaze.Html5 as H hiding (main)
 import Text.Blaze.Html5.Attributes as A
 import Data.Yaml
 import qualified Data.Text as T
