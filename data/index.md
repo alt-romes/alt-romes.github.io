@@ -13,30 +13,3 @@ Lorem ipsum dolor sit amet, malis incorrupte et qui, modo alienum et eam. Stet v
 ![movies](romes://movies-month)
 
 <ul class="orange"><li>Languages :: (Deutsch, 日本語, Русский)</li></ul>
-
-<p></p>
-<br>
-
-<script type="text/javascript" src="//d3js.org/d3.v3.min.js"></script>
-<script type="text/javascript" src="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.min.js"></script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
-<div id="cal-heatmap"></div>
-<script type="text/javascript">
-	var cal = new CalHeatMap();
-	cal.init({
-        domain: "month",
-        subDomain: "day",
-        weekStartOnMonday: false,
-        range: 6,
-        cellSize: 10,
-        cellRadius: 4,
-        domainMargin: [1, 1, 1, 1],
-        domainGutter: 10,
-        domainLabelFormat: "%b '%y",
-        legendCellSize: 5,
-        legendCellPadding: 3,
-        legendHorizontalPosition: "right",
-        start: new Date()
-    });
-</script>
-<!-- tooltip: true -->
