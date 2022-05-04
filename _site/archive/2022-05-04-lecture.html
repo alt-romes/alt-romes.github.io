@@ -1,15 +1,25 @@
 <!doctype html>
+<meta http-equiv="content-type" content="text/html; charset=utf8">
 <html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>romes - 2022-05-04-lecture</title>
-        <link rel="stylesheet" href="style.css" media="all" type="text/css">
+        <title>romes - Lecture 1</title>
+        <link rel="stylesheet" href="../css/default.css" />
     </head>
     <body>
-        <main role="main">
-            <h1>2022-05-04-lecture</h1>
+    <div class="main-container body-padding">
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <main>
+            <!-- <h1>Lecture 1</h1> -->
             <article>
     <section class="header">
         Posted on May  4, 2022
@@ -160,5 +170,11 @@ well (<code>*</code>).</p>
 </article>
 
         </main>
+    </div>
+    <script>
+        opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha'];
+        r = Math.floor(Math.random() * opt.length);
+        Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+    </script>
     </body>
 </html>

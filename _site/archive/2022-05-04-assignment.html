@@ -1,0 +1,215 @@
+<!doctype html>
+<meta http-equiv="content-type" content="text/html; charset=utf8">
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>romes - Assignment 1</title>
+        <link rel="stylesheet" href="../css/default.css" />
+    </head>
+    <body>
+    <div class="main-container body-padding">
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <main>
+            <!-- <h1>Assignment 1</h1> -->
+            <article>
+    <section class="header">
+        Posted on May  4, 2022
+        
+    </section>
+    <section>
+        <p>This problem set/project is about writing a simplified clone of the <em>ed
+line editor</em>. This should be hard enough as to take at least 10 hours of work.
+Since the project is big, it should be delivered in multiple stages, rather
+than just one final, complete, delivery. This way I can follow your progress
+and better orient you.</p>
+<p>The work to be delivered at the <strong>first stage</strong> should be at least one
+haskell module containing <em>datatypes</em> and <em>functions</em> representing
+the domain of your problem – use your judgment to choose whether or not to
+implement the functions, but <em>do</em> write the types first! To quote Edwin
+Brady:</p>
+<p>The main idea is to be guided by types and model the domain of the problem in
+Haskell. Remember you can use @undefined@ to compile the program without having
+a certain implementation, and so you can write the types and important bits
+upfront and use the compiler to verify its correctness. Forcing the skeleton of
+the program to be ready before any actual part of it is a nice way to exercise
+"thinking of the problem before programming" and become stronger at writing
+more beautiful code.</p>
+<p>This CS concept of "thinking before programming" blends very nicely with
+type-driven development. By modelling the problem domain in haskell, we
+basically get <em>typechecked thoughts</em>!</p>
+<p>The <strong>second stage</strong> is the delivery of a program that already fullfills
+some part of the specification, but isn’t yet fully complete. During this stage
+we’ll look at some abstractions and rework some parts of what has been done
+(<em>refactoring is one of Haskell’s many great strengths!</em>). The
+<strong>third stage</strong> is the said complete, polished, program.</p>
+<p>Do note that the program should <strong>compile at all stages</strong>!</p>
+<h1 id="sec:ed">ed</h1>
+<p>ed is a line-oriented text editor<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. It is
+used to create, display, modify and otherwise manipulate text files.</p>
+<p>If invoked with a <u>file</u> argument, then a copy of <u>file</u> is
+read into the <strong>editor’s buffer</strong>. Changes are made to this copy and not
+directly to <u>file</u> itself. Upon quitting <strong>ed</strong>, any changes not
+explicitly saved with a @’w’@ command are lost.</p>
+<p>Editing is done in two distinct modes: <strong>command mode</strong> and <strong>input mode</strong>. When
+first invoked, <strong>ed</strong> is in command mode.</p>
+<h2 id="sec:command">Command mode</h2>
+<p>In this mode commands are read from the standard input and executed to
+manipulate the contents of the <strong>editor buffer</strong>. A typical command might look
+like: <u>@5,12d@</u> which deletes all lines from line 5 to 12 (including 5 and 12)</p>
+<p>All ed commands operate on whole lines or ranges of lines; e.g., the @’d’@
+command deletes lines; the @’m’@ command moves lines, and so on.</p>
+<p>In general, ed commands consist of zero or more line addresses, followed by a
+single character command and possibly additional parameters; i.e., commands
+have the structure:</p>
+<p>&gt; [address[,address]]command[parameters]</p>
+<p>The addresses indicate the line or range of lines to be affected by the
+command. An address represents the number of a line in the <strong>editor
+buffer</strong>. The ed utility maintains a <strong>current address</strong> which is typically supplied
+to commands as the default address when none is specified. When a file is
+first read, the <strong>current address</strong> is set to the last line of the file.</p>
+<p>We can run Unix shell (sh) commands from inside <strong>ed</strong> by prefixing them with @&lt;!&gt;@ (exclamation mark, aka "bang").</p>
+<h2 id="sec:input">Input mode</h2>
+<p>When an input command, such as @’a’@ (append), @’i’@ (insert) or @’c’@
+(change), is given, ed enters <strong>input mode</strong>. This is the primary means of adding
+text to a file. In this mode, no commands are available; instead, the standard
+input is written directly to the editor buffer. A line consists of the text up
+to and including a @&lt;newline&gt;@ character. <strong>Input mode</strong> is terminated by entering a
+single period @(’.’)@ on a line.</p>
+<h1 id="commands">Commands</h1>
+<p>All <strong>ed</strong> commands are single characters, though some require additional
+parameters. When nothing is said about unspecified addresses, assume the
+<strong>current address</strong> is passed</p>
+<dl>
+<dt>(.)a</dt>
+<dd>
+<p>Append text to the <strong>buffer</strong> after the addressed line. Text is
+entered in <strong>input mode</strong>. The <strong>current address</strong> is set to last line entered.</p>
+</dd>
+<dt>(.,.)c</dt>
+<dd>
+<p>Change lines in the <strong>buffer</strong>. The addressed lines are deleted
+from the buffer, and text is appended in their place. Text is entered in
+<strong>input mode</strong>. The <strong>current address</strong> is set to last line entered.</p>
+</dd>
+<dt>(.,.)d</dt>
+<dd>
+<p>Delete the addressed lines from the <strong>buffer</strong>. If there is a
+line after the deleted range, then the <strong>current address</strong> is
+set to this line. Otherwise the <strong>current address</strong> is set to
+the line before the deleted range.</p>
+</dd>
+<dt>e <u>file</u></dt>
+<dd>
+<p>Edit <u>file</u>, and sets the
+<strong>default filename</strong>. Any lines in the <strong>buffer</strong> are deleted before the
+new <u>file</u> is read. The <strong>current address</strong> is set to the last line read.</p>
+</dd>
+<dt>e <u>!command</u></dt>
+<dd>
+<p>Edit the standard output of <u>!command</u>, (see <u>!command</u> below).
+The <strong>default filename</strong> is unchanged. Any lines in the <strong>buffer</strong>
+are deleted before the output of <u>command</u> is read. The
+<strong>current address</strong> is set to the last line read.</p>
+</dd>
+<dt>f <u>file</u></dt>
+<dd>
+<p>Set the default filename to <u>file</u>. If
+<u>file</u> is not specified, then the <strong>default filename</strong> is
+printed.</p>
+</dd>
+<dt>(.)i</dt>
+<dd>
+<p>Insert text in the <strong>buffer</strong> before the current line. Text is
+entered in <strong>input mode</strong>. The <strong>current address</strong> is set to the last
+line entered.</p>
+</dd>
+<dt>(.,.)p</dt>
+<dd>
+<p>Print the addressed lines. The <strong>current address</strong> is set to the last
+line printed.</p>
+</dd>
+<dt>q</dt>
+<dd>
+<p>Quit <strong>ed</strong></p>
+</dd>
+<dt>r <u>file</u></dt>
+<dd>
+<p>Read <u>file</u> to after the addressed line. If <u>file</u> is not specified,
+then the <strong>default filename</strong> is used. The <strong>current address</strong> is set to the last line read.</p>
+</dd>
+<dt>r <u>!command</u></dt>
+<dd>
+<p>Read to after the addressed line the standard output of <u>!command</u>,
+(see the <u>!command</u> below). The <strong>current address</strong> is set to the last line read.</p>
+</dd>
+<dt>w <u>file</u></dt>
+<dd>
+<p>Write the <strong>edit buffer</strong> to <u>file</u>. Any previous contents of <u>file</u>
+is lost without warning. If no filename is specified, then the <strong>default filename</strong> is used.
+The <strong>current address</strong> is unchanged.</p>
+</dd>
+<dt>!command</dt>
+<dd>
+<p>Execute command via <u>sh</u>. When
+the shell returns from execution, a ‘!’ is printed to the standard
+output. The <strong>current line</strong> is unchanged.</p>
+</dd>
+</dl>
+<h1 id="project">Project</h1>
+<p>Write a program that implements the features of this simplified <strong>ed</strong>
+clone. The program should always receive an argument indicating the name of the
+file to edit, start in <strong>command mode</strong>, and receive user input from the
+standard input (which might be a command when in command mode and just text
+when in input mode). The commands that must be implemented are listed under the
+<strong>commands</strong> section. Both the <strong>command mode</strong> and <strong>input
+mode</strong> should behave as described in the corresponding section. In general, the
+program should behave as the described line editor – the first part of the
+assignment is processing "ed line editor" from idea into program.</p>
+<p>This program should be delivered in the stages mentioned above, but do
+ask questions at any time – we’ll iterate on your work <em>during</em> the stages.
+The program should be version controlled and pushed to a remote repository.</p>
+<p>Get started by answering these design questions:</p>
+<ul>
+<li><p>How would you model the <strong>editor buffer</strong>? The buffer keeps the text being
+edited, and the edited text content is flushed to a file with the @’w’@ command.</p></li>
+<li><p>The program will receive one line from the user at a time. What would be the
+type signature of a function that <em>processes</em> an input string from the
+user? Hint: When editing, we can be either in <strong>command mode</strong> or in
+<strong>input mode</strong>. Therefore the user input can be either of two things: a
+text line to input in the buffer, or a command. To determine whether the user
+input should be parsed as either a line or a comand, the function will have to
+depenend on the current <strong>mode</strong>.</p></li>
+<li><p>What would be the type signature of a function that executes a user
+given command? Remember that some commands might change the editor <strong>mode</strong>.</p></li>
+<li><p>What would be the signature of a function that adds the text given by the user
+to the <strong>editor buffer</strong>? The <strong>mode</strong> changes back to command when a
+@’.’@ on a single line is inputted.</p></li>
+</ul>
+<p>Note that the execute command and input text functions work on a current buffer and a current line.</p>
+<section class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>from the man page<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+    </section>
+</article>
+
+        </main>
+    </div>
+    <script>
+        opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha'];
+        r = Math.floor(Math.random() * opt.length);
+        Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+    </script>
+    </body>
+</html>

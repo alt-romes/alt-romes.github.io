@@ -1,0 +1,215 @@
+Functions, Computations: Abstraction and application
+======================================
+
+What is a function?
+
+f(x) = 4x + 2
+f(5) = ?
+
+What is function application?
+
+From wikipedia:
+
+    In mathematics, function application is the act of applying a function to an
+    argument from its domain so as to obtain the corresponding value from its range.
+    In this sense, function application can be thought of as the opposite of
+    function abstraction.
+
+In functional programming languages, *computations* are based on
+function *abstraction* and *application*.
+
+An *Abstraction*, a.k.a a function, is denoted by the lambda notation (`\x -> ...`)
+
+```hs
+f = \x -> 4 * x + 2 -- `f` is an *abstraction*, it takes an argument named `x`
+                    -- and returns `4 * x + 2`
+```
+
+An *Application*, a.k.a function application, is denoted by a *space*: an
+expression followed by another expression represents the application of the
+first expression to the following one
+
+```hs
+f 5 -- application of `f` to `5`
+```
+
+
+Expressions, Values, Types
+==========================
+
+Haskell is a purely functional programming language. As such, all computations
+are done via the *evaluation* of *expressions* (syntactic terms) to yield
+*values* (abstract entities that we regard as answers). Every value has an
+associated *type* (intuitively, we can think of types as sets of values).
+
+```hs
+5 :: Integer
+'a' :: Char
+inc :: Integer -> Integer
+[1,2,3] :: [Integer]
+('b', 4) :: (Char, Int)
+
+inc 5 :: Integer               -- The evaluation of function application results in a value
+sum :: [Integer] -> Integer
+sum [1,2,3] :: Integer
+```
+
+The "::" can be read "has type". All expression evaluate to a value, and all
+values have types, which means all expressions have types too. Above are some of
+the common types.
+
+Which of the following are expressions, and which are values? What are the types
+of the expressions?
+
+```hs
+product
+[1,2,3]
+product [1,2,3]
+```
+
+They are all *expressions*, and only the first two is are *value*s. The first
+one is a function abstraction, which is value, the second one is a value
+constructed with the data constructors of `List`, but third one, however, is a
+function applied to a value which *evaluate*s to a *value*.
+
+
+ADTs, Construction, Deconstruction
+==================================
+
+Algebraic data types (ADTs) allow us to define our own *types* and *values*.
+
+To create a new *type* called `Point`, we define a new value `MkPoint` that has
+type `Int -> Int -> Point`. This function (the value) can be used to create
+values of type `Point`. It takes two arguments of type `Int`, which means
+`MkPoint 1 2` (`MkPoint` applied to `1` and `2`) has type `Point`.
+```hs
+      +--- type constructor
+      |
+      v
+data Point = MkPoint Int Int
+                ^
+                |
+                +--- data constructor
+```
+N.B. A *type constructor* with 0 arguments is also called simply *type*
+
+We can define types with more data constructors, which might take 0 to N
+arguments.
+```hs
+data Shape = Square Int Int Int Int
+           | Triangle Int Int Int
+           | Line Int Int
+           | Point
+```
+Which are the type constructors? What are the data constructors? Write 2
+different expressions with type `Shape`.
+
+There are two dual concepts related to ADTs: *construction* and *deconstruction*
+
+We've already seen that we can *construct* values of our defined type with the
+*data constructor*.
+The deconstruction of an *ADT* is done through *pattern matching*.
+
+Pattern matching is done by specifying the expression to deconstruct together
+with the patterns that might match the ADT "form".
+```hs
+shape1 = ... :: Shape
+
+            +------ expression to deconstruct
+            |
+aNumber =   v
+    case shape1 of
+        Square a b c d -> a + b + c + d
+        Triangle a 0 c -> a + b + c
+                ^
+                |
+                +---------------- pattern
+        Line 5 5 -> 5 ^ 5
+        a -> 0
+```
+What would be the value of `aNumber` if `shape1 = Triangle 22 0 1` ? And `shape1
+= Point`? And `shape1 = Triangle 1 1 1`? And `shape1 = Line 5 5`? And `shape1 = Line 1 2`?
+
+What is the type of aNumber?
+
+N.B. Constructors are really just a special kind of function (the distinguishing feature being that they can be used in pattern matching, and that when data constructors are given arguments they construct *values*)
+
+Polymorphism
+============
+
+Polymorphic types are universally quantified in some way over *all* types.
+
+```hs
+length                  :: [a] -> Integer
+length []               =  0
+length (x:xs)           =  1 + length xs
+```
+
+This function works for lists of *any* type, be it lists of `Int`, `Char`,
+`Shape`, etc.
+
+This example wouldn't work: e.g. if `a` was `Char`, it would mean `x` had type
+`Char`, which could not be added to the result of applying `sum` to `xs` (`sum xs
+:: Integer`)
+```hs
+sum                  :: [a] -> Integer
+sum []               =  0
+sum (x:xs)           =  x + sum xs
+```
+
+This kind of completely generic polymorphism is called *parametric
+polymorphism*.
+
+<!-- We said previously types could be seen as sets of values. -->
+
+<!-- The `Integer` type corresponds to the set of all integer numbers -->
+<!-- The `Natural` type correspondsd to the set of all natural numbers -->
+<!-- The `Char` type corresponds to the set of all characters -->
+<!-- Our `Shape` type corresponds to the set containing all possible combinations of -->
+<!--     applying `Square` or `Triangle` or `Line` to integer numbers, plus `Point`. -->
+
+Non-nullary type constructors, Kinds
+====================================
+
+When defining new types, I mentioned the name right next to the `data` keyword
+was called a *type constructor*, also called just *type* when the amount of
+arguments was null.
+
+If the amount of arguments is > 0, the definition looks like this
+
+```hs
+data Box a = MkBox a
+data DoubleBox a b = MkDoubleBox a b
+```
+
+Where `a` and `b` are type variables.
+Expressions can never have a *type* `Box`, they instead can have type `Box Int`,
+`Box Char`, or even be polymorphic as in `Box a` for all `a`s.
+
+    As we know, the type system detects typing errors in expressions. But what about
+    errors due to malformed type expressions? The expression `(+) 1 2 3` results in a
+    type error since `(+)` takes only two arguments. Similarly, the type `Tree Int Int`
+    should produce some sort of an error since the `Tree` type takes only a single
+    argument. So, how does Haskell detect malformed type expressions? The answer is
+    a second type system which ensures the correctness of types! Each type has an
+    associated *kind* which ensures that the type is used correctly.
+
+The same way all *expressions* have *types*, all *types*, *type constructors*,
+and in general *type expressions* have *kinds* (*kinds* are the *types* of
+*types*).
+
+All simple types have the kind `*` (star kind), also known as the `Type` kind, for example
+```hs
+type Int :: *
+type Char :: *
+type Float :: *
+```
+Where "type Int :: *" means type `Int` has kind *star*, or `Int` has kind *Type*
+
+*Type constructors*, however, take types as arguments and only then are considered
+types themselves. In our example, `Box` isn't a valid type, while `Box Int` is.
+With *kinds*, this is easily explained. The type constructor `Box` actually has
+kind `* -> *`, meaning it takes a type (`*`) as an argument to become a type as
+well (`*`).
+
+What's the kind of `DoubleBox`?

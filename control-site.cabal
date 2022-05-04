@@ -22,15 +22,26 @@ maintainer:         rodrigo.m.mesquita@gmail.com
 -- extra-source-files: CHANGELOG.md
 
 executable control-site
-    main-is:          Main.hs
-
-    -- Modules included in this executable, other than Main.
-    -- other-modules:
+    main-is:
+        Site.hs
+        -- Main.hs
+    other-modules:
+        Index,
+        Media,
+        Movies,
+        Albums,
+        Animes,
+        Series,
+        Util,
+        Page,
+        Post,
+        Projects
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:
-        base,
+        base >= 4,
+        hakyll >= 4.15,
         blaze-html,
         blaze-markup,
         bytestring,
@@ -44,19 +55,7 @@ executable control-site
         exceptions,
         directory
 
-
-
     hs-source-dirs:   app
+    ghc-options:      -threaded -rtsopts -with-rtsopts=-N
     default-language: Haskell2010
-    other-modules:
-        Index,
-        Media,
-        Movies,
-        Albums,
-        Animes,
-        Series,
-        Util,
-        Page,
-        Post,
-        Projects
 
