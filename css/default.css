@@ -131,6 +131,10 @@ article .header {
   margin-bottom: -1em;
 }
 
+code {
+    background: #f8f8f8;
+}
+
 /*----Main-----------------------*/
 
 .main-footer {

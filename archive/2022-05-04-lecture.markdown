@@ -54,7 +54,7 @@ sum :: [Integer] -> Integer
 sum [1,2,3] :: Integer
 ```
 
-The "::" can be read "has type". All expression evaluate to a value, and all
+The `::` can be read "has type". All expression evaluate to a value, and all
 values have types, which means all expressions have types too. Above are some of
 the common types.
 
@@ -204,7 +204,7 @@ type Int :: *
 type Char :: *
 type Float :: *
 ```
-Where "type Int :: *" means type `Int` has kind *star*, or `Int` has kind *Type*
+Where `type Int :: *` means type `Int` has kind *star*, or `Int` has kind *Type*
 
 *Type constructors*, however, take types as arguments and only then are considered
 types themselves. In our example, `Box` isn't a valid type, while `Box Int` is.
