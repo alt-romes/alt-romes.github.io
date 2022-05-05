@@ -1,11 +1,14 @@
 ---
 
-title: On SRS and studying Computer Science
+title: On Spaced Repetition Systems and studying CS
 
 ---
 
-## SRS (Spaced Repetition System)
+SRS (Spaced Repetition System)
+==============================
 
-## Studying Computer Science
+Studying Computer Science
+=========================
 
-## Combining SRS and Computer Science
+Combining SRS and Computer Science
+==================================
