@@ -9,17 +9,19 @@ Functions, Computations: Abstraction and application
 
 What is a function?
 
+```hs
 f(x) = 4x + 2
 f(5) = ?
+```
 
 What is function application?
 
 From wikipedia:
 
-    In mathematics, function application is the act of applying a function to an
-    argument from its domain so as to obtain the corresponding value from its range.
-    In this sense, function application can be thought of as the opposite of
-    function abstraction.
+> In mathematics, function application is the act of applying a function to an
+> argument from its domain so as to obtain the corresponding value from its range.
+> In this sense, function application can be thought of as the opposite of
+> function abstraction.
 
 In functional programming languages, *computations* are based on
 function *abstraction* and *application*.
@@ -55,7 +57,7 @@ inc :: Integer -> Integer
 [1,2,3] :: [Integer]
 ('b', 4) :: (Char, Int)
 
-inc 5 :: Integer               -- The evaluation of function application results in a value
+inc 5 :: Integer
 sum :: [Integer] -> Integer
 sum [1,2,3] :: Integer
 ```
@@ -192,13 +194,13 @@ Where `a` and `b` are type variables.
 Expressions can never have a *type* `Box`, they instead can have type `Box Int`,
 `Box Char`, or even be polymorphic as in `Box a` for all `a`s.
 
-    As we know, the type system detects typing errors in expressions. But what about
-    errors due to malformed type expressions? The expression `(+) 1 2 3` results in a
-    type error since `(+)` takes only two arguments. Similarly, the type `Tree Int Int`
-    should produce some sort of an error since the `Tree` type takes only a single
-    argument. So, how does Haskell detect malformed type expressions? The answer is
-    a second type system which ensures the correctness of types! Each type has an
-    associated *kind* which ensures that the type is used correctly.
+>  As we know, the type system detects typing errors in expressions. But what about
+>  errors due to malformed type expressions? The expression `(+) 1 2 3` results in a
+>  type error since `(+)` takes only two arguments. Similarly, the type `Tree Int Int`
+>  should produce some sort of an error since the `Tree` type takes only a single
+>  argument. So, how does Haskell detect malformed type expressions? The answer is
+>  a second type system which ensures the correctness of types! Each type has an
+>  associated *kind* which ensures that the type is used correctly.
 
 The same way all *expressions* have *types*, all *types*, *type constructors*,
 and in general *type expressions* have *kinds* (*kinds* are the *types* of

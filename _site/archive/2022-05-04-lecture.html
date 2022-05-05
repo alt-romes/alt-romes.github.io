@@ -1,23 +1,12 @@
 <!doctype html>
-<meta http-equiv="content-type" content="text/html; charset=utf8">
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta http-equiv="content-type" content="text/html; charset=utf8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>romes - Lecture 1</title>
         <link rel="stylesheet" href="../css/default.css" />
     </head>
     <body>
-    <div class="main-container body-padding">
-        <nav>
-            <ul>
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../archive.html">archive</a></li>
-                <li>music</li>
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-            </ul>
-        </nav>
         <main>
             <!-- <h1>Lecture 1</h1> -->
             <article>
@@ -28,14 +17,16 @@
     <section>
         <h1 id="functions-computations-abstraction-and-application">Functions, Computations: Abstraction and application</h1>
 <p>What is a function?</p>
-<p>f(x) = 4x + 2
-f(5) = ?</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>f(x) <span class="ot">=</span> 4x <span class="op">+</span> <span class="dv">2</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>f(<span class="dv">5</span>) <span class="ot">=</span> <span class="op">?</span></span></code></pre></div>
 <p>What is function application?</p>
 <p>From wikipedia:</p>
-<pre><code>In mathematics, function application is the act of applying a function to an
+<blockquote>
+<p>In mathematics, function application is the act of applying a function to an
 argument from its domain so as to obtain the corresponding value from its range.
 In this sense, function application can be thought of as the opposite of
-function abstraction.</code></pre>
+function abstraction.</p>
+</blockquote>
 <p>In functional programming languages, <em>computations</em> are based on
 function <em>abstraction</em> and <em>application</em>.</p>
 <p>An <em>Abstraction</em>, a.k.a a function, is denoted by the lambda notation (<code>\x -&gt; ...</code>)</p>
@@ -56,7 +47,7 @@ associated <em>type</em> (intuitively, we can think of types as sets of values).
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> [<span class="dt">Integer</span>]</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>(<span class="ch">'b'</span>, <span class="dv">4</span>)<span class="ot"> ::</span> (<span class="dt">Char</span>, <span class="dt">Int</span>)</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>inc <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span>               <span class="co">-- The evaluation of function application results in a value</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>inc <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span><span class="ot"> ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> <span class="dt">Integer</span></span></code></pre></div>
 <p>The “::” can be read “has type”. All expression evaluate to a value, and all
@@ -145,20 +136,22 @@ arguments was null.</p>
 <p>Where <code>a</code> and <code>b</code> are type variables.
 Expressions can never have a <em>type</em> <code>Box</code>, they instead can have type <code>Box Int</code>,
 <code>Box Char</code>, or even be polymorphic as in <code>Box a</code> for all <code>a</code>s.</p>
-<pre><code>As we know, the type system detects typing errors in expressions. But what about
-errors due to malformed type expressions? The expression `(+) 1 2 3` results in a
-type error since `(+)` takes only two arguments. Similarly, the type `Tree Int Int`
-should produce some sort of an error since the `Tree` type takes only a single
+<blockquote>
+<p>As we know, the type system detects typing errors in expressions. But what about
+errors due to malformed type expressions? The expression <code>(+) 1 2 3</code> results in a
+type error since <code>(+)</code> takes only two arguments. Similarly, the type <code>Tree Int Int</code>
+should produce some sort of an error since the <code>Tree</code> type takes only a single
 argument. So, how does Haskell detect malformed type expressions? The answer is
 a second type system which ensures the correctness of types! Each type has an
-associated *kind* which ensures that the type is used correctly.</code></pre>
+associated <em>kind</em> which ensures that the type is used correctly.</p>
+</blockquote>
 <p>The same way all <em>expressions</em> have <em>types</em>, all <em>types</em>, <em>type constructors</em>,
 and in general <em>type expressions</em> have <em>kinds</em> (<em>kinds</em> are the <em>types</em> of
 <em>types</em>).</p>
 <p>All simple types have the kind <code>*</code> (star kind), also known as the <code>Type</code> kind, for example</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
 <p>Where “type Int :: <em>” means type <code>Int</code> has kind </em>star<em>, or <code>Int</code> has kind </em>Type*</p>
 <p><em>Type constructors</em>, however, take types as arguments and only then are considered
 types themselves. In our example, <code>Box</code> isn’t a valid type, while <code>Box Int</code> is.
@@ -170,11 +163,18 @@ well (<code>*</code>).</p>
 </article>
 
         </main>
-    </div>
-    <script>
-        opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha'];
-        r = Math.floor(Math.random() * opt.length);
-        Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-    </script>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <script>
+            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
+            r = Math.floor(Math.random() * opt.length);
+            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+        </script>
     </body>
 </html>

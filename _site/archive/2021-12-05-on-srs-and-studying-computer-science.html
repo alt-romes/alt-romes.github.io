@@ -1,23 +1,12 @@
 <!doctype html>
-<meta http-equiv="content-type" content="text/html; charset=utf8">
 <html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta http-equiv="content-type" content="text/html; charset=utf8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>romes - On SRS and studying Computer Science</title>
         <link rel="stylesheet" href="../css/default.css" />
     </head>
     <body>
-    <div class="main-container body-padding">
-        <nav>
-            <ul>
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../archive.html">archive</a></li>
-                <li>music</li>
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-            </ul>
-        </nav>
         <main>
             <!-- <h1>On SRS and studying Computer Science</h1> -->
             <article>
@@ -33,11 +22,18 @@
 </article>
 
         </main>
-    </div>
-    <script>
-        opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'cjk-earthly-branch', 'cjk-heavenly-stem', 'hiragana', 'katakana-iroha'];
-        r = Math.floor(Math.random() * opt.length);
-        Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-    </script>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <script>
+            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
+            r = Math.floor(Math.random() * opt.length);
+            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+        </script>
     </body>
 </html>
