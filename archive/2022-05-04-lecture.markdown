@@ -48,10 +48,9 @@ associated *type* (intuitively, we can think of types as sets of values).
 inc :: Integer -> Integer
 [1,2,3] :: [Integer]
 ('b', 4) :: (Char, Int)
-
+sum [1,2,3] :: Integer
 inc 5 :: Integer
 sum :: [Integer] -> Integer
-sum [1,2,3] :: Integer
 ```
 
 The `::` can be read "has type". All expression evaluate to a value, and all
@@ -113,7 +112,8 @@ The deconstruction of an *ADT* is done through *pattern matching*.
 Pattern matching is done by specifying the expression to deconstruct together
 with the patterns that might match the ADT "form".
 ```hs
-shape1 = ... :: Shape
+shape1 :: Shape
+shape1 = undefined
 
             +------ expression to deconstruct
             |
@@ -140,9 +140,9 @@ Polymorphism
 Polymorphic types are universally quantified in some way over *all* types.
 
 ```hs
-length                  :: [a] -> Integer
-length []               =  0
-length (x:xs)           =  1 + length xs
+length         :: [a] -> Integer
+length []      =  0
+length (x:xs)  =  1 + length xs
 ```
 
 This function works for lists of *any* type, be it lists of `Int`, `Char`,
@@ -152,9 +152,9 @@ This example wouldn't work: e.g. if `a` was `Char`, it would mean `x` had type
 `Char`, which could not be added to the result of applying `sum` to `xs` (`sum xs
 :: Integer`)
 ```hs
-sum                  :: [a] -> Integer
-sum []               =  0
-sum (x:xs)           =  x + sum xs
+sum            :: [a] -> Integer
+sum []         =  0
+sum (x:xs)     =  x + sum xs
 ```
 
 This kind of completely generic polymorphism is called *parametric
@@ -213,3 +213,7 @@ kind `* -> *`, meaning it takes a type (`*`) as an argument to become a type as
 well (`*`).
 
 What's the kind of `DoubleBox`?
+```hs
+type Box :: * -> *
+type DoubleBox :: ?
+```

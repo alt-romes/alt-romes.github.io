@@ -140,10 +140,7 @@ article .header {
 
 pre {
     overflow: auto;
-}
-
-code {
-    background: var(--soft-grey);
+    padding: 1em;
 }
 
 blockquote {
