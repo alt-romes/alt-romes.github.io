@@ -7,37 +7,29 @@ title: Lecture 1
 Functions, Computations: Abstraction and application
 ======================================
 
-What is a function?
+What is a function? What is function application?
 
 ```hs
 f(x) = 4x + 2
 f(5) = ?
 ```
 
-What is function application?
-
-From wikipedia:
-
 > In mathematics, function application is the act of applying a function to an
 > argument from its domain so as to obtain the corresponding value from its range.
 > In this sense, function application can be thought of as the opposite of
 > function abstraction.
 
-In functional programming languages, *computations* are based on
-function *abstraction* and *application*.
+In functional programming languages, *computations* are based on function
+*abstraction* and *application*.  An *abstraction*, a.k.a a function, is denoted
+by the lambda notation (`\x -> ...`).  An *application*, a.k.a function
+application, is denoted by a *space*: an expression followed by another
+expression represents the application of the first expression to the following
+one.
 
-An *Abstraction*, a.k.a a function, is denoted by the lambda notation (`\x -> ...`)
-
-```hs
-f = \x -> 4 * x + 2 -- `f` is an *abstraction*, it takes an argument named `x`
-                    -- and returns `4 * x + 2`
-```
-
-An *Application*, a.k.a function application, is denoted by a *space*: an
-expression followed by another expression represents the application of the
-first expression to the following one
 
 ```hs
+f = \x -> 4 * x + 2 -- `f` is an abstraction
+
 f 5 -- application of `f` to `5`
 ```
 

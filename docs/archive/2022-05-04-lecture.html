@@ -16,48 +16,46 @@
     </section>
     <section>
         <h1 id="functions-computations-abstraction-and-application">Functions, Computations: Abstraction and application</h1>
-<p>What is a function?</p>
+<p>What is a function? What is function application?</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>f(x) <span class="ot">=</span> 4x <span class="op">+</span> <span class="dv">2</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>f(<span class="dv">5</span>) <span class="ot">=</span> <span class="op">?</span></span></code></pre></div>
-<p>What is function application?</p>
-<p>From wikipedia:</p>
 <blockquote>
 <p>In mathematics, function application is the act of applying a function to an
 argument from its domain so as to obtain the corresponding value from its range.
 In this sense, function application can be thought of as the opposite of
 function abstraction.</p>
 </blockquote>
-<p>In functional programming languages, <em>computations</em> are based on
-function <em>abstraction</em> and <em>application</em>.</p>
-<p>An <em>Abstraction</em>, a.k.a a function, is denoted by the lambda notation (<code>\x -&gt; ...</code>)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="dv">4</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">2</span> <span class="co">-- `f` is an *abstraction*, it takes an argument named `x`</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                    <span class="co">-- and returns `4 * x + 2`</span></span></code></pre></div>
-<p>An <em>Application</em>, a.k.a function application, is denoted by a <em>space</em>: an
-expression followed by another expression represents the application of the
-first expression to the following one</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>f <span class="dv">5</span> <span class="co">-- application of `f` to `5`</span></span></code></pre></div>
+<p>In functional programming languages, <em>computations</em> are based on function
+<em>abstraction</em> and <em>application</em>. An <em>abstraction</em>, a.k.a a function, is denoted
+by the lambda notation (<code>\x -&gt; ...</code>). An <em>application</em>, a.k.a function
+application, is denoted by a <em>space</em>: an expression followed by another
+expression represents the application of the first expression to the following
+one.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="dv">4</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">2</span> <span class="co">-- `f` is an abstraction</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>f <span class="dv">5</span> <span class="co">-- application of `f` to `5`</span></span></code></pre></div>
 <h1 id="expressions-values-types">Expressions, Values, Types</h1>
 <p>Haskell is a purely functional programming language. As such, all computations
 are done via the <em>evaluation</em> of <em>expressions</em> (syntactic terms) to yield
 <em>values</em> (abstract entities that we regard as answers). Every value has an
 associated <em>type</em> (intuitively, we can think of types as sets of values).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ch">'a'</span><span class="ot"> ::</span> <span class="dt">Char</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">inc ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> [<span class="dt">Integer</span>]</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>(<span class="ch">'b'</span>, <span class="dv">4</span>)<span class="ot"> ::</span> (<span class="dt">Char</span>, <span class="dt">Int</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>inc <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span><span class="ot"> ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> <span class="dt">Integer</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ch">'a'</span><span class="ot"> ::</span> <span class="dt">Char</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ot">inc ::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> [<span class="dt">Integer</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>(<span class="ch">'b'</span>, <span class="dv">4</span>)<span class="ot"> ::</span> (<span class="dt">Char</span>, <span class="dt">Int</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>inc <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">Integer</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span><span class="ot"> ::</span> [<span class="dt">Integer</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> <span class="dt">Integer</span></span></code></pre></div>
 <p>The “::” can be read “has type”. All expression evaluate to a value, and all
 values have types, which means all expressions have types too. Above are some of
 the common types.</p>
 <p>Which of the following are expressions, and which are values? What are the types
 of the expressions?</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span></code></pre></div>
 <p>They are all <em>expressions</em>, and only the first two is are <em>value</em>s. The first
 one is a function abstraction, which is value, the second one is a value
 constructed with the data constructors of <code>List</code>, but third one, however, is a
@@ -68,20 +66,20 @@ function applied to a value which <em>evaluate</em>s to a <em>value</em>.</p>
 type <code>Int -&gt; Int -&gt; Point</code>. This function (the value) can be used to create
 values of type <code>Point</code>. It takes two arguments of type <code>Int</code>, which means
 <code>MkPoint 1 2</code> (<code>MkPoint</code> applied to <code>1</code> and <code>2</code>) has type <code>Point</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>      <span class="op">+---</span> <span class="kw">type</span> constructor</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>      <span class="op">|</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>      v</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Point</span> <span class="ot">=</span> <span class="dt">MkPoint</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                <span class="op">^</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">+---</span> <span class="kw">data</span> constructor</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>      <span class="op">+---</span> <span class="kw">type</span> constructor</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>      <span class="op">|</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      v</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Point</span> <span class="ot">=</span> <span class="dt">MkPoint</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                <span class="op">^</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">+---</span> <span class="kw">data</span> constructor</span></code></pre></div>
 <p>N.B. A <em>type constructor</em> with 0 arguments is also called simply <em>type</em></p>
 <p>We can define types with more data constructors, which might take 0 to N
 arguments.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Shape</span> <span class="ot">=</span> <span class="dt">Square</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Triangle</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Line</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Point</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Shape</span> <span class="ot">=</span> <span class="dt">Square</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Triangle</span> <span class="dt">Int</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Line</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Point</span></span></code></pre></div>
 <p>Which are the type constructors? What are the data constructors? Write 2
 different expressions with type <code>Shape</code>.</p>
 <p>There are two dual concepts related to ADTs: <em>construction</em> and <em>deconstruction</em></p>
@@ -90,34 +88,34 @@ different expressions with type <code>Shape</code>.</p>
 The deconstruction of an <em>ADT</em> is done through <em>pattern matching</em>.</p>
 <p>Pattern matching is done by specifying the expression to deconstruct together
 with the patterns that might match the ADT “form”.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>shape1 <span class="ot">=</span> <span class="op">...</span><span class="ot"> ::</span> <span class="dt">Shape</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">+------</span> expression to deconstruct</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>aNumber <span class="ot">=</span>   v</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> shape1 <span class="kw">of</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Square</span> a b c d <span class="ot">-&gt;</span> a <span class="op">+</span> b <span class="op">+</span> c <span class="op">+</span> d</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Triangle</span> a <span class="dv">0</span> c <span class="ot">-&gt;</span> a <span class="op">+</span> b <span class="op">+</span> c</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                <span class="op">^</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                <span class="op">+----------------</span> <span class="kw">pattern</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Line</span> <span class="dv">5</span> <span class="dv">5</span> <span class="ot">-&gt;</span> <span class="dv">5</span> <span class="op">^</span> <span class="dv">5</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        a <span class="ot">-&gt;</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>shape1 <span class="ot">=</span> <span class="op">...</span><span class="ot"> ::</span> <span class="dt">Shape</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>            <span class="op">+------</span> expression to deconstruct</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="op">|</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>aNumber <span class="ot">=</span>   v</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">case</span> shape1 <span class="kw">of</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Square</span> a b c d <span class="ot">-&gt;</span> a <span class="op">+</span> b <span class="op">+</span> c <span class="op">+</span> d</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Triangle</span> a <span class="dv">0</span> c <span class="ot">-&gt;</span> a <span class="op">+</span> b <span class="op">+</span> c</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                <span class="op">^</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>                <span class="op">|</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                <span class="op">+----------------</span> <span class="kw">pattern</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">Line</span> <span class="dv">5</span> <span class="dv">5</span> <span class="ot">-&gt;</span> <span class="dv">5</span> <span class="op">^</span> <span class="dv">5</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        a <span class="ot">-&gt;</span> <span class="dv">0</span></span></code></pre></div>
 <p>What would be the value of <code>aNumber</code> if <code>shape1 = Triangle 22 0 1</code> ? And <code>shape1 = Point</code>? And <code>shape1 = Triangle 1 1 1</code>? And <code>shape1 = Line 5 5</code>? And <code>shape1 = Line 1 2</code>?</p>
 <p>What is the type of aNumber?</p>
 <p>N.B. Constructors are really just a special kind of function (the distinguishing feature being that they can be used in pattern matching, and that when data constructors are given arguments they construct <em>values</em>)</p>
 <h1 id="polymorphism">Polymorphism</h1>
 <p>Polymorphic types are universally quantified in some way over <em>all</em> types.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span><span class="ot">                  ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> []               <span class="ot">=</span>  <span class="dv">0</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> (x<span class="op">:</span>xs)           <span class="ot">=</span>  <span class="dv">1</span> <span class="op">+</span> <span class="fu">length</span> xs</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span><span class="ot">                  ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> []               <span class="ot">=</span>  <span class="dv">0</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> (x<span class="op">:</span>xs)           <span class="ot">=</span>  <span class="dv">1</span> <span class="op">+</span> <span class="fu">length</span> xs</span></code></pre></div>
 <p>This function works for lists of <em>any</em> type, be it lists of <code>Int</code>, <code>Char</code>,
 <code>Shape</code>, etc.</p>
 <p>This example wouldn’t work: e.g. if <code>a</code> was <code>Char</code>, it would mean <code>x</code> had type
 <code>Char</code>, which could not be added to the result of applying <code>sum</code> to <code>xs</code> (<code>sum xs :: Integer</code>)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span><span class="ot">                  ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> []               <span class="ot">=</span>  <span class="dv">0</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> (x<span class="op">:</span>xs)           <span class="ot">=</span>  x <span class="op">+</span> <span class="fu">sum</span> xs</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span><span class="ot">                  ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> []               <span class="ot">=</span>  <span class="dv">0</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span> (x<span class="op">:</span>xs)           <span class="ot">=</span>  x <span class="op">+</span> <span class="fu">sum</span> xs</span></code></pre></div>
 <p>This kind of completely generic polymorphism is called <em>parametric
 polymorphism</em>.</p>
 <!-- We said previously types could be seen as sets of values. -->
@@ -131,8 +129,8 @@ polymorphism</em>.</p>
 was called a <em>type constructor</em>, also called just <em>type</em> when the amount of
 arguments was null.</p>
 <p>If the amount of arguments is &gt; 0, the definition looks like this</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Box</span> a <span class="ot">=</span> <span class="dt">MkBox</span> a</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">DoubleBox</span> a b <span class="ot">=</span> <span class="dt">MkDoubleBox</span> a b</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Box</span> a <span class="ot">=</span> <span class="dt">MkBox</span> a</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">DoubleBox</span> a b <span class="ot">=</span> <span class="dt">MkDoubleBox</span> a b</span></code></pre></div>
 <p>Where <code>a</code> and <code>b</code> are type variables.
 Expressions can never have a <em>type</em> <code>Box</code>, they instead can have type <code>Box Int</code>,
 <code>Box Char</code>, or even be polymorphic as in <code>Box a</code> for all <code>a</code>s.</p>
@@ -149,9 +147,9 @@ associated <em>kind</em> which ensures that the type is used correctly.</p>
 and in general <em>type expressions</em> have <em>kinds</em> (<em>kinds</em> are the <em>types</em> of
 <em>types</em>).</p>
 <p>All simple types have the kind <code>*</code> (star kind), also known as the <code>Type</code> kind, for example</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
 <p>Where “type Int :: <em>” means type <code>Int</code> has kind </em>star<em>, or <code>Int</code> has kind </em>Type*</p>
 <p><em>Type constructors</em>, however, take types as arguments and only then are considered
 types themselves. In our example, <code>Box</code> isn’t a valid type, while <code>Box Int</code> is.
