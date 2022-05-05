@@ -97,7 +97,8 @@ pandocCodeStyle = Style {..}
             KeywordTok =: defStyle { tokenColor = toColor @String "#96609e", tokenBold = True } <>
             DataTypeTok =: color "#96609e" <>
             DecValTok =: color "#dc9656" <>
-            StringTok =: color "#538947"
+            StringTok =: color "#538947" <>
+            CharTok =: color "#538947"
         defaultColor = toColor @String "#383838"
         backgroundColor = toColor @String "#f8f8f8"
         lineNumberColor = Nothing

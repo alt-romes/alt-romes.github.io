@@ -31,6 +31,7 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span.ch { color: #538947; } /* Char */
 code span.co { color: #b8b8b8; } /* Comment */
 code span.dt { color: #96609e; } /* DataType */
 code span.dv { color: #dc9656; } /* DecVal */
