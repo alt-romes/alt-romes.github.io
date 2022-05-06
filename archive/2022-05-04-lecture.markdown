@@ -66,10 +66,10 @@ product
 product [1,2,3]
 ```
 
-They are all *expressions*, and only the first two is are *value*s. The first
-one is a function abstraction, which is value, the second one is a value
-constructed with the data constructors of `List`, but third one, however, is a
-function applied to a value which *evaluate*s to a *value*.
+They are all *expressions*, and only the first two are *value*s. The first
+one is a function abstraction, which is a value, the second one is a value
+constructed with the data constructors of `List`, but the third one, however, is a
+function application (`product` applied to `[1,2,3]`) which *evaluate*s to a *value*.
 
 
 ADTs, Construction, Deconstruction
@@ -78,7 +78,7 @@ ADTs, Construction, Deconstruction
 Algebraic data types (ADTs) allow us to define our own *types* and *values*.
 
 To create a new *type* called `Point`, we define a new value `MkPoint` that has
-type `Int -> Int -> Point`. This function (the value) can be used to create
+type `Int -> Int -> Point`. This function can be used to create
 values of type `Point`. It takes two arguments of type `Int`, which means
 `MkPoint 1 2` (`MkPoint` applied to `1` and `2`) has type `Point`.
 ```hs

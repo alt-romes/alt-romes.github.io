@@ -56,14 +56,14 @@ of the expressions?</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">product</span> [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span></code></pre></div>
-<p>They are all <em>expressions</em>, and only the first two is are <em>value</em>s. The first
-one is a function abstraction, which is value, the second one is a value
-constructed with the data constructors of <code>List</code>, but third one, however, is a
-function applied to a value which <em>evaluate</em>s to a <em>value</em>.</p>
+<p>They are all <em>expressions</em>, and only the first two are <em>value</em>s. The first
+one is a function abstraction, which is a value, the second one is a value
+constructed with the data constructors of <code>List</code>, but the third one, however, is a
+function application (<code>product</code> applied to <code>[1,2,3]</code>) which <em>evaluate</em>s to a <em>value</em>.</p>
 <h1 id="adts-construction-deconstruction">ADTs, Construction, Deconstruction</h1>
 <p>Algebraic data types (ADTs) allow us to define our own <em>types</em> and <em>values</em>.</p>
 <p>To create a new <em>type</em> called <code>Point</code>, we define a new value <code>MkPoint</code> that has
-type <code>Int -&gt; Int -&gt; Point</code>. This function (the value) can be used to create
+type <code>Int -&gt; Int -&gt; Point</code>. This function can be used to create
 values of type <code>Point</code>. It takes two arguments of type <code>Int</code>, which means
 <code>MkPoint 1 2</code> (<code>MkPoint</code> applied to <code>1</code> and <code>2</code>) has type <code>Point</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>      <span class="op">+---</span> <span class="kw">type</span> constructor</span>
