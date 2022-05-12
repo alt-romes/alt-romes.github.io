@@ -1,3 +1,9 @@
+---
+
+title: Lecture 2
+
+---
+
 Functions Types, Currying, Partial application, Higher-order functions
 ======================================================================
 
@@ -195,23 +201,91 @@ recursive call result.
 Recursive data structures
 =========================
 
-Data structures that use themselves to define themselves, in other words, that
-define themselves recursively
+Data structures can use themselves to define themselves, or in other words,
+define themselves recursively. When they do so, they can be called *recursive
+data types*.
 
-Because of laziness, we can even make infinite structures
-
-Write a function that gives an infinite tree of length `n` given `n :: Int`
 ```hs
 data Tree a = Leaf | Node a (Tree a) (Tree a)
+```
 
+A `Tree` here is defined in terms of other `Tree`s. A `Tree` of `a`s can be either a
+`Leaf` or a `Node` with a value of type `a` and two subtrees.
+
+Recursive data types are expressive kinds of structures and a very idiom in
+functional programming. For example, we can clearly express a simple calculator
+language through a recursive data type `Expr`.
+
+```hs
+data Expr = Const Int
+          | Add Expr Expr
+          | Mult Expr Expr
+```
+
+This way, we can represent numerical expressions in through our datatype:
+
+```hs
+-- 5
+Const 5
+
+-- 6 * 2
+Mult (Const 6) (Const 2)
+
+-- 2 + 3 * 4
+Mult (Add (Const 2) (Const 3)) (Const 4)
+```
+
+And easily define recursive operations on it:
+
+```hs
+calculate :: Expr -> Int
+calculate (Const i) = i
+calculate (Add x y) = calculate x + calculate y
+calculate (Mult x y) = calculate x * calculate y
+```
+
+Because of Haskell's laziness, we can even make infinite values of this recursive type.
+
+Write a function that creates an infinite tree of length `n` given `n :: Int`
+```hs
 infiniteTree :: Int -> Tree a
 infiniteTree = undefined
+```
+
+What about an expression that infinitely adds `n`?
+```hs
+-- infiniteAdd 5 <=> 5 + 5 + 5 + ... + 5 + ... + 5 + ...
+infiniteAdd :: Int -> Expr
+infiniteAdd = undefined
+```
+
+One can then write functions to make use of these infinite structures. For
+example, a function that given an infinite expression of adding `n`, adds `n`
+`k` amount of times (that is, a function that multiplies `n` by `k` through
+creating an infinite addition expression).
+
+The most common example of an infinite structure is the infinite list and
+operations on it
+```hs
+[1..] -- [1,2,3,4,5,6,7......
+
+take 5 [1..] -- [1,2,3,4,5]
+```
+
+Could you write a generator of infinite lists starting at `n`?
+```hs
+data List a = Nil | Cons a (List a)
+
+infList :: n -> List a
+infList = undefined
 ```
 
 Type Classes, Constraints
 =========================
 
 Suggested reading: [Type Classes](https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html)
+
+Work in progress:
 
 Type-class polymorphism
 
@@ -227,30 +301,3 @@ types which are instances of the type class(es) in question.
 class Eq a where
   (==) :: a -> a -> Bool
 ```
-
-Semigroups, Monoids
-===================
-
-Higher-kinded polymorphism, and constraints on higher-kinded types
-==================================================================
-
-Functions that are polymorphic over higher-kinded types
-Functions can be type-class polymorphic over higher-kinded types too
-
-Functors
-========
-
-Applicative Functors
-====================
-
-Monads
-======
-
-Monad Transformers
-==================
-
-IO
-===
-
-https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html
-

@@ -120,7 +120,7 @@ shape1 = undefined
 aNumber =   v
     case shape1 of
         Square a b c d -> a + b + c + d
-        Triangle a 0 c -> a + b + c
+        Triangle a 0 c -> a + c
                 ^
                 |
                 +---------------- pattern

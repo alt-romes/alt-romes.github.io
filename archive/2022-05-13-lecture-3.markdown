@@ -1,0 +1,32 @@
+---
+
+title: Lecture 3 -- Abstractions
+
+---
+
+Semigroups, Monoids
+===================
+
+Higher-kinded polymorphism, and constraints on higher-kinded types
+==================================================================
+
+Functions that are polymorphic over higher-kinded types
+Functions can be type-class polymorphic over higher-kinded types too
+
+Functors
+========
+
+Applicative Functors
+====================
+
+Monads
+======
+
+Monad Transformers
+==================
+
+IO
+===
+
+https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html
+
