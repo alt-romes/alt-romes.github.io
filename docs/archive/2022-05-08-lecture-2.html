@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>romes - 2022-05-08-lecture-2</title>
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <main>
+            <!-- <h1>2022-05-08-lecture-2</h1> -->
+            <article>
+    <section class="header">
+        Posted on May  8, 2022
+        
+    </section>
+    <section>
+        <h1 id="functions-types-currying-partial-application-higher-order-functions">Functions Types, Currying, Partial application, Higher-order functions</h1>
+<p>All functions have a type, the <em>function type</em>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> (x<span class="op">:</span>xs) <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="fu">length</span> xs</span></code></pre></div>
+<p>The same way we think about the <code>Either</code> type constructor, and about the tuple
+type constructor <code>(,)</code>, we can think about the function type type constructor
+(the arrow <code>-&gt;</code>). They are all type constructors that take two arguments.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Either</span> a b <span class="ot">=</span> <span class="dt">Left</span> a <span class="op">|</span> <span class="dt">Right</span> b</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> (,) a b <span class="ot">=</span> (a, b)     <span class="co">-- pseudo code</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> (<span class="ot">-&gt;</span>) a b <span class="ot">=</span> a <span class="ot">-&gt;</span> b    <span class="co">-- pseudo code</span></span></code></pre></div>
+<p>This means that the <code>(-&gt;)</code> type constructor, when applied to two types <code>a</code> and <code>b</code>, creates
+a new type <code>a -&gt; b</code>, where <code>a</code> is the input type and <code>b</code> the return type.</p>
+<p>This beggets the question, what is the type of a function that takes two
+arguments? There are two ways to define multi-argument functions.</p>
+<p>The first would be to think about functions that receive multiple arguments in a
+tuple.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prepend ::</span> (<span class="dt">Char</span>, <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>prepend (c, str) <span class="ot">=</span> c<span class="op">:</span>str</span></code></pre></div>
+<p>You could even use it like this <code>prepend('h', "ello")</code>, which somewhat resembles
+the imperative style function call.</p>
+<p>The second option is to have a function take one argument <code>a</code>, and return a
+function that takes another argument <code>b</code> and only then returns <code>c</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prepend ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> (<span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>prepend c <span class="ot">=</span> (\str <span class="ot">-&gt;</span> c<span class="op">:</span>str)</span></code></pre></div>
+<p>And this is the most common way to have multi-argument functions in functional
+programming languages. In Haskell, thinking about two argument functions and
+functions that return functions is really the same thing.</p>
+<p>The most common way of writing the two argument function <code>prepend</code> in Haskell,
+read “<code>prepend</code> is a function that takes <em>two</em> arguments of type <code>Char</code> and <code>String</code>
+and returns <code>String</code>”, would be</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">prepend ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>prepend c str <span class="ot">=</span> c<span class="op">:</span>str</span></code></pre></div>
+<p>The <code>(Char, String) -&gt; String</code> version is said to be an <em>uncurried</em> function,
+while <code>Char -&gt; String -&gt; String</code> is said to be <em>curried</em>.</p>
+<p>An advantage in using <em>curried</em> functions is the possibility to partially apply
+them.</p>
+<p>We can define a new function that always prepends <code>B</code> in terms of <code>prepend</code> by
+partially applying <code>prepend</code> (that is, applying the function to a partial number
+of arguments)</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>prependB <span class="ot">=</span> prepend <span class="ch">'B'</span></span></code></pre></div>
+<p>Partial application is useful in everyday functional programming; A common
+example is passing partially applied functions to functions that take functions:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- Given a list of strings, prepend C to them all</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ot">prependAll ::</span> [<span class="dt">String</span>] <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>prependAll strs <span class="ot">=</span> <span class="fu">map</span> (prepend <span class="ch">'C'</span>) strs</span></code></pre></div>
+<p>In functional programming, functions are <em>first-class</em>, meaning they can be
+passed as parameters and returned from functions. Functions used in those ways
+are said to be higher-order functions</p>
+<p>As an end note on function types, notice that the “correct use” of <code>-&gt;</code> type constructor is enforced by the
+kind system, the same way the usage of <code>Either</code> is enforced by the kind system.
+The kinds of these type constructors are:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Either</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> (,)<span class="ot">    ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span><span class="ot"> (-&gt;)   ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span></code></pre></div>
+<p>To have a function type we must supply both type arguments to the <code>-&gt;</code> type
+constructor (i.e. <code>Int -&gt; Char</code> is a valid <em>type</em>), but what happens if we
+<em>partially apply</em> the type constructor?</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> (<span class="ot">-&gt;</span>) <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">FunctionFromInt</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>) <span class="dt">Int</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">FunctionFromInt</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span> <span class="co">-- equivalent to `Int -&gt; Char`</span></span></code></pre></div>
+<h1 id="laziness">Laziness</h1>
+<p><small>This section derives from <a href="https://www.haskell.org/tutorial/functions.html">A Gentle Introduction to Haskell</a></small></p>
+<p>Suppose <code>bot</code> is defined by:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bot <span class="ot">=</span> bot</span></code></pre></div>
+<p>In other words, <code>bot</code> is a non-terminating expression. Abstractly, we denote the
+value of a non-terminating expression as <em>|</em>. Expressions that result in some
+kind of a run-time error, such as 1/0, also have this value. Such an error is
+not recoverable: programs will not continue past these errors.</p>
+<p>A function <code>f</code> is said to be <em>strict</em> if, when applied to a nonterminating
+expression, it also fails to terminate. In other words, f is <em>strict</em> iff the
+value of <code>f bot</code> is <code>bot</code>. For most programming languages, all functions are strict.
+But this is not so in Haskell.</p>
+<p>As a simple example, consider const1, the constant 1 function, defined by:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>const1 x <span class="ot">=</span> <span class="dv">1</span></span></code></pre></div>
+<p>The value of <code>const1 bot</code> in Haskell is <code>1</code>. Operationally speaking, since <code>const1</code>
+does not <em>need</em> the value of its argument, it never attempts to evaluate it, and
+thus never gets caught in a nonterminating computation. For this reason,
+non-strict functions are also called <em>lazy functions</em>, and are said to evaluate
+their arguments <em>lazily</em>, or <em>by need</em>.</p>
+<p>Another way of explaining non-strict functions is that Haskell computes using
+definitions rather than the assignments found in traditional languages. Read a
+declaration such as</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>v <span class="ot">=</span> <span class="dv">1</span><span class="op">/</span><span class="dv">0</span></span></code></pre></div>
+<p>as define <code>v</code> as <code>1/0</code> instead of compute <code>1/0</code> and store the result in <code>v</code>. Only if
+the value (definition) of <code>v</code> is needed will the division by zero error occur. By
+itself, this declaration does not imply any computation. Programming using
+assignments requires careful attention to the ordering of the assignments: the
+meaning of the program depends on the order in which the assignments are
+executed. Definitions, in contrast, are much simpler: they can be presented in
+any order without affecting the meaning of the program.</p>
+<h1 id="recursion-inductive-method">Recursion: Inductive Method</h1>
+<p>Inspired on <a href="http://ctp.di.fct.unl.pt/~amd/lap/teoricas/03.html">AMD - Teórica 3</a>.</p>
+<p>A well defined recursive function does case analysis over its parameters.</p>
+<p>The <strong>base cases</strong> are the ones that don’t lead to recursive calls of the
+function. The <strong>general cases</strong> are those that lead to, directly or indirectly,
+recursive calls of the function.</p>
+<p>The <em>inductive method</em> helps the programmer reason about the logical properties
+of the problem to solve:
+* The trivial case should be dealt with trivially
+* The general case should be dealt with by <em>reducing the problem to a simpler
+problem</em>
+When reducing the problem to a simpler one, assume the simpler one is already
+solved, and try to form the result based on that answer. In practice, the
+simpler problem is solved by the recursive call.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fact <span class="dv">0</span> <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>fact n <span class="ot">=</span> n <span class="op">*</span> fact (n<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> [] <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> (x<span class="op">:</span>xs) <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="fu">length</span> xs</span></code></pre></div>
+<p>Analysing these recursive functions, we note that when dealing with the
+<strong>general case</strong> (the non-trivial case), they both <em>reduce the original problem
+to a simpler instance</em> of the same problem. the <code>length</code> function reduces the
+original problem <code>length (x:xs)</code> to the simpler <code>length xs</code>, and the function
+<code>fact</code> reduces the problem <code>fact n</code> to the simler problem <code>fact (n-1)</code>.</p>
+<p>Assuming the simpler problem is already solved (what is the length of <code>xs</code>?), we
+can just think about the step to take to the solution, which is add <code>1</code> to the
+recursive call result.</p>
+<h1 id="recursive-data-structures">Recursive data structures</h1>
+<p>Data structures that use themselves to define themselves, in other words, that
+define themselves recursively</p>
+<p>Because of laziness, we can even make infinite structures</p>
+<p>Write a function that gives an infinite tree of length <code>n</code> given <code>n :: Int</code></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Tree</span> a <span class="ot">=</span> <span class="dt">Leaf</span> <span class="op">|</span> <span class="dt">Node</span> a (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ot">infiniteTree ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Tree</span> a</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>infiniteTree <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<h1 id="type-classes-constraints">Type Classes, Constraints</h1>
+<p>Suggested reading: <a href="https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html">Type Classes</a></p>
+<p>Type-class polymorphism</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(+) ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>Intuitively, type classes correspond to sets of types which have certain
+operations defined for them, and type class polymorphic functions work only for
+types which are instances of the type class(es) in question.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<h1 id="semigroups-monoids">Semigroups, Monoids</h1>
+<h1 id="higher-kinded-polymorphism-and-constraints-on-higher-kinded-types">Higher-kinded polymorphism, and constraints on higher-kinded types</h1>
+<p>Functions that are polymorphic over higher-kinded types
+Functions can be type-class polymorphic over higher-kinded types too</p>
+<h1 id="functors">Functors</h1>
+<h1 id="applicative-functors">Applicative Functors</h1>
+<h1 id="monads">Monads</h1>
+<h1 id="monad-transformers">Monad Transformers</h1>
+<h1 id="io">IO</h1>
+<p>https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html</p>
+    </section>
+</article>
+
+        </main>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <script>
+            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
+            r = Math.floor(Math.random() * opt.length);
+            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+        </script>
+    </body>
+</html>

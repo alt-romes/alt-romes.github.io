@@ -1,0 +1,256 @@
+Functions Types, Currying, Partial application, Higher-order functions
+======================================================================
+
+All functions have a type, the *function type*:
+```hs
+length :: [a] -> Int
+length [] = 0
+length (x:xs) = 1 + length xs
+```
+
+The same way we think about the `Either` type constructor, and about the tuple
+type constructor `(,)`, we can think about the function type type constructor
+(the arrow `->`). They are all type constructors that take two arguments.
+
+```hs
+data Either a b = Left a | Right b
+
+data (,) a b = (a, b)     -- pseudo code
+
+data (->) a b = a -> b    -- pseudo code
+```
+
+This means that the `(->)` type constructor, when applied to two types `a` and `b`, creates
+a new type `a -> b`, where `a` is the input type and `b` the return type.
+
+This beggets the question, what is the type of a function that takes two
+arguments? There are two ways to define multi-argument functions.
+
+The first would be to think about functions that receive multiple arguments in a
+tuple.
+```hs
+prepend :: (Char, String) -> String
+prepend (c, str) = c:str
+```
+
+You could even use it like this `prepend('h', "ello")`, which somewhat resembles
+the imperative style function call.
+
+The second option is to have a function take one argument `a`, and return a
+function that takes another argument `b` and only then returns `c`.
+```hs
+prepend :: Char -> (String -> String)
+prepend c = (\str -> c:str)
+```
+
+And this is the most common way to have multi-argument functions in functional
+programming languages. In Haskell, thinking about two argument functions and
+functions that return functions is really the same thing.
+
+The most common way of writing the two argument function `prepend` in Haskell,
+read "`prepend` is a function that takes *two* arguments of type `Char` and `String`
+and returns `String`", would be
+```hs
+prepend :: Char -> String -> String
+prepend c str = c:str
+```
+
+The `(Char, String) -> String` version is said to be an *uncurried* function,
+while `Char -> String -> String` is said to be *curried*.
+
+An advantage in using *curried* functions is the possibility to partially apply
+them.
+
+We can define a new function that always prepends `B` in terms of `prepend` by
+partially applying `prepend` (that is, applying the function to a partial number
+of arguments)
+```hs
+prependB = prepend 'B'
+```
+
+Partial application is useful in everyday functional programming; A common
+example is passing partially applied functions to functions that take functions:
+```hs
+map :: (a -> b) -> [a] -> [b]
+
+-- Given a list of strings, prepend C to them all
+prependAll :: [String] -> [String]
+prependAll strs = map (prepend 'C') strs
+```
+
+In functional programming, functions are *first-class*, meaning they can be
+passed as parameters and returned from functions. Functions used in those ways
+are said to be higher-order functions
+
+As an end note on function types, notice that the "correct use" of `->` type constructor is enforced by the
+kind system, the same way the usage of `Either` is enforced by the kind system.
+The kinds of these type constructors are:
+
+```hs
+type Either :: * -> * -> *
+type (,)    :: * -> * -> *
+type (->)   :: * -> * -> *
+```
+
+To have a function type we must supply both type arguments to the `->` type
+constructor (i.e. `Int -> Char` is a valid *type*), but what happens if we
+*partially apply* the type constructor?
+```hs
+type (->) Int :: * -> *
+
+type FunctionFromInt = (->) Int
+
+type FunctionFromInt Char :: * -- equivalent to `Int -> Char`
+```
+
+
+Laziness
+========
+
+<small>This section derives from [A Gentle Introduction to Haskell](https://www.haskell.org/tutorial/functions.html)</small>
+
+Suppose `bot` is defined by:
+
+```hs
+bot = bot
+```
+
+In other words, `bot` is a non-terminating expression. Abstractly, we denote the
+value of a non-terminating expression as _|_. Expressions that result in some
+kind of a run-time error, such as 1/0, also have this value. Such an error is
+not recoverable: programs will not continue past these errors.
+
+A function `f` is said to be *strict* if, when applied to a nonterminating
+expression, it also fails to terminate. In other words, f is *strict* iff the
+value of `f bot` is `bot`. For most programming languages, all functions are strict.
+But this is not so in Haskell.
+
+As a simple example, consider const1, the constant 1 function, defined by:
+
+```hs
+const1 x = 1
+```
+
+The value of `const1 bot` in Haskell is `1`. Operationally speaking, since `const1`
+does not *need* the value of its argument, it never attempts to evaluate it, and
+thus never gets caught in a nonterminating computation. For this reason,
+non-strict functions are also called *lazy functions*, and are said to evaluate
+their arguments *lazily*, or *by need*.
+
+Another way of explaining non-strict functions is that Haskell computes using
+definitions rather than the assignments found in traditional languages. Read a
+declaration such as 
+
+```hs
+v = 1/0
+```
+
+as define `v` as `1/0` instead of compute `1/0` and store the result in `v`. Only if
+the value (definition) of `v` is needed will the division by zero error occur. By
+itself, this declaration does not imply any computation. Programming using
+assignments requires careful attention to the ordering of the assignments: the
+meaning of the program depends on the order in which the assignments are
+executed. Definitions, in contrast, are much simpler: they can be presented in
+any order without affecting the meaning of the program.
+
+Recursion: Inductive Method
+===========================
+
+Inspired on [AMD - Teórica 3](http://ctp.di.fct.unl.pt/~amd/lap/teoricas/03.html).
+
+A well defined recursive function does case analysis over its parameters.
+
+The **base cases** are the ones that don't lead to recursive calls of the
+function. The **general cases** are those that lead to, directly or indirectly,
+recursive calls of the function.
+
+The *inductive method* helps the programmer reason about the logical properties
+of the problem to solve:
+    * The trivial case should be dealt with trivially
+    * The general case should be dealt with by *reducing the problem to a simpler
+        problem*
+When reducing the problem to a simpler one, assume the simpler one is already
+solved, and try to form the result based on that answer. In practice, the
+simpler problem is solved by the recursive call.
+
+```hs
+fact 0 = 1
+fact n = n * fact (n-1)
+
+length [] = 0
+length (x:xs) = 1 + length xs
+```
+
+Analysing these recursive functions, we note that when dealing with the
+**general case** (the non-trivial case), they both *reduce the original problem
+to a simpler instance* of the same problem. the `length` function reduces the
+original problem `length (x:xs)` to the simpler `length xs`, and the function
+`fact` reduces the problem `fact n` to the simler problem `fact (n-1)`.
+
+Assuming the simpler problem is already solved (what is the length of `xs`?), we
+can just think about the step to take to the solution, which is add `1` to the
+recursive call result.
+
+
+Recursive data structures
+=========================
+
+Data structures that use themselves to define themselves, in other words, that
+define themselves recursively
+
+Because of laziness, we can even make infinite structures
+
+Write a function that gives an infinite tree of length `n` given `n :: Int`
+```hs
+data Tree a = Leaf | Node a (Tree a) (Tree a)
+
+infiniteTree :: Int -> Tree a
+infiniteTree = undefined
+```
+
+Type Classes, Constraints
+=========================
+
+Suggested reading: [Type Classes](https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html)
+
+Type-class polymorphism
+
+```hs
+(+) :: Num a => a -> a -> a
+```
+
+Intuitively, type classes correspond to sets of types which have certain
+operations defined for them, and type class polymorphic functions work only for
+types which are instances of the type class(es) in question.
+
+```hs
+class Eq a where
+  (==) :: a -> a -> Bool
+```
+
+Semigroups, Monoids
+===================
+
+Higher-kinded polymorphism, and constraints on higher-kinded types
+==================================================================
+
+Functions that are polymorphic over higher-kinded types
+Functions can be type-class polymorphic over higher-kinded types too
+
+Functors
+========
+
+Applicative Functors
+====================
+
+Monads
+======
+
+Monad Transformers
+==================
+
+IO
+===
+
+https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html
+
