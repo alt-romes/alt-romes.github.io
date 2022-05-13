@@ -210,7 +210,7 @@ for all types (e.g. the <code>Expr</code>s we created previously).</p>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual4 ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="co">-- how to compare a?</span></span></code></pre></div>
 <p>That’s where <em>type-class polymorphism</em> (also known as <em>ad-hoc polymorphism</em>)
 comes into play. We can define a <strong>type class</strong> which corresponds to a set of
-types which have certain operrations defined for them, and we can define
+types which have certain operations defined for them, and we can define
 <em>type-class polymorphic</em> functions which can only be called on types which
 instance the said type-class.</p>
 <p>Let’s define a type class for equality. Any <em>type</em> that <em>instances</em> this <em>type
@@ -271,7 +271,7 @@ that returned types of this kind</p>
 <p>The <code>Magic</code> type operator receives a <code>*</code> and returns <code>MagicalKind</code>. <code>*</code> is a
 kind, <code>MagicalKind</code> is a kind, and their combination through the kind arrow
 <code>(-&gt;)</code> is also a kind.</p>
-<p>If we applied <code>Magic</code> to some type, say, <code>Int</code>, we’d get a type of kind
+<p>If we applied <code>Magic</code> to some type, say, <code>Int</code>, we’d get something of kind
 <code>MagicalKind</code>.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Magic</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">MagicalKind</span></span></code></pre></div>
 <p>There are other kinds besides <code>*</code> and kinds constructed with <code>-&gt;</code>. There exists
