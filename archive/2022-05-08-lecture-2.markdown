@@ -280,24 +280,186 @@ infList :: n -> List a
 infList = undefined
 ```
 
-Type Classes, Constraints
-=========================
+Type Classes
+============
+
+Previously we saw *parametric polymorphism*, and how a function needed to treat the polymorphic
+types agnostically, that is, the polymorphic type could be instanced by any type
+and the expression would still be valid. A common example is the map function
+```hs
+map :: (a -> b) -> [a] -> [b]
+map _ [] = []
+map f (x:xs) = f x:map f xs
+```
+
+In which the elements of the list are treated agnostically -- they could have any
+type and this function would still typecheck.
+
+Sometimes, however, we desire a function to be polymorphic over just some types,
+for example, a function polymorphic over all types for which equality `(==)` is
+defined.
+
+We don't want to define multiple equal functions just with different types,
+neither do we want a fully polymorphic function because equality isn't defined
+for all types (e.g. the `Expr`s we created previously).
+```hs
+allEqual1 :: [Int] -> Bool
+allEqual2 :: [Char] -> Bool
+allEqual3 :: [Bool] -> Bool
+allEqual4 :: [a] -> Bool -- how to compare a?
+```
+That's where *type-class polymorphism* (also known as *ad-hoc polymorphism*)
+comes into play. We can define a **type class** which corresponds to a set of
+types which have certain operrations defined for them, and we can define
+*type-class polymorphic* functions which can only be called on types which
+instance the said type-class.
+
+Let's define a type class for equality. Any *type* that *instances* this *type
+class* `Eq`, or in other words, any *type* that belongs to the *set of types* that
+support the equality comparison `(==)`, well, can be compared using `==`.
+
+```hs
+      + --- class name
+      |
+      v
+class Eq a where
+    (==) :: a -> a -> Bool
+      ^
+      |
+      + --- operation that must be defined for all instances of `Eq`
+```
+
+We can then define *type-class polymorphic* functions such as `allEqual`, which
+take a polymorphic type `a`, as long as `a` instances `Eq` (`Eq a => a`).
+
+```hs
+             + -- Constraint
+             |          + -- Function type, where `a` must instance `Eq`
+             v          v
+            _____   ___________
+allEqual :: Eq a => [a] -> Bool
+allEqual [] = True
+allEqual [x] = True
+allEqual (x:y:xs) = x == y && allEqual xs
+```
+
+If we then called `allEqual` on a list of `Expr`, it still wouldn't work --
+that's because `Expr` doesn't instance `Eq` (how do you compare two `Expr`?)
+```hs
+allEqual [Const 5, Const 5, Add (Const 6) (Const 7)]
+```
+
+To define an *instance* of a type class for some type, we use the `instance`
+keyword in the following way:
+```hs
+         + --- class name
+         |   + --- instancing type
+         v   v
+instance Eq Expr where
+ -- (==) :: Expr -> Expr -> Bool
+    (==) x y = case (x,y) of
+        (Const i, Const j) -> i == j
+        (Add z w, Add k p) -> z == k && w == p
+        (Mult z w, Mult k p) -> z == k && w == p
+        (_, _) -> False
+
+```
+
+After which `allEqual [Const 2, Const 2]` would return `True`.
+
+
+Type Classes Kinds, Constraints
+===============================
+
+Let's begin with this set up
+```hs
+data Box a = MkBox a
+
+class Eq a where
+    (==) :: a -> a -> a
+
+allEqual :: Eq a => [a] -> Bool
+```
+
+And now let's revisit *kinds*.
+The kind of a simple type such as `Int`, is `*`.
+The kind of a type constructor such as `Box` is `* -> *`
+The kind of a type constructor applied to a type, such as `Box Int` is `*`.
+
+```hs
+type Int :: *
+type Box :: * -> *
+type Box Int :: *
+```
+
+Now imagine there existed a kind called `MagicalKind`, and we could define type operators
+that returned types of this kind
+```hs
+type Magic :: * -> MagicalKind
+```
+The `Magic` type operator receives a `*` and returns `MagicalKind`. `*` is a
+kind, `MagicalKind` is a kind, and their combination through the kind arrow
+`(->)` is also a kind.
+
+If we applied `Magic` to some type, say, `Int`, we'd get a type of kind
+`MagicalKind`.
+
+```hs
+type Magic Int :: MagicalKind
+```
+
+There are other kinds besides `*` and kinds constructed with `->`. There exists
+an important kind called `Constraint`, and there exist type operators that
+return types of kind `Constraint`.
+
+Those type operators are defined through type classes. Our `Eq` class has a
+kind:
+```hs
+type Eq :: * -> Constraint
+```
+
+Which means that `Eq` applied to `Int`, `Eq Int`, has kind `Constraint`.
+
+It's the kind system that enforces the correct usage of constraints and type classes.
+Going back to the set up of this section, how could we create an instance of `Eq` for `Box`?
+
+```hs
+instance Eq Box where
+    (==) = undefined
+```
+
+This would actually not compile! Why? Let's inspect the kinds.
+```hs
+type Eq :: * -> Constraint
+type Box :: * -> *
+type Box a :: *
+```
+
+When we write `Eq Box`, `Eq` is expecting a type of kind `*`, but we pass it
+`Box` of kind `* -> *`!
+
+A correct instance could be formulated as follows
+```hs
+instance Eq (Box a) where
+    (Box x) == (Box y) = True -- We define two boxes to be always equal
+```
+
+Now, `Box a` has kind `*`, and so `Eq (Box a)` is correctly formulated.
+
+Finally, let's look at the `Constraint` kind. When defining a type class
+polymorphic function, we use the `=>` symbol. On the left side of the symbol we
+must have *constraints*, and on the right, *types*. The kind system also
+enforces this.
+```hs
+allEqual :: Eq a => [a] -> Bool
+```
+This is a correct function definition. `Eq a` has kind `Constraint`, and so it
+can comfortably sit on the left side of `=>`. If we were, however, to write
+```hs
+allEqual :: Box a => [a] -> Bool
+```
+
+We'd get an error complaining about how `Box a` should have kind `Constraint`,
+but in reality has kind `*`.
 
 Suggested reading: [Type Classes](https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html)
-
-Work in progress:
-
-Type-class polymorphism
-
-```hs
-(+) :: Num a => a -> a -> a
-```
-
-Intuitively, type classes correspond to sets of types which have certain
-operations defined for them, and type class polymorphic functions work only for
-types which are instances of the type class(es) in question.
-
-```hs
-class Eq a where
-  (==) :: a -> a -> Bool
-```

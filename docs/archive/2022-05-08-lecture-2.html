@@ -189,16 +189,123 @@ operations on it</p>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ot">infList ::</span> n <span class="ot">-&gt;</span> <span class="dt">List</span> a</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>infList <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
-<h1 id="type-classes-constraints">Type Classes, Constraints</h1>
+<h1 id="type-classes">Type Classes</h1>
+<p>Previously we saw <em>parametric polymorphism</em>, and how a function needed to treat the polymorphic
+types agnostically, that is, the polymorphic type could be instanced by any type
+and the expression would still be valid. A common example is the map function</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span><span class="ot"> ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span> _ [] <span class="ot">=</span> []</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span> f (x<span class="op">:</span>xs) <span class="ot">=</span> f x<span class="op">:</span><span class="fu">map</span> f xs</span></code></pre></div>
+<p>In which the elements of the list are treated agnostically – they could have any
+type and this function would still typecheck.</p>
+<p>Sometimes, however, we desire a function to be polymorphic over just some types,
+for example, a function polymorphic over all types for which equality <code>(==)</code> is
+defined.</p>
+<p>We don’t want to define multiple equal functions just with different types,
+neither do we want a fully polymorphic function because equality isn’t defined
+for all types (e.g. the <code>Expr</code>s we created previously).</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual1 ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual2 ::</span> [<span class="dt">Char</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual3 ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual4 ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="co">-- how to compare a?</span></span></code></pre></div>
+<p>That’s where <em>type-class polymorphism</em> (also known as <em>ad-hoc polymorphism</em>)
+comes into play. We can define a <strong>type class</strong> which corresponds to a set of
+types which have certain operrations defined for them, and we can define
+<em>type-class polymorphic</em> functions which can only be called on types which
+instance the said type-class.</p>
+<p>Let’s define a type class for equality. Any <em>type</em> that <em>instances</em> this <em>type
+class</em> <code>Eq</code>, or in other words, any <em>type</em> that belongs to the <em>set of types</em> that
+support the equality comparison <code>(==)</code>, well, can be compared using <code>==</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>      <span class="op">+</span> <span class="co">--- class name</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>      <span class="op">|</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>      v</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">^</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>      <span class="op">|</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>      <span class="op">+</span> <span class="co">--- operation that must be defined for all instances of `Eq`</span></span></code></pre></div>
+<p>We can then define <em>type-class polymorphic</em> functions such as <code>allEqual</code>, which
+take a polymorphic type <code>a</code>, as long as <code>a</code> instances <code>Eq</code> (<code>Eq a =&gt; a</code>).</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>             <span class="op">+</span> <span class="co">-- Constraint</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>             <span class="op">|</span>          <span class="op">+</span> <span class="co">-- Function type, where `a` must instance `Eq`</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>             v          v</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>            _____   ___________</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>allEqual [] <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>allEqual [x] <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>allEqual (x<span class="op">:</span>y<span class="op">:</span>xs) <span class="ot">=</span> x <span class="op">==</span> y <span class="op">&amp;&amp;</span> allEqual xs</span></code></pre></div>
+<p>If we then called <code>allEqual</code> on a list of <code>Expr</code>, it still wouldn’t work –
+that’s because <code>Expr</code> doesn’t instance <code>Eq</code> (how do you compare two <code>Expr</code>?)</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>allEqual [<span class="dt">Const</span> <span class="dv">5</span>, <span class="dt">Const</span> <span class="dv">5</span>, <span class="dt">Add</span> (<span class="dt">Const</span> <span class="dv">6</span>) (<span class="dt">Const</span> <span class="dv">7</span>)]</span></code></pre></div>
+<p>To define an <em>instance</em> of a type class for some type, we use the <code>instance</code>
+keyword in the following way:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>         <span class="op">+</span> <span class="co">--- class name</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>         <span class="op">|</span>   <span class="op">+</span> <span class="co">--- instancing type</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>         v   v</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Expr</span> <span class="kw">where</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a> <span class="co">-- (==) :: Expr -&gt; Expr -&gt; Bool</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    (<span class="op">==</span>) x y <span class="ot">=</span> <span class="kw">case</span> (x,y) <span class="kw">of</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        (<span class="dt">Const</span> i, <span class="dt">Const</span> j) <span class="ot">-&gt;</span> i <span class="op">==</span> j</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>        (<span class="dt">Add</span> z w, <span class="dt">Add</span> k p) <span class="ot">-&gt;</span> z <span class="op">==</span> k <span class="op">&amp;&amp;</span> w <span class="op">==</span> p</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        (<span class="dt">Mult</span> z w, <span class="dt">Mult</span> k p) <span class="ot">-&gt;</span> z <span class="op">==</span> k <span class="op">&amp;&amp;</span> w <span class="op">==</span> p</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>        (_, _) <span class="ot">-&gt;</span> <span class="dt">False</span></span></code></pre></div>
+<p>After which <code>allEqual [Const 2, Const 2]</code> would return <code>True</code>.</p>
+<h1 id="type-classes-kinds-constraints">Type Classes Kinds, Constraints</h1>
+<p>Let’s begin with this set up</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Box</span> a <span class="ot">=</span> <span class="dt">MkBox</span> a</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<p>And now let’s revisit <em>kinds</em>.
+The kind of a simple type such as <code>Int</code>, is <code>*</code>.
+The kind of a type constructor such as <code>Box</code> is <code>* -&gt; *</code>
+The kind of a type constructor applied to a type, such as <code>Box Int</code> is <code>*</code>.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<p>Now imagine there existed a kind called <code>MagicalKind</code>, and we could define type operators
+that returned types of this kind</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Magic</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">MagicalKind</span></span></code></pre></div>
+<p>The <code>Magic</code> type operator receives a <code>*</code> and returns <code>MagicalKind</code>. <code>*</code> is a
+kind, <code>MagicalKind</code> is a kind, and their combination through the kind arrow
+<code>(-&gt;)</code> is also a kind.</p>
+<p>If we applied <code>Magic</code> to some type, say, <code>Int</code>, we’d get a type of kind
+<code>MagicalKind</code>.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Magic</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">MagicalKind</span></span></code></pre></div>
+<p>There are other kinds besides <code>*</code> and kinds constructed with <code>-&gt;</code>. There exists
+an important kind called <code>Constraint</code>, and there exist type operators that
+return types of kind <code>Constraint</code>.</p>
+<p>Those type operators are defined through type classes. Our <code>Eq</code> class has a
+kind:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Eq</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Constraint</span></span></code></pre></div>
+<p>Which means that <code>Eq</code> applied to <code>Int</code>, <code>Eq Int</code>, has kind <code>Constraint</code>.</p>
+<p>It’s the kind system that enforces the correct usage of constraints and type classes.
+Going back to the set up of this section, how could we create an instance of <code>Eq</code> for <code>Box</code>?</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Box</span> <span class="kw">where</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    (<span class="op">==</span>) <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
+<p>This would actually not compile! Why? Let’s inspect the kinds.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Eq</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Constraint</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> a ::</span> <span class="op">*</span></span></code></pre></div>
+<p>When we write <code>Eq Box</code>, <code>Eq</code> is expecting a type of kind <code>*</code>, but we pass it
+<code>Box</code> of kind <code>* -&gt; *</code>!</p>
+<p>A correct instance could be formulated as follows</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Eq</span> (<span class="dt">Box</span> a) <span class="kw">where</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    (<span class="dt">Box</span> x) <span class="op">==</span> (<span class="dt">Box</span> y) <span class="ot">=</span> <span class="dt">True</span> <span class="co">-- We define two boxes to be always equal</span></span></code></pre></div>
+<p>Now, <code>Box a</code> has kind <code>*</code>, and so <code>Eq (Box a)</code> is correctly formulated.</p>
+<p>Finally, let’s look at the <code>Constraint</code> kind. When defining a type class
+polymorphic function, we use the <code>=&gt;</code> symbol. On the left side of the symbol we
+must have <em>constraints</em>, and on the right, <em>types</em>. The kind system also
+enforces this.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<p>This is a correct function definition. <code>Eq a</code> has kind <code>Constraint</code>, and so it
+can comfortably sit on the left side of <code>=&gt;</code>. If we were, however, to write</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ot">allEqual ::</span> <span class="dt">Box</span> a <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<p>We’d get an error complaining about how <code>Box a</code> should have kind <code>Constraint</code>,
+but in reality has kind <code>*</code>.</p>
 <p>Suggested reading: <a href="https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html">Type Classes</a></p>
-<p>Work in progress:</p>
-<p>Type-class polymorphism</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(+) ::</span> <span class="dt">Num</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a</span></code></pre></div>
-<p>Intuitively, type classes correspond to sets of types which have certain
-operations defined for them, and type class polymorphic functions work only for
-types which are instances of the type class(es) in question.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> <span class="dt">Eq</span> a <span class="kw">where</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ot">  (==) ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
     </section>
 </article>
 
