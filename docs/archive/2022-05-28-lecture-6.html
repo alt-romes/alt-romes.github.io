@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>romes - 2022-05-28-lecture-6</title>
+        
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <main>
+            <!-- <h1>2022-05-28-lecture-6</h1> -->
+            <article>
+    <section class="header">
+        Posted on May 28, 2022
+        
+    </section>
+    <section>
+        <h1 id="json">JSON</h1>
+<p><strong>JSON</strong> (JavaScript Object Notation) is a lightweight data-interchange format.
+It is easy for humans to read and write. It is easy for machines to parse and
+generate.</p>
+<p>Example of a JSON object:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;John&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;age&quot;</span><span class="fu">:</span><span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;car&quot;</span><span class="fu">:</span><span class="kw">null</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>It defines an object with 3 properties: <code>name</code>, <code>age</code>, <code>car</code></p>
+<p>Javascript usage:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personName <span class="op">=</span> obj<span class="op">.</span><span class="at">name</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personAge <span class="op">=</span> obj<span class="op">.</span><span class="at">age</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personCar <span class="op">=</span> obj<span class="op">.</span><span class="at">car</span><span class="op">;</span></span></code></pre></div>
+<h1 id="aeson">Aeson</h1>
+<p><a href="https://hackage.haskell.org/package/aeson">Aeson</a> is a JSON parsing and encoding library optimized for ease of use and high
+performance.</p>
+<p>(A note on naming: in Greek mythology, Aeson was the father of Jason.)</p>
+<p>In Haskell, working with untyped pairs of property-value would go against the
+idiom of the language. Therefore, we instead choose to define data types that
+model the same thing the JSON object would, and define methods to convert
+to/from JSON, but in the statically-typed-haskell-way.</p>
+<p>We define <code>Person</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Person</span> <span class="ot">=</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Person</span> {<span class="ot"> name ::</span> <span class="dt">Text</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>           ,<span class="ot"> age  ::</span> <span class="dt">Int</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>           ,<span class="ot"> car  ::</span> <span class="dt">Maybe</span> <span class="dt">Car</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>           }</span></code></pre></div>
+<p>Now we want to read a JSON string and make a person out of it.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- &gt;&gt;&gt; mkPerson &quot;{\&quot;name\&quot;:\&quot;John\&quot;, \&quot;age\&quot;:30, \&quot;car\&quot;:null}&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- Person { name = &quot;John&quot;, age = 30, car = Nothing }</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ot">mkPerson ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Person</span></span></code></pre></div>
+<p>We could get this string e.g. by reading a file, or performing an HTTP request.
+Either way, to transform a JSON string into a <code>Person</code> value in Haskell, the
+<code>Person</code> type must instance <code>FromJSON</code> and <code>ToJSON</code>, and then we can use
+<code>encode</code> and <code>decode</code> to convert a <code>Person</code> from and to a textual representation</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">encode ::</span> <span class="dt">ToJSON</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">ByteString</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ot">decode ::</span> <span class="dt">FromJSON</span> a <span class="ot">=&gt;</span> <span class="dt">ByteString</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span></code></pre></div>
+<p><strong>ToJSON</strong></p>
+<p><code>ToJSON</code> is the most obvious one, so we’ll start with that.
+We only need to define a function <code>toJSON :: a -&gt; Value</code></p>
+<p>A <code>Value</code> is a JSON value represented as a Haskell value.
+A JSON value can be…</p>
+<ul>
+<li>An object <code>{"a": x, "b": y, ...}</code></li>
+<li>An array <code>[1,"2", {"key": 3}, ...]</code></li>
+<li>A string <code>"Hello"</code></li>
+<li>A number <code>5.67</code></li>
+<li>A bool <code>{"t": true, "f": false}</code></li>
+<li>Null</li>
+</ul>
+<p>Coincidentally, that’s how <code>Value</code> is defined:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Value</span> <span class="ot">=</span> <span class="dt">Object</span> <span class="op">!</span><span class="dt">Object</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Array</span> <span class="op">!</span><span class="dt">Array</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">String</span> <span class="op">!</span><span class="dt">Text</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Number</span> <span class="op">!</span><span class="dt">Scientific</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Bool</span> <span class="op">!</span><span class="dt">Bool</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>           <span class="op">|</span> <span class="dt">Null</span></span></code></pre></div>
+<p>However, we usually don’t work directly with <code>Value</code>, but rather with helper
+functions. We’ll go over possibly the most common two: <code>object</code> and <code>.=</code>.</p>
+<p><code>object</code> creates an object given a list of pairs of names-values. Its type is</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">object ::</span> [<span class="dt">Pair</span>] <span class="ot">-&gt;</span> <span class="dt">Value</span></span></code></pre></div>
+<p><code>.=</code> is the function that creates the <code>Pair</code> needed by <code>object</code>. Its type is</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(.=) ::</span> <span class="dt">ToJSON</span> v <span class="ot">=&gt;</span> <span class="dt">Key</span> <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> kv</span></code></pre></div>
+<p>It’s somewhat of a weird type but that’s because the method is defined in the
+type class <code>KeyValue kv</code>. Because we have <code>instance KeyValue Pair</code>; we can think</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(.=) ::</span> <span class="dt">ToJSON</span> v <span class="ot">=&gt;</span> <span class="dt">Key</span> <span class="ot">-&gt;</span> v <span class="ot">-&gt;</span> <span class="dt">Pair</span></span></code></pre></div>
+<p><code>Key</code> is also something we haven’t seen
+before, but <code>Key</code> instances <code>IsString</code>: we write a literal string for it.</p>
+<p>With that in mind, let’s instance <code>ToJSON</code> define the function <code>toJSON :: Person -&gt; Value</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">ToJSON</span> <span class="dt">Person</span> <span class="kw">where</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    toJSON (<span class="dt">Person</span> n a c) <span class="ot">=</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        object [ <span class="st">&quot;name&quot;</span> <span class="op">.=</span> n</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>               , <span class="st">&quot;age&quot;</span> <span class="op">.=</span> a</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>               , <span class="st">&quot;car&quot;</span> <span class="op">.=</span> c</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>               ]</span></code></pre></div>
+<p><strong>FromJSON</strong></p>
+<p>A type that can be converted from JSON, with the possibility of failure.</p>
+<p>There are various reasons a conversion could fail. For example, an Object could
+be missing a required key, an Array could be of the wrong size, or a value could
+be of an incompatible type.</p>
+<p><code>FromJSON</code> is a little more complicated to get your head around. Instead of
+something straightforward like <code>toJSON :: Person -&gt; Value</code>, the function we must
+implement, <code>parseJSON</code>, doesn’t return <code>Person</code> but rather <code>Parser Person</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">parseJSON ::</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</span></code></pre></div>
+<p><code>Parser</code> instances <code>Monad</code>, so we can build a parser by binding actions on <code>Parser</code>.
+The main functions we’ll look at are <code>.:</code> and <code>withObject</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">(.:) ::</span> <span class="dt">FromJSON</span> a <span class="ot">=&gt;</span> <span class="dt">Object</span> <span class="ot">-&gt;</span> <span class="dt">Key</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</span></code></pre></div>
+<p>With <code>.:</code> we can get a property from a JSON object.</p>
+<p>As an example consider</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="er">let</span> <span class="er">obj</span> <span class="er">=</span> <span class="fu">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;John&quot;</span><span class="fu">,</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;age&quot;</span><span class="fu">:</span><span class="dv">30</span><span class="fu">,</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;car&quot;</span><span class="fu">:</span><span class="kw">null</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="er">let</span> <span class="er">personName</span> <span class="er">=</span> <span class="er">obj.name</span></span></code></pre></div>
+<p>If we had this object as a <code>Value</code> in Haskell, to get the person name of type <code>String</code>:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> val <span class="ot">=</span> <span class="dt">Object</span> [<span class="op">...</span>]<span class="ot"> ::</span> <span class="dt">Value</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personName <span class="ot">=</span> <span class="kw">case</span> val <span class="kw">of</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Object</span> obj <span class="ot">-&gt;</span> obj <span class="op">.:</span> <span class="st">&quot;name&quot;</span><span class="ot"> ::</span> <span class="dt">Parser</span> <span class="dt">String</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    _ <span class="ot">-&gt;</span> empty <span class="co">-- represents parser failure</span></span></code></pre></div>
+<p>We use <code>.:</code> on</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">withObject ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Object</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> a) <span class="ot">-&gt;</span> <span class="dt">Value</span> <span class="ot">-&gt;</span> <span class="dt">Parser</span> a</span></code></pre></div>
+<p><code>withObject name f value</code> applies <code>f</code> to the <code>Object</code> when <code>value</code> is an <code>Object</code> and fails otherwise.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">FromJSON</span> <span class="dt">Person</span> <span class="kw">where</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    parseJSON <span class="ot">=</span> withObject <span class="st">&quot;Person&quot;</span> <span class="op">$</span> \v <span class="ot">-&gt;</span> <span class="dt">Person</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;$&gt;</span> v <span class="op">.:</span> <span class="st">&quot;name&quot;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;*&gt;</span> v <span class="op">.:</span> <span class="st">&quot;age&quot;</span></span></code></pre></div>
+<h1 id="parsec">Parsec</h1>
+<h1 id="http">HTTP</h1>
+<h1 id="http-conduit">http-conduit</h1>
+<p>– mention req</p>
+<h1 id="servant">Servant</h1>
+    </section>
+</article>
+
+        </main>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <script>
+            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
+            r = Math.floor(Math.random() * opt.length);
+            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+        </script>
+    </body>
+</html>

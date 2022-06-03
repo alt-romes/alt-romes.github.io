@@ -1,8 +1,13 @@
 ---
 
 title: Lecture 3 -- Abstractions
+description: Semigroups, Monoids, Functors, Applicative Functors, Monads, Monad
+                Transformers
 
 ---
+
+Constraints as operations defined for sets of values
+====================================================
 
 Semigroups, Monoids
 ===================
@@ -25,8 +30,8 @@ Monads
 Monad Transformers
 ==================
 
-IO
-===
+<!-- IO -->
+<!-- === -->
 
-https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html
+<!-- https://www.cis.upenn.edu/~cis194/spring13/lectures/08-IO.html -->
 

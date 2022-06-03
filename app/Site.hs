@@ -30,7 +30,7 @@ main = hakyllWith config $ do
     create ["css/syntax.css"] $ do
         route   idRoute
         compile $
-            makeItem $ styleToCss pandocCodeStyle
+            makeItem (styleToCss pandocCodeStyle)
 
     match "templates/*" $
         compile templateBodyCompiler

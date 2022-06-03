@@ -1,0 +1,199 @@
+JSON
+====
+
+**JSON** (JavaScript Object Notation) is a lightweight data-interchange format.
+It is easy for humans to read and write. It is easy for machines to parse and
+generate.
+
+Example of a JSON object:
+```json
+{
+  "name": "John",
+  "age":30,
+  "car":null
+}
+```
+
+It defines an object with 3 properties: `name`, `age`, `car`
+
+Javascript usage:
+
+```js
+let personName = obj.name;
+let personAge = obj.age;
+let personCar = obj.car;
+```
+
+
+Aeson
+=====
+
+[Aeson](https://hackage.haskell.org/package/aeson) is a JSON parsing and encoding library optimized for ease of use and high
+performance.
+
+(A note on naming: in Greek mythology, Aeson was the father of Jason.)
+
+In Haskell, working with untyped pairs of property-value would go against the
+idiom of the language. Therefore, we instead choose to define data types that
+model the same thing the JSON object would, and define methods to convert
+to/from JSON, but in the statically-typed-haskell-way.
+
+We define `Person`:
+```hs
+data Person =
+    Person { name :: Text
+           , age  :: Int
+           , car  :: Maybe Car
+           }
+```
+
+
+Now we want to read a JSON string and make a person out of it.
+```hs
+-- >>> mkPerson "{\"name\":\"John\", \"age\":30, \"car\":null}"
+-- Person { name = "John", age = 30, car = Nothing }
+mkPerson :: String -> Person
+```
+
+We could get this string e.g. by reading a file, or performing an HTTP request.
+Either way, to transform a JSON string into a `Person` value in Haskell, the
+`Person` type must instance `FromJSON` and `ToJSON`, and then we can use
+`encode` and `decode` to convert a `Person` from and to a textual representation
+```hs
+encode :: ToJSON a => a -> ByteString
+decode :: FromJSON a => ByteString -> Maybe a
+```
+
+**ToJSON**
+
+`ToJSON` is the most obvious one, so we'll start with that.
+We only need to define a function `toJSON :: a -> Value`
+
+A `Value` is a JSON value represented as a Haskell value.
+A JSON value can be...
+
+* An object `{"a": x, "b": y, ...}`
+* An array `[1,"2", {"key": 3}, ...]`
+* A string `"Hello"`
+* A number `5.67`
+* A bool `{"t": true, "f": false}`
+* Null
+
+Coincidentally, that's how `Value` is defined:
+```hs
+data Value = Object !Object
+           | Array !Array
+           | String !Text
+           | Number !Scientific
+           | Bool !Bool
+           | Null
+```
+
+However, we usually don't work directly with `Value`, but rather with helper
+functions. We'll go over possibly the most common two: `object` and `.=`.
+
+`object` creates an object given a list of pairs of names-values. Its type is
+```hs
+object :: [Pair] -> Value
+```
+
+`.=` is the function that creates the `Pair` needed by `object`. Its type is
+```hs
+(.=) :: ToJSON v => Key -> v -> kv
+```
+
+It's somewhat of a weird type but that's because the method is defined in the
+type class `KeyValue kv`. Because we have `instance KeyValue Pair`; we can think
+```hs
+(.=) :: ToJSON v => Key -> v -> Pair
+```
+
+`Key` is also something we haven't seen
+before, but `Key` instances `IsString`: we write a literal string for it.
+
+With that in mind, let's instance `ToJSON` define the function `toJSON :: Person -> Value`.
+
+```hs
+instance ToJSON Person where
+    toJSON (Person n a c) =
+        object [ "name" .= n
+               , "age" .= a
+               , "car" .= c
+               ]
+```
+
+**FromJSON**
+
+A type that can be converted from JSON, with the possibility of failure.
+
+There are various reasons a conversion could fail. For example, an Object could
+be missing a required key, an Array could be of the wrong size, or a value could
+be of an incompatible type.
+
+`FromJSON` is a little more complicated to get your head around. Instead of
+something straightforward like `toJSON :: Person -> Value`, the function we must
+implement, `parseJSON`, doesn't return `Person` but rather `Parser Person`.
+```hs
+parseJSON :: Value -> Parser a
+```
+
+`Parser` instances `Monad`, so we can build a parser by binding actions on `Parser`.
+The main functions we'll look at are `.:` and `withObject`.
+```hs
+(.:) :: FromJSON a => Object -> Key -> Parser a
+```
+
+With `.:` we can get a property from a JSON object.
+
+As an example consider
+```json
+let obj = {
+  "name": "John",
+  "age":30,
+  "car":null
+}
+
+let personName = obj.name
+```
+If we had this object as a `Value` in Haskell, to get the person name of type `String`:
+```hs
+let val = Object [...] :: Value
+
+let personName = case val of
+    Object obj -> obj .: "name" :: Parser String
+    _ -> empty -- represents parser failure
+```
+We use `.:` on 
+
+
+```hs
+withObject :: String -> (Object -> Parser a) -> Value -> Parser a
+```
+`withObject name f value` applies `f` to the `Object` when `value` is an `Object` and fails otherwise.
+
+
+```hs
+instance FromJSON Person where
+    parseJSON = withObject "Person" $ \v -> Person
+        <$> v .: "name"
+        <*> v .: "age"
+```
+
+Parsec
+======
+
+
+
+
+HTTP
+====
+
+
+
+http-conduit
+============
+
+-- mention req
+
+Servant
+=======
