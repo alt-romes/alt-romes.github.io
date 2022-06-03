@@ -5,9 +5,9 @@ author: Rodrigo Mesquita
 # Parser Combinators and Interpreting a PL
 
 I propose we extend the functional programming course with a module covering
-parser combinators and some basics idea behind interpreting a programming
-language (e.g. using an environment state), together with an assignment for the
-student to put both into practice
+parser combinators, together with an assignment that covers some basics ideas
+behind interpreting a programming language (e.g. using an environment state) for
+the student to put them into practice.
 
 ## Motivation
 
@@ -137,10 +137,17 @@ would be simpler
 
 That is, the drawback could be the parser combinators + programming language being too difficult.
 
+Also, perhaps it would be more interesting to show case a lower-level use of
+parser combinators, with more `space`, `many`, `many1`, `char`, `satisfy`,
+etc...
+
 ## Alternatives
 
 We could use parser combinators for a range of other things. As mentioned above,
-we could ahvwrite a JSON parser.
+we could write a JSON parser.
+
+Perhaps we could bring more into light with parser combinators, for example the
+`Alternative` instance of `Parser`.
 
 ## Unresolved Questions
 
