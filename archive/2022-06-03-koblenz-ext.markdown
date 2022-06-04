@@ -149,9 +149,13 @@ we could write a JSON parser.
 Perhaps we could bring more into light with parser combinators, for example the
 `Alternative` instance of `Parser`.
 
+We could focus on the implementation of the parser combinators and the instance
+of the Monad type class.
+
 ## Unresolved Questions
 
-Which parsing library should we use? I would say `parsec` or `megaparsec`.
+Should we use a parsing library or define parser combinators by hand? Which
+parsing library should we use? I would say `parsec` or `megaparsec`.
 
 Which assignment would be best/most interesting?
 
