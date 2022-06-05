@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>romes - Assignment 7</title>
+        
+        <link rel="stylesheet" href="../css/default.css" />
+        <link rel="stylesheet" href="../css/syntax.css" />
+    </head>
+    <body>
+        <main>
+            <!-- <h1>Assignment 7</h1> -->
+            <article>
+    <section class="header">
+        Posted on June  5, 2022
+        
+            by Rodrigo Mesquita
+        
+    </section>
+    <section>
+        <h1 id="stocks">Stocks</h1>
+<p>For this assignment, you will build a simple stock market watch-list app.</p>
+<p>This app has three defining features:</p>
+<ul>
+<li>Inspect a SYMBOL</li>
+<li>Create and edit a watchlist</li>
+<li>Inspect the whole watchlist</li>
+</ul>
+<h2 id="example-usage">Example usage:</h2>
+<p>Display the current price, and today’s change</p>
+<pre><code>&gt; show IBM
+IBM:    141,18$    +0.73%</code></pre>
+<p>Add a symbol to your watchlist</p>
+<pre><code>&gt; watch IBM
+IBM was added to your watchlist
+
+&gt; watch AMZN
+AMZN was added to your watchlist</code></pre>
+<p>Display your watchlist (for bonus points try to align the values, but at first
+just use tabs or spaces)</p>
+<pre><code>&gt; watchlist
+IBM:       $141,18    +0.73%
+AMZN:    $2 447,00    -2.52%</code></pre>
+<p>Remove symbol from watchlist</p>
+<pre><code>&gt; unwatch IBM
+IBM was removed from your watchlist</code></pre>
+<h2 id="details">Details:</h2>
+<p>The watchlist should persist across uses! This means when you run the program
+the watchlist should be exactly as you left it when you closed the program.</p>
+<p>To this effect the watchlist should be stored as JSON in a normal file. When the
+user adds a symbol the file is edited or created, and when the program starts,
+the watchlist is loaded from the file.</p>
+<p>The information about the symbols should be fetched with HTTP requests using
+<code>http-conduit</code> through a URL similar to the following (you might want to change
+query parameters):</p>
+<pre><code>https://www.alphavantage.co/query?function=GLOBAL_QUOTE&amp;symbol=IBM&amp;apikey=demo</code></pre>
+<p>Note the different components of the URL you’ll need to take into consideration
+when constructing the http request</p>
+<p>Remember to create a cabal project and add both <code>aeson</code> and <code>http-conduit</code> as
+dependencies, and remember to keep your project under version control using
+<code>git</code>. You shall additionally create repository on GitHub so that I can better
+comment on your progress.</p>
+<p>For this project I’m giving you full initial freedom, and again will give you
+hints to guide your progress when needed.</p>
+<p>Initially it should be a text-based app, but if you’d like later on you can use
+a library like <code>brick</code> to make it a TUI.</p>
+    </section>
+</article>
+
+        </main>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../archive.html">archive</a></li>
+                <li>music</li>
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+            </ul>
+        </nav>
+        <script>
+            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
+            r = Math.floor(Math.random() * opt.length);
+            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
+        </script>
+    </body>
+</html>

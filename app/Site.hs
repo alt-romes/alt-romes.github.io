@@ -41,6 +41,13 @@ main = hakyllWith config $ do
     --         >>= loadAndApplyTemplate "templates/data.html" defaultContext
     --         >>= relativizeUrls 
 
+    match "assignments/*" $ do
+        route $ setExtension "html"
+        compile $ pandocCompilerS
+            >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= relativizeUrls
+
     match "archive/*" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS

@@ -26,16 +26,16 @@ executable control-site
         Site.hs
         -- Main.hs
     other-modules:
-        Index,
-        Media,
-        Movies,
-        Albums,
-        Animes,
-        Series,
-        Util,
-        Page,
-        Post,
-        Projects
+        -- Index,
+        -- Media,
+        -- Movies,
+        -- Albums,
+        -- Animes,
+        -- Series,
+        -- Util,
+        -- Page,
+        -- Post,
+        -- Projects
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -51,7 +51,7 @@ executable control-site
         text,
         time,
         yaml,
-        cmark-gfm,
+        -- cmark-gfm,
         mtl,
         haskeline,
         transformers,
