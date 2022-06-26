@@ -69,6 +69,12 @@ main = hakyllWith config $ do
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
 
+    match "papers.md" $ do
+        route $ setExtension "html"
+        compile $ pandocCompilerS
+            >>= loadAndApplyTemplate "templates/default.html" defaultContext
+            >>= relativizeUrls
+
     match "index.html" $ do
         route idRoute
         compile $ do
