@@ -16,3 +16,9 @@ GHC contributions
 - https://gitlab.haskell.org/ghc/ghc/-/merge_requests/8301
 
 - https://gitlab.haskell.org/ghc/ghc/-/merge_requests/7821
+
+- https://gitlab.haskell.org/ghc/ghc/-/merge_requests/8228
+
+- https://gitlab.haskell.org/ghc/ghc/-/merge_requests/8308
+
+- https://gitlab.haskell.org/ghc/ghc/-/merge_requests/8591
