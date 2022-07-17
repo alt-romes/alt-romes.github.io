@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <body>
+    <body class="noShadow">
         <main>
             <!-- <h1>2022-05-28-lecture-4</h1> -->
             <article>
@@ -31,6 +31,10 @@
                 <li>music</li>
                 <li><a href="../papers.html">papers</a></li>
                 <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <br />
+                <button onclick="document.body.classList.toggle('dark')">*</button>
+                <br />
+                <button onclick="document.body.classList.toggle('noShadow')">**</button>
             </ul>
         </nav>
         <script>
