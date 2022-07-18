@@ -124,16 +124,136 @@ button is clicked, an event occurs of type <code>Event ()</code> (a button click
 associated value, unlike, e.g., key presses, which would have type <code>Event Char</code>).</p>
 <p>Ahead we’ll see how we can manipulate and put together events and behaviors to
 build a reactive application.</p>
-<h1 id="building-uis-with-frp">Building UIs with FRP</h1>
-<p>Reflex…</p>
-<p>New concept:</p>
-<h1 id="dynamics">Dynamics</h1>
+<h1 id="reflex">Reflex</h1>
+<p><a href="https://hackage.haskell.org/package/reflex">Reflex</a> is a haskell library for
+functional reactive programming in haskell.</p>
+<blockquote>
+<p>Interactive programs without callbacks or side-effects. Functional Reactive
+Programming (FRP) uses composable events and time-varying values to describe
+interactive systems as pure functions. Just like other pure functional code,
+functional reactive code is easier to get right on the first try, maintain,
+and reuse.</p>
+</blockquote>
+<blockquote>
+<p>Reflex is a fully-deterministic, higher-order Functional Reactive Programming
+interface and an engine that efficiently implements that interface.</p>
+</blockquote>
+<p>Reflex provides the above described abstractions (behaviors and events),
+functions to work with them, and an additional abstraction called <strong>Dynamics</strong>.
+For our intents and purposes, <strong>we’ll consider dynamics to be the same as
+behaviors</strong>, since discussing the details of it would be out of the scope of
+this tutorial[2].</p>
+<ul>
+<li>[2] In a <em>very</em> short note: Reflex is implemented with push-pull evaluation,
+and thus often requires explicit push notifications to update things like
+the DOM. Event push notifications when they occur, but Behaviors don’t push
+anything. A Dynamic is a combination of an Event and Behavior, meaning it’s
+a continuous time-varying value that pushes notification whenever it
+changes, and fills the spaces where we need a behaviour <em>and</em> to know when
+the value changes.</li>
+</ul>
+<h1 id="building-uis-with-reflex-dom">Building UIs with Reflex-Dom</h1>
+<p>To build a UI we’ll use
+<a href="https://hackage.haskell.org/package/reflex-dom">reflex-dom</a> which is a haskell
+library that provides a monadic interface for building a DOM-based UI with
+functional reactive programming abstractions from <em>reflex</em>.</p>
+<p>A DOM user interface is defined with element tags. A webpage can have many
+elements such as <em>divisions</em> and text <em>paragraphs</em>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is a paragraph.<span class="kw">&lt;/p&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;button&gt;</span>Button below the paragraph<span class="kw">&lt;/button&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is the second division.<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span></code></pre></div>
+<p>Would define a webpage with two divisions (<code>&lt;div&gt;</code>). The first division has a
+paragraph (<code>&lt;p&gt;</code>) and a button (<code>&lt;button&gt;</code>), the second, a paragraph and and a
+text-box for input (<code>&lt;input&gt;</code>).</p>
+<p>Reflex-dom defines the <code>Widget</code> monad[3] and multiple functions with which we can
+create our UI. However, some of these functions do more than build the UI: they
+return and accept events and behaviors! Let’s look at a few.</p>
+<p>We can put text on the UI, without creating a new element. Notice how the
+returned <code>Widget</code> is a computation that builds the UI and the resulting value of
+the said computation has type <code>()</code>.</p>
+<pre><code>text :: Text -&gt; Widget ()</code></pre>
+<p>The most basic element-creating function is <code>el</code>. It takes the name of the
+element as a string, a <code>Widget</code> computation, and returns another <code>Widget</code>
+computation. This still does nothing regarding FRP.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">el ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> a <span class="ot">-&gt;</span> <span class="dt">Widget</span> a</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ex1 <span class="ot">=</span> el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;This is a paragraph&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;p&gt;This is a paragraph&lt;/p&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>ex2 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> (el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Other paragraph&quot;</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;div&gt;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;This is a paragraph&lt;/p&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;/div&gt;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>ex3 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;First paragraph&quot;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Second paragraph&quot;</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;First paragraph&lt;/p&gt;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;Second paragraph&lt;/p&gt;</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>A button can be clicked at some points in time. We can model a button click with
+an event! There is a convenient function that returns a <code>Widget</code> computation
+that creates a button and returns an event that occurs when the button is
+clicked. We’ll see ahead an example in which we this event.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">button ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> (<span class="dt">Event</span> t ()) </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ex4 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Before button&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        clickEvt <span class="ot">&lt;-</span> button <span class="st">&quot;Click me!&quot;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;After button&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;Before button&lt;/p&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;button&gt;Click me!&lt;/button&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;After button&lt;/p&gt;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>An input text box has a continuous time-varying value: What the user has input
+in the box. We can model the value inside the input box with a behavior! As with
+the button, we already have a function that returns a <code>Widget</code> computation that
+creates an input box and which returns a behavior of the value in the text box.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">input ::</span> <span class="dt">Widget</span> (<span class="dt">Dynamic</span> <span class="dt">Text</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ex5 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        inputBehavior <span class="ot">&lt;-</span> input</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> ()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>Lastly, we have a function for displaying a behavior of a string. Whatever the
+value of the string is at the current time, is what’s displayed on the string.
+Non-surprisingly, this function is called <code>dynText</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dynText ::</span> <span class="dt">Dynamic</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> ()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>ex6 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        inputBehavior <span class="ot">&lt;-</span> input</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (dynText inputBehavior)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- what would this look like?</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;div&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;???&lt;/p&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;/div&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- not so simple, would require javascript</span></span></code></pre></div>
+<p>Next we’ll look at some UI-independent combinators on events and behaviors, and
+at a few examples of how we can use them in building more complex UIs.</p>
+<ul>
+<li>[3] In fact, <code>Widget x</code> is the monad (<code>Widget :: * -&gt; * -&gt; *</code>), where <code>x</code>
+is a type parameter to guarantee contexts don’t get mixed.</li>
+</ul>
+<h1 id="reflex-combinators">Reflex Combinators</h1>
 <h1 id="acknowledgments">Acknowledgments</h1>
 <p>Ask John to review this?</p>
-<figure>
-<img src="https://github.com/hansroland/reflex-dom-inbits/raw/master/images//dynamic.png" alt="Reflex dynamics" />
-<figcaption aria-hidden="true">Reflex dynamics</figcaption>
-</figure>
     </section>
 </article>
 
