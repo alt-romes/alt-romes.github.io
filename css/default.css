@@ -201,6 +201,10 @@ button:active {
     border: 1px groove;
 }
 
+img {
+    max-width: 100%
+}
+
 /*----Tables---------------------*/
 
 .table-border {

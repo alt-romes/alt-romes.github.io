@@ -314,7 +314,126 @@ every time an event occurs.</p>
 <li>[4] A full runnable example of this program is provided in the appendix(?)</li>
 </ul>
 <h1 id="companies">101companies</h1>
-<p>TODO</p>
+<p>For our 101 companies example we’ll build a simple application with three
+distinct divisions. One for information where we display the total price of the
+employees, one for the hiring form with which we can add employees to our
+company, and one with the list of the employees in the company.</p>
+<p><img src="../images/101companies-frp-demo.png" /></p>
+<p>Our application models and displays the changes in a company over time. We’ll
+model the company with a behavior. Initially, the company will be the sample
+company. Whenever an employee is hired the company behavior changes accordingly.</p>
+<p>The first section is a simple division with a text that changes according to a
+behavior. We only want to display the total value of a company that changes over
+time, so we’ll capture this idea with this function:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">info ::</span> <span class="dt">Dynamic</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>info c <span class="ot">=</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Info&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        dynText (companyToTotal <span class="op">&lt;$&gt;</span> c)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    companyToTotal ::</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    companyToTotal c <span class="ot">=</span> <span class="st">&quot;Total cost: $&quot;</span> <span class="op">&lt;&gt;</span> showT (total c)</span></code></pre></div>
+<p>Our hiring department defines a company that changes over time: It defines the
+button that will add an employee to the company everytime it’s clicked, and
+otherwise doesn’t take any arguments.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">hiring ::</span> <span class="dt">Widget</span> x (<span class="dt">Dynamic</span> <span class="dt">Company</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>hiring <span class="ot">=</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    el <span class="st">&quot;div&quot;</span> <span class="kw">do</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Hiring&quot;</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        name    <span class="ot">&lt;-</span> input <span class="st">&quot;Name&quot;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        address <span class="ot">&lt;-</span> input <span class="st">&quot;Addr.&quot;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        salary  <span class="ot">&lt;-</span> input <span class="st">&quot;Salary&quot;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        clickEv <span class="ot">&lt;-</span> button <span class="st">&quot;Hire&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span><span class="ot"> behaviorEmployee ::</span> <span class="dt">Dynamic</span> <span class="dt">Employee</span> <span class="ot">=</span> <span class="dt">Employee</span> <span class="op">&lt;$&gt;</span> name <span class="op">&lt;*&gt;</span> address <span class="op">&lt;*&gt;</span> (readSalary <span class="op">&lt;$&gt;</span> salary)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span><span class="ot"> hireEmployee     ::</span> <span class="dt">Event</span> <span class="dt">Employee</span> <span class="ot">=</span> tagPromptlyDyn behaviorEmployee clickEv</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        foldDyn addEmployee sampleCompany hireEmployee</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="ot">    addEmployee ::</span> <span class="dt">Employee</span> <span class="ot">-&gt;</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Company</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    addEmployee e (<span class="dt">Company</span> n es) <span class="ot">=</span> <span class="dt">Company</span> n (e<span class="op">:</span>es)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    readSalary ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Salary</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    readSalary <span class="ot">=</span> <span class="fu">read</span> <span class="op">.</span> unpack</span></code></pre></div>
+<ul>
+<li><code>input</code> is a helper function defined in our module with type <code>Text -&gt; Widget x     (Dynamic Text)</code>. It takes a text to display above the input, and returns the
+DOM-building computation that returns a behavior of the value inside the
+input box.</li>
+<li>We make three input boxes and get three behaviors of text.</li>
+<li>We make a button and get <code>clickEvt :: Event ()</code>.</li>
+<li>We make a new behavior <code>behaviorEmployee</code> that combines the continuos values
+in the input boxes to define an employee that changes over continuous time.
+(We make use of applicative functor syntax here)</li>
+<li>We create a new event <code>hireEmployee</code> by combining the click event with the
+employee behavior. This event fires every time the button is clicked, and
+the value will be the current employee described in the input boxes at that
+time.</li>
+<li>In the last line, we return the behavior of the company by folding (<code>foldDyn</code>)
+over the employee-creating event <code>hireEmployee</code> and starting with the
+initial company <code>sampleCompany</code>. That is, every time the event fires, we
+apply <code>addEmployee</code> to the value of the event and to the current value of
+the behavior (which initially is equal to <code>sampleCompany</code>).</li>
+</ul>
+<p>Finally, we’ll display the list of employees. We’ll make use of a reflex
+function called <code>simpleList :: Dynamic t [v] -&gt; (Dynamic t v -&gt; Widget a) -&gt; Widget x ()</code>[5]. It basically says that with a behavior of a list of values, and
+with a function that can turn the behavior of each value in the list into a
+widget, we get a widget which applies the function to every element of the list.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">employeesList ::</span> <span class="dt">Dynamic</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>employeesList c <span class="ot">=</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    section <span class="kw">do</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Employees&quot;</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;table&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>            el <span class="st">&quot;tr&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Name&quot;</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Address&quot;</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Salary&quot;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>            simpleList (employees <span class="op">&lt;$&gt;</span> c) \dEmployee <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;tr&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dName <span class="ot">=</span> <span class="fu">fmap</span> emplName dEmployee</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dAddr <span class="ot">=</span> <span class="fu">fmap</span> emplAddr dEmployee</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dSalr <span class="ot">=</span> <span class="fu">fmap</span> emplSalr dEmployee</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dName)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dAddr)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dSalr)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> ()</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>            <span class="kw">where</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                emplName (<span class="dt">Employee</span> n _ _) <span class="ot">=</span> n</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                emplAddr (<span class="dt">Employee</span> _ a _) <span class="ot">=</span> a</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                emplSalr (<span class="dt">Employee</span> _ _ s) <span class="ot">=</span> <span class="st">&quot;$&quot;</span> <span class="op">&lt;&gt;</span> (<span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span>) s</span></code></pre></div>
+<ul>
+<li>We’re creating an HTML table. It consists of table rows (<code>&lt;tr&gt;</code>) and each
+table row has multiple cells called table data (<code>&lt;td&gt;</code>).</li>
+<li>We display a row with the headers Name, Address, and Salary.</li>
+<li>We apply the simple list function to the list of employees in the company.
+Note how <code>c :: Dynamic Company</code>, and <code>employees :: Company -&gt; [Employee]</code>,
+so <code>employees &lt;$&gt; c :: Dynamic [Employee]</code>.</li>
+<li>The function to display each element of the list displays the name, address,
+and salary of the employee in a table row. We get the behavior of each
+individual attribute (name, salary, employee) by using <code>fmap</code> on the
+behavior of the employee with the utility functions defined below.</li>
+</ul>
+<p>Finally, we put together these three things in one widget:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">body ::</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>body <span class="ot">=</span> mdo</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    info dynamicCompany</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    dynamicCompany <span class="ot">&lt;-</span> hiring</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    employeesList dynamicCompany</span></code></pre></div>
+<p><code>hiring</code> defines the behavior of the company, and both <code>info</code> and
+<code>employeesList</code> consume it. We then define main using a main reflex-dom
+function to run the body of the application:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> mainWidgetWithCss style body</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>style <span class="ot">=</span> <span class="st">&quot;body { padding: 2em; margin: auto; max-width: 50em; } h3 {...&quot;</span></span></code></pre></div>
+<p>You might note that we pass <code>dynamicCompany</code> to <code>info</code> <em>before</em> it’s actually
+defined. I think we’ve seen enough mind-blowing things for this post, but in
+short, we’re making use of an extension called <code>RecursiveDo</code> that allows us to
+do these logic-defying things.</p>
+<ul>
+<li>[5] Simplified version of the signature for our purposes… The actual one is
+<code>simpleList :: (Adjustable t m, MonadHold t m, PostBuild t m, MonadFix m) =&gt;     Dynamic t [v] -&gt; (Dynamic t v -&gt; m a) -&gt; m (Dynamic t [a])</code></li>
+</ul>
 <h1 id="acknowledgments">Acknowledgments</h1>
 <p>Ask John to review this?</p>
     </section>
