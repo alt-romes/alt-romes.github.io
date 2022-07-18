@@ -246,12 +246,75 @@ Non-surprisingly, this function is called <code>dynText</code>.</p>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;/div&gt;</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- not so simple, would require javascript</span></span></code></pre></div>
 <p>Next we’ll look at some UI-independent combinators on events and behaviors, and
-at a few examples of how we can use them in building more complex UIs.</p>
+an example of how we can use them in building a more complex UI.</p>
 <ul>
 <li>[3] In fact, <code>Widget x</code> is the monad (<code>Widget :: * -&gt; * -&gt; *</code>), where <code>x</code>
 is a type parameter to guarantee contexts don’t get mixed.</li>
 </ul>
 <h1 id="reflex-combinators">Reflex Combinators</h1>
+<p>In this section we describe some reflex combinators for manipulating events and
+behaviors. Remember that for our purposes we’ll consider dynamics to be the same
+as behaviors but with a different name.</p>
+<p>We can create a behavior which is constant over all time, given the constant
+value.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">constDyn ::</span> a <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> a</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>d1 <span class="ot">=</span> constDyn <span class="dv">2</span> <span class="co">-- is 2 at all points in time</span></span></code></pre></div>
+<p>We can create a behavior that changes to the value of an event every time said
+event occurs, provided an initial value for the behavior to have before the
+first occurrence of the event is given.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">holdDyn ::</span> a <span class="ot">-&gt;</span> <span class="dt">Event</span> a <span class="ot">-&gt;</span> <span class="dt">Widget</span> (<span class="dt">Dynamic</span> a)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">=</span> holdDyn <span class="ch">'A'</span> keyPress <span class="co">-- until the first event occurrence is 'A', and then it's the value of the event occurrence</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span><span class="ot"> keyPress ::</span> <span class="dt">Event</span> <span class="dt">Char</span></span></code></pre></div>
+<p>We can create a behavior that changes everytime an event occurs, provided the
+function to fold the event value with the current value, and an initial value.
+This is somewhat similar to a list fold, but it’s a actually a fold <em>across time</em>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldDyn ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Event</span> a <span class="ot">-&gt;</span> m (<span class="dt">Dynamic</span> b)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- Note: foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b</span></span></code></pre></div>
+<p>As an example, we can now define an application that displays a button and the
+number of times said button has been clicked (remember how behaviors instance
+<code>Functor</code>)</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>app <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        clickEvt <span class="ot">&lt;-</span> button <span class="st">&quot;Click me!&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        clickAmount <span class="ot">&lt;-</span> foldDyn (\_ acc <span class="ot">-&gt;</span> acc<span class="op">+</span><span class="dv">1</span>) <span class="dv">0</span> clickEvt</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (dynText (displayAmt <span class="op">&lt;$&gt;</span> clickAmount))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        displayAmt x <span class="ot">=</span> <span class="st">&quot;Clicked &quot;</span> <span class="op">&lt;&gt;</span> showT x <span class="op">&lt;&gt;</span> <span class="st">&quot; times.&quot;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Note how length for normal functions can be defined as</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> ls <span class="ot">=</span> <span class="fu">foldr</span> (\_ acc <span class="ot">-&gt;</span> acc<span class="op">+</span><span class="dv">1</span>) <span class="dv">0</span> ls</span></code></pre></div>
+<p>This might be a bit confusing so we’ll walk through each value.</p>
+<ul>
+<li><code>clickEvt</code> has type <code>Event ()</code>, representing the occurrences of a button click
+through time</li>
+<li><code>clickAmount</code> has type <code>Dynamic Int</code>. We start with the value <code>0</code>, and
+when the <code>Event ()</code> occurs, we apply the lambda of type <code>() -&gt; Int -&gt; Int</code>
+which ignores the first argument and adds <code>+1</code> to the existing counter.</li>
+<li><code>displayAmt &lt;$&gt; clickAmount</code> has type <code>Dynamic Text</code>, meaning we can display
+it with <code>dynText</code>. Note that <code>displayAmt :: Int -&gt; Text</code>, and we <code>fmap</code> it
+over <code>Dynamic Int</code> (hence why we get <code>Dynamic Text</code>).</li>
+</ul>
+<p>If you were something similar[4] to this code, you’d see an application with a
+button and a text paragraph with a counter. Every time you click the button the
+counter will increase.</p>
+<p>Lastly, we’ll cover a function that allows us to sample the value of a behavior
+every time an event occurs.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tagPromptlyDyn ::</span> <span class="dt">Dynamic</span> a <span class="ot">-&gt;</span> <span class="dt">Event</span> b <span class="ot">-&gt;</span> <span class="dt">Event</span> a</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- e1 will occur with the value of the input box every time the button is clicked</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ot">e1 ::</span> <span class="dt">Event</span> <span class="dt">Text</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>e1 <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    click <span class="ot">&lt;-</span> button <span class="st">&quot;Sample input box value&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    valBehv <span class="ot">&lt;-</span> input</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (tagPromptlyDyn valBehv click)</span></code></pre></div>
+<p>Next we’ll build a simple application for the Company example.</p>
+<ul>
+<li>[4] A full runnable example of this program is provided in the appendix(?)</li>
+</ul>
+<h1 id="companies">101companies</h1>
+<p>TODO</p>
 <h1 id="acknowledgments">Acknowledgments</h1>
 <p>Ask John to review this?</p>
     </section>
