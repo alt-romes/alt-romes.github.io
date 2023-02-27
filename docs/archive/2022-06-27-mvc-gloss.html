@@ -13,7 +13,9 @@
             <!-- <h1>2022-06-27-mvc-gloss</h1> -->
             <article>
     <section class="header">
-        Posted on June 27, 2022
+        
+            Posted on June 27, 2022
+        
         
     </section>
     <section>
@@ -353,27 +355,29 @@ types get us a clearer distinction between the three.</p>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>picture <span class="ot">=</span> <span class="dt">Translate</span> (<span class="op">-</span><span class="dv">170</span>) (<span class="op">-</span><span class="dv">20</span>) <span class="co">-- shift the text to the middle of the window</span></span>
 <span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span> <span class="dt">Scale</span> <span class="fl">0.5</span> <span class="fl">0.5</span>          <span class="co">-- display it half the original size</span></span>
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">$</span> <span class="dt">Text</span> <span class="st">&quot;Hello World&quot;</span>     <span class="co">-- text to display</span></span></code></pre></div>
-<hr />
-<h1 id="draft-part-below">Draft part below</h1>
-<p>TODO: Não esquecer de mostrar outros exemplos de coisas feitas em gloss, se
-calhar até no início</p>
-<p>After seeing how we can display some simple text on the screen, let’s work on
-building a representation of our company. To avoid taking care of positioning
-we’ll simply display the employees along a circle, making a bigger circle for a
-better paid employee.</p>
-<p>And now we can add names to them. Let’s display them at the top left corner of the circle</p>
-<p>To extend our simulation we’ll say that the company raises the salary of
-everyone that isn’t making &gt; $10000 by $250 everyday. It is up to the manager to
-keep on cutting the salaries before they run out of money.</p>
-<h1 id="controller">Controller</h1>
-<p>When writing a controller, that is, a function that updates the state of the
-world, we want to react to both user events, such as mouse clicks, but also to
-the passing of time.
-Considering this, the controller in gloss is defined with two separate
-functions: one to control the time moving forward, and the other to react to
-user events.</p>
-<p>These two functions are passed to the main <code>play</code> function i.e. <code>play</code> takes two
-higher order functions that control events and time</p>
+<!-- --- -->
+<!-- Draft part below -->
+<!-- ================ -->
+<!-- TODO: Não esquecer de mostrar outros exemplos de coisas feitas em gloss, se -->
+<!-- calhar até no início -->
+<!-- After seeing how we can display some simple text on the screen, let's work on -->
+<!-- building a representation of our company. To avoid taking care of positioning -->
+<!-- we'll simply display the employees along a circle, making a bigger circle for a -->
+<!-- better paid employee. -->
+<!-- And now we can add names to them. Let's display them at the top left corner of the circle -->
+<!-- To extend our simulation we'll say that the company raises the salary of -->
+<!-- everyone that isn't making > $10000 by $250 everyday. It is up to the manager to -->
+<!-- keep on cutting the salaries before they run out of money. -->
+<!-- Controller -->
+<!-- ========== -->
+<!-- When writing a controller, that is, a function that updates the state of the -->
+<!-- world, we want to react to both user events, such as mouse clicks, but also to -->
+<!-- the passing of time. -->
+<!-- Considering this, the controller in gloss is defined with two separate -->
+<!-- functions: one to control the time moving forward, and the other to react to -->
+<!-- user events. -->
+<!-- These two functions are passed to the main `play` function i.e. `play` takes two -->
+<!-- higher order functions that control events and time -->
     </section>
 </article>
 
@@ -381,10 +385,11 @@ higher order functions that control events and time</p>
         <nav>
             <ul>
                 <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../archive.html">archive</a></li>
+                <li><a href="../posts.html">posts</a></li>
                 <li>music</li>
-                <li><a href="../papers.html">papers</a></li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
                 <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
                 <br />
                 <button onclick="document.body.classList.toggle('dark')">*</button>
                 <br />

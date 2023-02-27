@@ -1,5 +1,7 @@
 ---
 title: Papers
+date: 2022-8-06
+
 ---
 
 * [Synthesis of Linear Functional Programs](https://github.com/alt-romes/slfl/blob/master/article/synthesis-of-linear-functional-programs.pdf)

@@ -13,7 +13,7 @@ import Skylighting (Style(..), ToColor(..), TokenType(..), TokenStyle(..), defSt
 
 import Hakyll
 
-import Media
+-- import Media
 
 
 --------------------------------------------------------------------------------
@@ -41,12 +41,12 @@ main = hakyllWith config $ do
     --         >>= loadAndApplyTemplate "templates/data.html" defaultContext
     --         >>= relativizeUrls 
 
-    match "assignments/*" $ do
-        route $ setExtension "html"
-        compile $ pandocCompilerS
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
-            >>= loadAndApplyTemplate "templates/default.html" postCtx
-            >>= relativizeUrls
+    -- match "assignments/*" $ do
+    --     route $ setExtension "html"
+    --     compile $ pandocCompilerS
+    --         >>= loadAndApplyTemplate "templates/post.html"    postCtx
+    --         >>= loadAndApplyTemplate "templates/default.html" postCtx
+    --         >>= relativizeUrls
 
     match "archive/*" $ do
         route $ setExtension "html"
@@ -55,36 +55,57 @@ main = hakyllWith config $ do
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
-    create ["archive.html"] $ do
+    -- create ["archive.html"] $ do
+    --     route idRoute
+    --     compile $ do
+    --         posts <- recentFirst =<< loadAll "archive/*"
+    --         let archiveCtx =
+    --                 listField "posts" postCtx (return posts) <>
+    --                 constField "title" "Archives"            <>
+    --                 defaultContext
+
+    --         makeItem ""
+    --             >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+    --             >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+    --             >>= relativizeUrls
+
+    -- match "papers.md" $ do
+    --     route $ setExtension "html"
+    --     compile $ pandocCompilerS
+    --         >>= loadAndApplyTemplate "templates/default.html" defaultContext
+    --         >>= relativizeUrls
+
+    match "posts/*" $ do
+        route $ setExtension "html"
+        compile $ pandocCompilerS
+            >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= relativizeUrls
+
+    create ["posts.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "archive/*"
+            posts <- recentFirst =<< loadAll "posts/*"
             let archiveCtx =
                     listField "posts" postCtx (return posts) <>
-                    constField "title" "Archives"            <>
+                    constField "title" "Posts"               <>
                     defaultContext
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+                >>= loadAndApplyTemplate "templates/posts.html" archiveCtx
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
-
-    match "papers.md" $ do
-        route $ setExtension "html"
-        compile $ pandocCompilerS
-            >>= loadAndApplyTemplate "templates/default.html" defaultContext
-            >>= relativizeUrls
 
     match "index.html" $ do
         route idRoute
         compile $ do
 
-            posts <- recentFirst =<< loadAll "archive/*"
+            posts <- recentFirst =<< loadAll "posts/*"
             let indexCtx = listField "posts" postCtx (return posts) <> defaultContext
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
-                >>= loadAndApplyTemplate "templates/default.html" indexCtx
+                >>= loadAndApplyTemplate "templates/default.html" indexCtx -- TODO: Index template, use posts from context?
                 >>= relativizeUrls
 
 
@@ -118,13 +139,13 @@ pandocCodeStyle = Style {..}
         lineNumberBackgroundColor = Nothing
         color c = defStyle { tokenColor = toColor @String c }
 
-dataCompiler :: (FromJSON a, Media a) => Compiler (Item a)
-dataCompiler = do
-    content <- getResourceLBS
-    return (fromRight . decodeEither' . toStrict <$> content)
-    where
-    fromRight (Right x) = x
-    fromRight _ = error "fromRight"
+-- dataCompiler :: (FromJSON a, Media a) => Compiler (Item a)
+-- dataCompiler = do
+--     content <- getResourceLBS
+--     return (fromRight . decodeEither' . toStrict <$> content)
+--     where
+--     fromRight (Right x) = x
+--     fromRight _ = error "fromRight"
 
 config :: Configuration
 config = defaultConfiguration
