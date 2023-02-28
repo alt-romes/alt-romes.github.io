@@ -48,7 +48,7 @@ main = hakyllWith config $ do
     --         >>= loadAndApplyTemplate "templates/default.html" postCtx
     --         >>= relativizeUrls
 
-    match "archive/*" $ do
+    match "archive/*.md" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
