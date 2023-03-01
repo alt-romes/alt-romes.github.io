@@ -15,6 +15,15 @@
     --purple: #e787e7;
     --yellow: #ffe75f;
     --orange: #ff875f;
+
+    --time: 500ms;
+
+    --shadow-color: 273deg 28% 56%;
+    --shadow-elevation-medium:
+        0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.42),
+        0.9px 1.7px 2.2px -0.8px hsl(var(--shadow-color) / 0.42),
+        2.2px 4.4px 5.5px -1.7px hsl(var(--shadow-color) / 0.42),
+        5.4px 10.8px 13.6px -2.5px hsl(var(--shadow-color) / 0.42);
 }
 
 .black  { color: var(--black)  }
@@ -130,11 +139,35 @@ a:active {
     color: var(--orange);
 }
 
+/* TODO: Consider grid for layout
+ * See also https://layout.bradwoods.io/customize
+ */
+
 nav a { color: inherit; }
 
+nav ul {
+    border: 3px solid var(--purple);
+    padding-right: 1.5em;
+    padding-left: 3em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    transform: rotate3d(0.2,0.4,0.1,15deg);
+}
+
 main {
-    max-width: 50em;
+    /* w/ padding, quasi equiv. to max-width: 50em; */
+    max-width: 60em;
+    padding: 2.5em 5em;
     overflow-x: hidden;
+
+    /* background-color: var(--soft-grey); */
+    border: 3px solid var(--orange);
+    /* border-radius: 1em; */
+    /* box-shadow: var(--shadow-elevation-medium); */
+
+    /* transform: rotate3d(0,0.3,0,12deg); */
+    transform: rotate3d(0.2,0.4,0.1,-10deg);
 }
 
 h1 {
@@ -196,15 +229,18 @@ code.sourceCode {
 
 button {
     background: none; 
-    border: 1px dotted;
+    border: 3px solid var(--blue);
+    color: var(--blue);
     font-family: inherit;
-    color:inherit;
-    width: 100%;
+    width: 75%;
     cursor: pointer;
+
+    /* transform: rotate3d(0.8,0.3,0.5,-90deg); */
+    transform: rotate3d(0.7,0.7,0,26deg)
 }
 
 button:active {
-    border: 1px groove;
+    border: 4px groove var(--blue);
 }
 
 img {
@@ -267,3 +303,7 @@ tbody > tr:last-child > td { padding-bottom: 0.2em; }
     }
 
 }
+
+/*----And More-------------------*/
+
+
