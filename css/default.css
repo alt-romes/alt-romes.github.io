@@ -41,15 +41,17 @@
 .blue-shadow   { text-shadow: 2px 2px var(--blue)  }
 
 /* Taken from Iosevka's website */
+/*
 @font-face {
  font-family:Iosevka Web;
  font-display:swap;
  font-weight:400;
  font-stretch:normal;
  font-style:normal;
- /* we were previously using a base64 encoded font */
- src:url(https://typeof.net/Iosevka/_next/static/media/iosevka-regular.a978d7ce.woff2) format("woff2")
+ src:url(https://typeof.net/Iosevka/_next/static/media/iosevka-regular.f5a1481e.woff2) format("woff2");
 }
+*/
+/* we were previously using a base64 encoded font */
 
 
 
@@ -80,8 +82,8 @@ body {
     line-height: inherit;
 
     /* font-family: "Iosevka Web", sans-serif; */
-    font-family: "Iosevka Web", sans-serif;
     /* font-size: 0.94em; */
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
 
     display: flex; 
     flex-flow: row wrap;
@@ -167,13 +169,13 @@ main {
     /* box-shadow: var(--shadow-elevation-medium); */
 
     /* transform: rotate3d(0,0.3,0,12deg); */
-    transform: rotate3d(0.2,0.4,0.1,-10deg);
+    /* transform: rotate3d(0.2,0.4,0.1,-10deg); */
 }
 
 h1 {
     color: var(--orange);
     font-weight: 500;
-    font-size: 1.05em;
+    /* font-size: 1.05em; */
     margin-block-start: 1em;
     margin-block-end: 1em;
     text-decoration: underline;
@@ -184,7 +186,7 @@ h1 {
 h2 {
     color: var(--orange);
     font-weight: 500;
-    font-size: 1.05em;
+    /* font-size: 1.05em; */
     margin-block-start: 1em;
     margin-block-end: 1em;
     margin-top: 2em;
@@ -218,7 +220,7 @@ code {
     color: #383838;
     padding: 0.2em;
     text-shadow: none;
-    font-family: "Iosevka Web", monospace;
+    font-family: Monaco, monospace; /* "Iosevka Web" */
 }
 
 /* Clear for sourceCode blocks */
