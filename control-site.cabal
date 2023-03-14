@@ -44,6 +44,7 @@ executable control-site
         hakyll >= 4.15,
         pandoc >= 2.18,
         skylighting >= 0.12,
+        clay,
         containers,
         blaze-html,
         blaze-markup,

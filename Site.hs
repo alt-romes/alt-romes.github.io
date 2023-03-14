@@ -19,19 +19,28 @@ import Hakyll
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyllWith config $ do
+    -- Copy images
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
 
-    match "css/*" $ do
+    -- Compress css stylesheets
+    match "css/*.css" $ do
         route   idRoute
         compile compressCssCompiler
 
+    -- Make clay stylesheets
+    match "css/*.hs" $ do
+        route   $ setExtension "css"
+        compile $ getResourceString >>= withItemBody (unixFilter "cabal" ["exec", "runghc"])
+
+    -- Create syntax stylesheet
     create ["css/syntax.css"] $ do
         route   idRoute
         compile $
             makeItem (styleToCss pandocCodeStyle)
 
+    -- Compile templates
     match "templates/*" $
         compile templateBodyCompiler
 
@@ -48,6 +57,7 @@ main = hakyllWith config $ do
     --         >>= loadAndApplyTemplate "templates/default.html" postCtx
     --         >>= relativizeUrls
 
+    -- Archive (unlisted)
     match "archive/*.md" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
@@ -139,6 +149,9 @@ pandocCodeStyle = Style {..}
         lineNumberBackgroundColor = Nothing
         color c = defStyle { tokenColor = toColor @String c }
 
+        (=:) :: TokenType -> TokenStyle -> Map TokenType TokenStyle
+        (=:) = Data.Map.singleton
+
 -- dataCompiler :: (FromJSON a, Media a) => Compiler (Item a)
 -- dataCompiler = do
 --     content <- getResourceLBS
@@ -151,6 +164,3 @@ config :: Configuration
 config = defaultConfiguration
            { destinationDirectory = "docs"
            }
-
-(=:) :: TokenType -> TokenStyle -> Map TokenType TokenStyle
-(=:) = Data.Map.singleton
