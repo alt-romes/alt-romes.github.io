@@ -1,0 +1,23 @@
+html {
+}
+
+body {
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 45rem;
+    display: flex;
+    flex-wrap: wrap;
+
+    box-shadow: inset 4px 4px 15px 0px #000000
+}
+
+nav {
+    display: flex;
+    gap: 1rem;
+}
+
+nav > ul {
+    margin: 0;
+    padding-left: 1rem;
+}
+
