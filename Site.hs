@@ -2,12 +2,17 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
+
+import Debug.Trace
+import Data.List (intersperse)
 import Data.Map (Map, singleton)
-import Data.ByteString
-import Data.ByteString.Lazy
-import Data.Yaml
 import Data.Text (Text)
 import qualified Data.Text as T
+
+import Text.Blaze.Html5.Attributes (href)
+import Text.Blaze.Html.Renderer.String (renderHtml)
+import Text.Blaze.Html5 (toHtml, (!), toValue)
+import qualified Text.Blaze.Html5 as H
 
 import Text.Pandoc.Highlighting (styleToCss)
 import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..))
@@ -47,6 +52,10 @@ main = hakyllWith config $ do
     -- Compile templates
     match "templates/*" $
         compile templateBodyCompiler
+
+    tags <- buildTags ("posts/*") (fromCapture "tags/*.html")
+
+    let postCtx = postCtx' tags
 
     -- match "data/*" $ do
     --     route $ setExtension "html"
@@ -89,6 +98,8 @@ main = hakyllWith config $ do
     --         >>= loadAndApplyTemplate "templates/default.html" defaultContext
     --         >>= relativizeUrls
 
+    -- TODO: match "projects/*" $ do
+
     match "posts/*" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
@@ -124,8 +135,19 @@ main = hakyllWith config $ do
 
 
 --------------------------------------------------------------------------------
-postCtx :: Context String
-postCtx = dateField "date" "%B %e, %Y" <> defaultContext
+postCtx' :: Tags -> Context String
+postCtx' tags = dateField "date" "%B %e, %Y" <>
+               tagsListField "tags" tags <>
+               defaultContext
+  where
+    tagsListField :: String -> Tags -> Context a
+    tagsListField key tags =
+       field key (const $ renderList tags)
+       where
+          renderList = renderTags makeLink unwords
+          makeLink tag url _ _ _ = renderHtml $ H.li $ do
+             "#"
+             H.a ! href (toValue url) $ toHtml tag
 
 -- | Styled pandoc compiler
 pandocCompilerS :: Compiler (Item String)

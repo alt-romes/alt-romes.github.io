@@ -1,20 +1,18 @@
-<section class="header">
+<header>
     <h1>$title$</h1>
     $if(description)$
-        <h5>$description$</h5>
+        <p class="description">$description$</p>
     $endif$
-    $if(tags)$
-        <p>$tags$</p>
-    $endif$
+    <ul class="tags">
+      $tags$
+    </ul>
     $if(date)$
         <p>Posted on $date$</p>
     $endif$
     $if(author)$
         <p>by $author$</p>
     $endif$
-</section>
-<section>
-    <article>
-        $body$
-    </article>
-</section>
+</header>
+<article>
+    $body$
+</article>

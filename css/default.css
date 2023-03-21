@@ -48,7 +48,6 @@ body > nav {
 body > nav > ul {
   list-style-type: none;
   margin: 0;
-  padding-left: 0;
   padding: 1rem 2rem;
 
   display: flex;
@@ -64,7 +63,7 @@ h1, h2, h3, h4 {
 }
 
 h1,h2,h3 {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .header-section-number {
@@ -72,16 +71,42 @@ h1,h2,h3 {
   margin-right: 0.25em;
 }
 
+/* Tags */
+ul.tags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+ul.tags > li {
+  border-radius: 0.2em;
+  background-color: black;
+  padding: 0.25em 0.5em;
+  color: white;
+}
+
+ul.tags > li > a {
+  text-decoration: none;
+  color: white;
+}
+
+ul.tags > li > a:hover {
+  text-decoration: underline;
+}
+
 /* Table of Contents */
 .toc {
   padding: 1em 0 1em 2em; /* top right bottom left */
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   float: right;
 }
 
 .toc > .header {
   font-weight: bold;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   margin-bottom: 0.5em;
   text-align: center;
 }
@@ -113,3 +138,4 @@ h1,h2,h3 {
   }
 }
 
+/* TODO: MATHJAX */
