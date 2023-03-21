@@ -3,13 +3,13 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import Debug.Trace
+import Data.String
 import Data.List (intersperse)
 import Data.Map (Map, singleton)
 import Data.Text (Text)
 import qualified Data.Text as T
 
-import Text.Blaze.Html5.Attributes (href)
+import Text.Blaze.Html5.Attributes (href, class_)
 import Text.Blaze.Html.Renderer.String (renderHtml)
 import Text.Blaze.Html5 (toHtml, (!), toValue)
 import qualified Text.Blaze.Html5 as H
@@ -145,7 +145,7 @@ postCtx' tags = dateField "date" "%B %e, %Y" <>
        field key (const $ renderList tags)
        where
           renderList = renderTags makeLink unwords
-          makeLink tag url _ _ _ = renderHtml $ H.li $ do
+          makeLink tag url _ _ _ = renderHtml $ H.li ! class_ ("tag-" <> fromString tag) $ do
              "#"
              H.a ! href (toValue url) $ toHtml tag
 

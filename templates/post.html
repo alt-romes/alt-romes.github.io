@@ -1,18 +1,19 @@
 <header>
+  <div class="title">
     <h1>$title$</h1>
-    $if(description)$
-        <p class="description">$description$</p>
-    $endif$
-    <ul class="tags">
-      $tags$
-    </ul>
-    $if(date)$
-        <p>Posted on $date$</p>
-    $endif$
-    $if(author)$
-        <p>by $author$</p>
-    $endif$
+    <p class="post-metadata">
+      $if(date)$
+      $date$
+      $endif$
+    </p>
+  </div>
+  $if(description)$
+  <p class="description">$description$</p>
+  $endif$
+  <ul class="tags">
+    $tags$
+  </ul>
 </header>
 <article>
-    $body$
+  $body$
 </article>

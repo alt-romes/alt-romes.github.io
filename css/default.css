@@ -1,42 +1,58 @@
 :root {
-  /* https://modernfontstacks.com/ */
+  /* Note [var(--xfont) doesn't work]
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   *
+   * Unfortunately, CSS custom properties don't seem to work with comma
+   * separated lists of properties, so they don't work as font macros.
+   *
+   * To use a font-stack, inline its definition with a comment pointing to the
+   * correct would-be variable...
+   *
+   * (https://modernfontstacks.com/)
+   *
+   * */
 
   /* Transitional */
-  --font-main: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif;
+  /* --xfont-main: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif; */
 
   /* Geometric Humanist */
-  --font-heading: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+  /* --xfont-heading: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif; */
 
   /* Classical Humanist */
-  /* --font-main: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; */
+  --xfont-heading: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
 
   /* Old-style */
-  /* --font-main: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; */
+  --xfont-main: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
 
   /* Monospace Code */
-  --font-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  --xfont-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+  /* Cursive */
+  --xfont-cursive: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
 
   /* ROMES:TODO: Colorscheme */
 }
 
 .sourceCode {
-  /* font-family: var(--font-code); */
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; /* --xfont-code */
 }
 
 html {
   /* background-image: url("/images/us.jpeg"); */
-  font-family: var(--font-main);
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; /* --xfont-main */
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  padding-bottom: 2em;
 }
 
 main {
   max-width: 55rem;
   margin: 0 auto;
   padding: 0em 1.5em;
+  font-size: 105%;
 }
 
 body > nav {
@@ -54,12 +70,10 @@ body > nav > ul {
   gap: 2em;
   justify-content: center;
   align-items: center;
-
-  font-family: var(--font-heading);
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-heading);
+  font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
 }
 
 h1,h2,h3 {
@@ -71,7 +85,34 @@ h1,h2,h3 {
   margin-right: 0.25em;
 }
 
-/* Tags */
+main > header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: space-between; */
+  padding: 2em 2em 2em 2em;
+}
+
+main > header div.title {
+  display: flex;
+  align-items: flex-end;
+  gap: 1em;
+}
+
+main > header > div.title > h1 {
+  margin: 1em 0;
+}
+
+main > header > div.title > p {
+  margin: 1em 0;
+}
+
+main > header > .description {
+  margin-top: 0;
+}
+
+/* Tags
+   ---- */
 ul.tags {
   margin: 0;
   padding: 0;
@@ -97,16 +138,16 @@ ul.tags > li > a:hover {
   text-decoration: underline;
 }
 
-/* Table of Contents */
+/* Table of Contents
+   ----------------- */
 .toc {
   padding: 1em 0 1em 2em; /* top right bottom left */
-  font-size: 1.05rem;
   float: right;
+  font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
 }
 
 .toc > .header {
   font-weight: bold;
-  font-size: 1.1rem;
   margin-bottom: 0.5em;
   text-align: center;
 }
@@ -136,6 +177,12 @@ ul.tags > li > a:hover {
     float: none;
     padding: 1em 2em 1em 2em; /* if we aren't floating right, we want to the padding to be even */
   }
+}
+
+/* Specific tags
+   ------------- */
+.tag-haskell {
+    background: linear-gradient(90deg, #5e5086, #8f4e8b);
 }
 
 /* TODO: MATHJAX */
