@@ -5,22 +5,48 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>romes - Lecture 1</title>
         
+        <meta name="description" content="Introductory lecture on Haskell">
+        
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <!-- <body class="noShadow"> -->
     <body>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../posts.html">posts</a></li>
+                <li>music</li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+            </ul>
+        </nav>
         <main>
-            <!-- <h1>Lecture 1</h1> -->
-            <article>
-    <section class="header">
-        
-            Posted on May  4, 2022
-        
-        
-    </section>
-    <section>
-        <h1 id="functions-computations-abstraction-and-application">Functions, Computations: Abstraction and application</h1>
+            <section class="header">
+    <h1>Lecture 1</h1>
+    
+        <h5>Introductory lecture on Haskell</h5>
+    
+    
+        <p>haskell, beginner</p>
+    
+    
+        <p>Posted on May  4, 2022</p>
+    
+    
+</section>
+<section>
+    <article>
+        <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#functions-computations-abstraction-and-application" id="toc-functions-computations-abstraction-and-application"><span class="toc-section-number">1</span> Functions, Computations: Abstraction and application</a></li>
+<li><a href="#expressions-values-types" id="toc-expressions-values-types"><span class="toc-section-number">2</span> Expressions, Values, Types</a></li>
+<li><a href="#adts-construction-deconstruction" id="toc-adts-construction-deconstruction"><span class="toc-section-number">3</span> ADTs, Construction, Deconstruction</a></li>
+<li><a href="#polymorphism" id="toc-polymorphism"><span class="toc-section-number">4</span> Polymorphism</a></li>
+<li><a href="#non-nullary-type-constructors-kinds" id="toc-non-nullary-type-constructors-kinds"><span class="toc-section-number">5</span> Non-nullary type constructors, Kinds</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="functions-computations-abstraction-and-application"><span class="header-section-number">1</span> Functions, Computations: Abstraction and application</h1>
 <p>What is a function? What is function application?</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>f(x) <span class="ot">=</span> 4x <span class="op">+</span> <span class="dv">2</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>f(<span class="dv">5</span>) <span class="ot">=</span> <span class="op">?</span></span></code></pre></div>
@@ -39,7 +65,7 @@ one.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="dv">4</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">2</span> <span class="co">-- `f` is an abstraction</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>f <span class="dv">5</span> <span class="co">-- application of `f` to `5`</span></span></code></pre></div>
-<h1 id="expressions-values-types">Expressions, Values, Types</h1>
+<h1 data-number="2" id="expressions-values-types"><span class="header-section-number">2</span> Expressions, Values, Types</h1>
 <p>Haskell is a purely functional programming language. As such, all computations
 are done via the <em>evaluation</em> of <em>expressions</em> (syntactic terms) to yield
 <em>values</em> (abstract entities that we regard as answers). Every value has an
@@ -64,7 +90,7 @@ of the expressions?</p>
 one is a function abstraction, which is a value, the second one is a value
 constructed with the data constructors of <code>List</code>, but the third one, however, is a
 function application (<code>product</code> applied to <code>[1,2,3]</code>) which <em>evaluate</em>s to a <em>value</em>.</p>
-<h1 id="adts-construction-deconstruction">ADTs, Construction, Deconstruction</h1>
+<h1 data-number="3" id="adts-construction-deconstruction"><span class="header-section-number">3</span> ADTs, Construction, Deconstruction</h1>
 <p>Algebraic data types (ADTs) allow us to define our own <em>types</em> and <em>values</em>.</p>
 <p>To create a new <em>type</em> called <code>Point</code>, we define a new value <code>MkPoint</code> that has
 type <code>Int -&gt; Int -&gt; Point</code>. This function can be used to create
@@ -109,7 +135,7 @@ with the patterns that might match the ADT “form”.</p>
 <p>What would be the value of <code>aNumber</code> if <code>shape1 = Triangle 22 0 1</code> ? And <code>shape1 = Point</code>? And <code>shape1 = Triangle 1 1 1</code>? And <code>shape1 = Line 5 5</code>? And <code>shape1 = Line 1 2</code>?</p>
 <p>What is the type of aNumber?</p>
 <p>N.B. Constructors are really just a special kind of function (the distinguishing feature being that they can be used in pattern matching, and that when data constructors are given arguments they construct <em>values</em>)</p>
-<h1 id="polymorphism">Polymorphism</h1>
+<h1 data-number="4" id="polymorphism"><span class="header-section-number">4</span> Polymorphism</h1>
 <p>Polymorphic types are universally quantified in some way over <em>all</em> types.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span><span class="ot">         ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Integer</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> []      <span class="ot">=</span>  <span class="dv">0</span></span>
@@ -129,7 +155,7 @@ polymorphism</em>.</p>
 <!-- The `Char` type corresponds to the set of all characters -->
 <!-- Our `Shape` type corresponds to the set containing all possible combinations of -->
 <!--     applying `Square` or `Triangle` or `Line` to integer numbers, plus `Point`. -->
-<h1 id="non-nullary-type-constructors-kinds">Non-nullary type constructors, Kinds</h1>
+<h1 data-number="5" id="non-nullary-type-constructors-kinds"><span class="header-section-number">5</span> Non-nullary type constructors, Kinds</h1>
 <p>When defining new types, I mentioned the name right next to the <code>data</code> keyword
 was called a <em>type constructor</em>, also called just <em>type</em> when the amount of
 arguments was null.</p>
@@ -165,29 +191,10 @@ well (<code>*</code>).</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">DoubleBox</span><span class="ot"> ::</span> <span class="op">?</span></span></code></pre></div>
 <p>To watch on kinds: <a href="https://youtu.be/JleVecHAad4">An introduction to Haskell’s kinds</a></p>
-    </section>
-</article>
+
+    </article>
+</section>
 
         </main>
-        <nav>
-            <ul style="list-style-type: bengali">
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-            <!-- <button onclick="document.body.classList.toggle('dark')">*</button> -->
-            <!-- <br/> -->
-            <!-- <button onclick="document.body.classList.toggle('noShadow')">**</button> -->
-        </nav>
-        <script>
-            /*
-            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
-            r = Math.floor(Math.random() * opt.length);
-            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-            */
-        </script>
     </body>
 </html>

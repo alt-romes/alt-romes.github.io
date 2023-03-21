@@ -8,24 +8,48 @@
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <!-- <body class="noShadow"> -->
     <body>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../posts.html">posts</a></li>
+                <li>music</li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+            </ul>
+        </nav>
         <main>
-            <!-- <h1>2022-07-10-frp</h1> -->
-            <article>
-    <section class="header">
-        
-            Posted on July 10, 2022
-        
-        
-    </section>
-    <section>
-        <h1 id="graphics-with-haskell-reflex">Graphics with Haskell: Reflex</h1>
+            <section class="header">
+    <h1>2022-07-10-frp</h1>
+    
+    
+    
+        <p>Posted on July 10, 2022</p>
+    
+    
+</section>
+<section>
+    <article>
+        <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#graphics-with-haskell-reflex" id="toc-graphics-with-haskell-reflex"><span class="toc-section-number">1</span> Graphics with Haskell: Reflex</a></li>
+<li><a href="#functional-reactive-programming" id="toc-functional-reactive-programming"><span class="toc-section-number">2</span> Functional Reactive Programming</a></li>
+<li><a href="#behaviours" id="toc-behaviours"><span class="toc-section-number">3</span> Behaviours</a></li>
+<li><a href="#events" id="toc-events"><span class="toc-section-number">4</span> Events</a></li>
+<li><a href="#reflex" id="toc-reflex"><span class="toc-section-number">5</span> Reflex</a></li>
+<li><a href="#building-uis-with-reflex-dom" id="toc-building-uis-with-reflex-dom"><span class="toc-section-number">6</span> Building UIs with Reflex-Dom</a></li>
+<li><a href="#reflex-combinators" id="toc-reflex-combinators"><span class="toc-section-number">7</span> Reflex Combinators</a></li>
+<li><a href="#companies" id="toc-companies"><span class="toc-section-number">8</span> 101companies</a></li>
+<li><a href="#acknowledgments" id="toc-acknowledgments"><span class="toc-section-number">9</span> Acknowledgments</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="graphics-with-haskell-reflex"><span class="header-section-number">1</span> Graphics with Haskell: Reflex</h1>
 <p>This is the second of two parts on displaying graphics and user interfaces with
 the functional programming paradigm, in Haskell.</p>
 <p>In this part we’ll look at <strong>Functional Reactive Programming</strong> (or <strong>FRP</strong> for
 short), and particularly on how it can be used to build an interactive UI.</p>
-<h1 id="functional-reactive-programming">Functional Reactive Programming</h1>
+<h1 data-number="2" id="functional-reactive-programming"><span class="header-section-number">2</span> Functional Reactive Programming</h1>
 <p>Functional reactive programming is a general paradigm well suited to programming
 <em>real-time systems</em> in a high-level and functional way.</p>
 <p><em>Real-time systems</em> or <em>reactive systems</em> are those that handle continuous
@@ -71,7 +95,7 @@ meaning we don’t even need to know how they are defined.</p>
 <ul>
 <li>[1] <em>Functional Reactive Animation, …</em></li>
 </ul>
-<h1 id="behaviours">Behaviours</h1>
+<h1 data-number="3" id="behaviours"><span class="header-section-number">3</span> Behaviours</h1>
 <p>A <strong>Behaviour</strong> is a first-class value that varies over continuous time. In
 other words, a Behaviour is a value that can be passed to and returned by
 functions (is first-class) and this value is defined for all time (and can
@@ -104,7 +128,7 @@ into a <code>Behavior (Maybe Color)</code></p>
 <p>An example of a behaviour we’ll use is the value in an input text box. This box
 has a string at all times. Before the user writes anything, the value is the
 empty string. The value at some time after the user has written “123” is “123”.</p>
-<h1 id="events">Events</h1>
+<h1 data-number="4" id="events"><span class="header-section-number">4</span> Events</h1>
 <p>An <strong>Event</strong> is a first-class value that occurs at discrete points in time. In
 other words, an Event is a value that can be passed to and returned by
 functions (is first-class) and this value is defined at only some points in
@@ -127,7 +151,7 @@ button is clicked, an event occurs of type <code>Event ()</code> (a button click
 associated value, unlike, e.g., key presses, which would have type <code>Event Char</code>).</p>
 <p>Ahead we’ll see how we can manipulate and put together events and behaviors to
 build a reactive application.</p>
-<h1 id="reflex">Reflex</h1>
+<h1 data-number="5" id="reflex"><span class="header-section-number">5</span> Reflex</h1>
 <p><a href="https://hackage.haskell.org/package/reflex">Reflex</a> is a haskell library for
 functional reactive programming in haskell.</p>
 <blockquote>
@@ -155,7 +179,7 @@ a continuous time-varying value that pushes notification whenever it
 changes, and fills the spaces where we need a behaviour <em>and</em> to know when
 the value changes.</li>
 </ul>
-<h1 id="building-uis-with-reflex-dom">Building UIs with Reflex-Dom</h1>
+<h1 data-number="6" id="building-uis-with-reflex-dom"><span class="header-section-number">6</span> Building UIs with Reflex-Dom</h1>
 <p>To build a UI we’ll use
 <a href="https://hackage.haskell.org/package/reflex-dom">reflex-dom</a> which is a haskell
 library that provides a monadic interface for building a DOM-based UI with
@@ -254,7 +278,7 @@ an example of how we can use them in building a more complex UI.</p>
 <li>[3] In fact, <code>Widget x</code> is the monad (<code>Widget :: * -&gt; * -&gt; *</code>), where <code>x</code>
 is a type parameter to guarantee contexts don’t get mixed.</li>
 </ul>
-<h1 id="reflex-combinators">Reflex Combinators</h1>
+<h1 data-number="7" id="reflex-combinators"><span class="header-section-number">7</span> Reflex Combinators</h1>
 <p>In this section we describe some reflex combinators for manipulating events and
 behaviors. Remember that for our purposes we’ll consider dynamics to be the same
 as behaviors but with a different name.</p>
@@ -316,7 +340,7 @@ every time an event occurs.</p>
 <ul>
 <li>[4] A full runnable example of this program is provided in the appendix(?)</li>
 </ul>
-<h1 id="companies">101companies</h1>
+<h1 data-number="8" id="companies"><span class="header-section-number">8</span> 101companies</h1>
 <p>For our 101 companies example we’ll build a simple application with three
 distinct divisions. One for information where we display the total price of the
 employees, one for the hiring form with which we can add employees to our
@@ -437,31 +461,12 @@ do these logic-defying things.</p>
 <li>[5] Simplified version of the signature for our purposes… The actual one is
 <code>simpleList :: (Adjustable t m, MonadHold t m, PostBuild t m, MonadFix m) =&gt;     Dynamic t [v] -&gt; (Dynamic t v -&gt; m a) -&gt; m (Dynamic t [a])</code></li>
 </ul>
-<h1 id="acknowledgments">Acknowledgments</h1>
+<h1 data-number="9" id="acknowledgments"><span class="header-section-number">9</span> Acknowledgments</h1>
 <p>Ask John to review this?</p>
-    </section>
-</article>
+
+    </article>
+</section>
 
         </main>
-        <nav>
-            <ul style="list-style-type: bengali">
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-            <!-- <button onclick="document.body.classList.toggle('dark')">*</button> -->
-            <!-- <br/> -->
-            <!-- <button onclick="document.body.classList.toggle('noShadow')">**</button> -->
-        </nav>
-        <script>
-            /*
-            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
-            r = Math.floor(Math.random() * opt.length);
-            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-            */
-        </script>
     </body>
 </html>

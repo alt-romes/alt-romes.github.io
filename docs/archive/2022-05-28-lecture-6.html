@@ -8,19 +8,40 @@
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <!-- <body class="noShadow"> -->
     <body>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../posts.html">posts</a></li>
+                <li>music</li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+            </ul>
+        </nav>
         <main>
-            <!-- <h1>2022-05-28-lecture-6</h1> -->
-            <article>
-    <section class="header">
-        
-            Posted on May 28, 2022
-        
-        
-    </section>
-    <section>
-        <h1 id="json">JSON</h1>
+            <section class="header">
+    <h1>2022-05-28-lecture-6</h1>
+    
+    
+    
+        <p>Posted on May 28, 2022</p>
+    
+    
+</section>
+<section>
+    <article>
+        <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#json" id="toc-json"><span class="toc-section-number">1</span> JSON</a></li>
+<li><a href="#aeson" id="toc-aeson"><span class="toc-section-number">2</span> Aeson</a></li>
+<li><a href="#parsec" id="toc-parsec"><span class="toc-section-number">3</span> Parsec</a></li>
+<li><a href="#http" id="toc-http"><span class="toc-section-number">4</span> HTTP</a></li>
+<li><a href="#http-conduit" id="toc-http-conduit"><span class="toc-section-number">5</span> http-conduit</a></li>
+<li><a href="#servant" id="toc-servant"><span class="toc-section-number">6</span> Servant</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="json"><span class="header-section-number">1</span> JSON</h1>
 <p><strong>JSON</strong> (JavaScript Object Notation) is a lightweight data-interchange format.
 It is easy for humans to read and write. It is easy for machines to parse and
 generate.</p>
@@ -35,7 +56,7 @@ generate.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personName <span class="op">=</span> obj<span class="op">.</span><span class="at">name</span><span class="op">;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personAge <span class="op">=</span> obj<span class="op">.</span><span class="at">age</span><span class="op">;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> personCar <span class="op">=</span> obj<span class="op">.</span><span class="at">car</span><span class="op">;</span></span></code></pre></div>
-<h1 id="aeson">Aeson</h1>
+<h1 data-number="2" id="aeson"><span class="header-section-number">2</span> Aeson</h1>
 <p><a href="https://hackage.haskell.org/package/aeson">Aeson</a> is a JSON parsing and encoding library optimized for ease of use and high
 performance.</p>
 <p>(A note on naming: in Greek mythology, Aeson was the father of Jason.)</p>
@@ -131,34 +152,15 @@ The main functions we’ll look at are <code>.:</code> and <code>withObject</cod
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    parseJSON <span class="ot">=</span> withObject <span class="st">&quot;Person&quot;</span> <span class="op">$</span> \v <span class="ot">-&gt;</span> <span class="dt">Person</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;$&gt;</span> v <span class="op">.:</span> <span class="st">&quot;name&quot;</span></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;*&gt;</span> v <span class="op">.:</span> <span class="st">&quot;age&quot;</span></span></code></pre></div>
-<h1 id="parsec">Parsec</h1>
-<h1 id="http">HTTP</h1>
-<h1 id="http-conduit">http-conduit</h1>
+<h1 data-number="3" id="parsec"><span class="header-section-number">3</span> Parsec</h1>
+<h1 data-number="4" id="http"><span class="header-section-number">4</span> HTTP</h1>
+<h1 data-number="5" id="http-conduit"><span class="header-section-number">5</span> http-conduit</h1>
 <p>– mention req</p>
-<h1 id="servant">Servant</h1>
-    </section>
-</article>
+<h1 data-number="6" id="servant"><span class="header-section-number">6</span> Servant</h1>
+
+    </article>
+</section>
 
         </main>
-        <nav>
-            <ul style="list-style-type: bengali">
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-            <!-- <button onclick="document.body.classList.toggle('dark')">*</button> -->
-            <!-- <br/> -->
-            <!-- <button onclick="document.body.classList.toggle('noShadow')">**</button> -->
-        </nav>
-        <script>
-            /*
-            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
-            r = Math.floor(Math.random() * opt.length);
-            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-            */
-        </script>
     </body>
 </html>

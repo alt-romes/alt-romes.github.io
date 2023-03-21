@@ -1,23 +1,115 @@
+:root {
+  /* https://modernfontstacks.com/ */
+
+  /* Transitional */
+  --font-main: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif;
+
+  /* Geometric Humanist */
+  --font-heading: Avenir, 'Avenir Next LT Pro', Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+
+  /* Classical Humanist */
+  /* --font-main: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; */
+
+  /* Old-style */
+  /* --font-main: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; */
+
+  /* Monospace Code */
+  --font-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+  /* ROMES:TODO: Colorscheme */
+}
+
+.sourceCode {
+  /* font-family: var(--font-code); */
+}
+
 html {
+  /* background-image: url("/images/us.jpeg"); */
+  font-family: var(--font-main);
+  scroll-behavior: smooth;
 }
 
 body {
-    margin: 0 auto;
-    padding: 2rem;
-    max-width: 45rem;
-    display: flex;
-    flex-wrap: wrap;
-
-    box-shadow: inset 4px 4px 15px 0px #000000
+  margin: 0;
 }
 
-nav {
-    display: flex;
-    gap: 1rem;
+main {
+  max-width: 55rem;
+  margin: 0 auto;
+  padding: 0em 1.5em;
 }
 
-nav > ul {
-    margin: 0;
-    padding-left: 1rem;
+body > nav {
+  /* gap: 1.5rem; */
+  /* align-items: center; */
+  border-bottom: 1px solid black;
+}
+
+body > nav > ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+  padding: 1rem 2rem;
+
+  display: flex;
+  gap: 2em;
+  justify-content: center;
+  align-items: center;
+
+  font-family: var(--font-heading);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+h1,h2,h3 {
+  margin-top: 1.5rem;
+}
+
+.header-section-number {
+  color: orange;
+  margin-right: 0.25em;
+}
+
+/* Table of Contents */
+.toc {
+  padding: 1em 0 1em 2em; /* top right bottom left */
+  font-size: 1.1rem;
+  float: right;
+}
+
+.toc > .header {
+  font-weight: bold;
+  font-size: 1.15rem;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+
+.toc > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 150%;
+}
+
+.toc .toc-section-number {
+  color: orange;
+  margin-right: 0.5em;
+}
+
+.toc a {
+  text-decoration: none;
+}
+
+.toc a:hover {
+  text-decoration: underline;
+}
+
+@media only screen and (max-width: 768px) {
+  .toc {
+    float: none;
+    padding: 1em 2em 1em 2em; /* if we aren't floating right, we want to the padding to be even */
+  }
 }
 

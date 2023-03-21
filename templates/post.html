@@ -1,13 +1,20 @@
-<article>
-    <section class="header">
-        $if(date)$
-            Posted on $date$
-        $endif$
-        $if(author)$
-            by $author$
-        $endif$
-    </section>
-    <section>
+<section class="header">
+    <h1>$title$</h1>
+    $if(description)$
+        <h5>$description$</h5>
+    $endif$
+    $if(tags)$
+        <p>$tags$</p>
+    $endif$
+    $if(date)$
+        <p>Posted on $date$</p>
+    $endif$
+    $if(author)$
+        <p>by $author$</p>
+    $endif$
+</section>
+<section>
+    <article>
         $body$
-    </section>
-</article>
+    </article>
+</section>

@@ -8,19 +8,40 @@
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <!-- <body class="noShadow"> -->
     <body>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../posts.html">posts</a></li>
+                <li>music</li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+            </ul>
+        </nav>
         <main>
-            <!-- <h1>2022-06-27-mvc-gloss</h1> -->
-            <article>
-    <section class="header">
-        
-            Posted on June 27, 2022
-        
-        
-    </section>
-    <section>
-        <h1 id="graphics-with-haskell-gloss">Graphics with Haskell: Gloss</h1>
+            <section class="header">
+    <h1>2022-06-27-mvc-gloss</h1>
+    
+    
+    
+        <p>Posted on June 27, 2022</p>
+    
+    
+</section>
+<section>
+    <article>
+        <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#graphics-with-haskell-gloss" id="toc-graphics-with-haskell-gloss"><span class="toc-section-number">1</span> Graphics with Haskell: Gloss</a></li>
+<li><a href="#mvc" id="toc-mvc"><span class="toc-section-number">2</span> MVC</a></li>
+<li><a href="#functional-mvc-gloss" id="toc-functional-mvc-gloss"><span class="toc-section-number">3</span> Functional MVC: Gloss</a></li>
+<li><a href="#picture" id="toc-picture"><span class="toc-section-number">4</span> Picture</a></li>
+<li><a href="#event" id="toc-event"><span class="toc-section-number">5</span> Event</a></li>
+<li><a href="#gloss" id="toc-gloss"><span class="toc-section-number">6</span> Gloss</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="graphics-with-haskell-gloss"><span class="header-section-number">1</span> Graphics with Haskell: Gloss</h1>
 <p>This is the first of two parts on displaying graphics and user interfaces with
 the functional programming paradigm, in Haskell.</p>
 <p>There are many ways to model an interactive application. In this part we’ll look
@@ -29,7 +50,7 @@ functional flavour. This pattern is very common (accross all languages!) and
 goes by many names such as Gloss, Elm architecture, …, …. For example, it’s
 the recommended way to structure Android mobile applications (with Android
 Studio).</p>
-<h1 id="mvc">MVC</h1>
+<h1 data-number="2" id="mvc"><span class="header-section-number">2</span> MVC</h1>
 <p>Model–view–controller (MVC) is a software architectural pattern commonly used
 for developing user interfaces that divide the related program logic into three
 interconnected elements.</p>
@@ -54,7 +75,7 @@ changes to the other player, and the time passed is reset to zero.</p></li>
 </ul>
 <p>And the three relate in the following manner:
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/MVC-Process.svg/400px-MVC-Process.svg.png" alt="Wikipedia: MVC" /></p>
-<h1 id="functional-mvc-gloss">Functional MVC: Gloss</h1>
+<h1 data-number="3" id="functional-mvc-gloss"><span class="header-section-number">3</span> Functional MVC: Gloss</h1>
 <p>How does the model-view-controller idea translate into functional programming?
 It turns out to be quite simple because the three parts match basic FP concepts.</p>
 <p>We’ll focus on the library <strong>Gloss</strong> to develop a graphical application. Gloss
@@ -132,7 +153,7 @@ main program would look like:</p>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        view           <span class="co">-- How to display a company?</span></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        handleEvent    <span class="co">-- How to react to events?</span></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        frameUpdate    <span class="co">-- What to do every frame?</span></span></code></pre></div>
-<h1 id="picture">Picture</h1>
+<h1 data-number="4" id="picture"><span class="header-section-number">4</span> Picture</h1>
 <p>In this section we explain how to create <code>Picture</code>s, and how the 101company’s
 <em>view</em> is implemented.</p>
 <p>In Gloss, <code>Picture</code>s are the building blocks out of which we build a graphical
@@ -276,7 +297,7 @@ about the view.</p>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        white                    <span class="co">-- background color</span></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        (view initialCompany)    <span class="co">-- picture to display</span></span></code></pre></div>
 <p>For the final demo code see the <code>Display</code> module.</p>
-<h1 id="event">Event</h1>
+<h1 data-number="5" id="event"><span class="header-section-number">5</span> Event</h1>
 <p>In this section we explain Gloss’s <code>Event</code>s, and how the 101company’s
 <em>controller</em> is implemented.</p>
 <p>In Gloss, the <code>Event</code> type models the possible input events in the application,
@@ -332,7 +353,7 @@ by 10€ everytime it’s called – as long as the employee earns less than 100
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    raise ::</span> (<span class="dt">Salary</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> <span class="dt">Salary</span> <span class="ot">-&gt;</span> <span class="dt">Employee</span> <span class="ot">-&gt;</span> <span class="dt">Employee</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    raise p inc (<span class="dt">Employee</span> n a s) <span class="ot">=</span> <span class="dt">Employee</span> n a ((<span class="kw">if</span> p s <span class="kw">then</span> inc <span class="kw">else</span> <span class="dv">0</span>) <span class="op">+</span> s)</span></code></pre></div>
 <p>The demo code can be read in the <code>Main</code> module.</p>
-<h1 id="gloss">Gloss</h1>
+<h1 data-number="6" id="gloss"><span class="header-section-number">6</span> Gloss</h1>
 <p>Gloss is a framework for programming graphical applications in Haskell, which
 is itself described in terms of the <strong>MVC</strong> pattern.</p>
 <p>In Haskell (and other strongly-typed functional programming languages) in
@@ -379,29 +400,10 @@ types get us a clearer distinction between the three.</p>
 <!-- user events. -->
 <!-- These two functions are passed to the main `play` function i.e. `play` takes two -->
 <!-- higher order functions that control events and time -->
-    </section>
-</article>
+
+    </article>
+</section>
 
         </main>
-        <nav>
-            <ul style="list-style-type: bengali">
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-            <!-- <button onclick="document.body.classList.toggle('dark')">*</button> -->
-            <!-- <br/> -->
-            <!-- <button onclick="document.body.classList.toggle('noShadow')">**</button> -->
-        </nav>
-        <script>
-            /*
-            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
-            r = Math.floor(Math.random() * opt.length);
-            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-            */
-        </script>
     </body>
 </html>

@@ -6,12 +6,16 @@ import Data.Map (Map, singleton)
 import Data.ByteString
 import Data.ByteString.Lazy
 import Data.Yaml
+import Data.Text (Text)
+import qualified Data.Text as T
 
 import Text.Pandoc.Highlighting (styleToCss)
 import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..))
 import Skylighting (Style(..), ToColor(..), TokenType(..), TokenStyle(..), defStyle)
 
 import Hakyll
+import Data.Functor.Identity
+import qualified Text.Pandoc.Templates as Pandoc
 
 -- import Media
 
@@ -129,7 +133,11 @@ pandocCompilerS =
     pandocCompilerWith
         defaultHakyllReaderOptions
         defaultHakyllWriterOptions
-            { writerHighlightStyle = Just pandocCodeStyle
+            { writerHighlightStyle  = Just pandocCodeStyle
+            , writerTableOfContents = True
+            , writerNumberSections  = True
+            , writerTOCDepth        = 2
+            , writerTemplate        = Just tocTemplate
             }
 
 -- | Custom style inspired by mexican-light
@@ -164,3 +172,11 @@ config :: Configuration
 config = defaultConfiguration
            { destinationDirectory = "docs"
            }
+
+tocTemplate :: Pandoc.Template Text
+tocTemplate = either error id . runIdentity . Pandoc.compileTemplate "" $ T.unlines
+  [ "<div class=\"toc\"><div class=\"header\">Contents</div>"
+  ,     "$toc$"
+  , "</div>"
+  , "$body$"
+  ]

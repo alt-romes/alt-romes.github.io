@@ -8,19 +8,40 @@
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
     </head>
-    <!-- <body class="noShadow"> -->
     <body>
+        <nav>
+            <ul>
+                <li class="logo"><a href="../">romes</a></li>
+                <li><a href="../posts.html">posts</a></li>
+                <li>music</li>
+                <!-- <li><a href="/papers.html">publications</a></li> -->
+                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+            </ul>
+        </nav>
         <main>
-            <!-- <h1>Lecture 2</h1> -->
-            <article>
-    <section class="header">
-        
-            Posted on May  8, 2022
-        
-        
-    </section>
-    <section>
-        <h1 id="functions-types-currying-partial-application-higher-order-functions">Functions Types, Currying, Partial application, Higher-order functions</h1>
+            <section class="header">
+    <h1>Lecture 2</h1>
+    
+    
+    
+        <p>Posted on May  8, 2022</p>
+    
+    
+</section>
+<section>
+    <article>
+        <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#functions-types-currying-partial-application-higher-order-functions" id="toc-functions-types-currying-partial-application-higher-order-functions"><span class="toc-section-number">1</span> Functions Types, Currying, Partial application, Higher-order functions</a></li>
+<li><a href="#laziness" id="toc-laziness"><span class="toc-section-number">2</span> Laziness</a></li>
+<li><a href="#recursion-inductive-method" id="toc-recursion-inductive-method"><span class="toc-section-number">3</span> Recursion: Inductive Method</a></li>
+<li><a href="#recursive-data-structures" id="toc-recursive-data-structures"><span class="toc-section-number">4</span> Recursive data structures</a></li>
+<li><a href="#type-classes" id="toc-type-classes"><span class="toc-section-number">5</span> Type Classes</a></li>
+<li><a href="#type-classes-kinds-constraints" id="toc-type-classes-kinds-constraints"><span class="toc-section-number">6</span> Type Classes Kinds, Constraints</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="functions-types-currying-partial-application-higher-order-functions"><span class="header-section-number">1</span> Functions Types, Currying, Partial application, Higher-order functions</h1>
 <p>All functions have a type, the <em>function type</em>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span><span class="ot"> ::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> [] <span class="ot">=</span> <span class="dv">0</span></span>
@@ -87,7 +108,7 @@ constructor (i.e. <code>Int -&gt; Char</code> is a valid <em>type</em>), but wh
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">FunctionFromInt</span> <span class="ot">=</span> (<span class="ot">-&gt;</span>) <span class="dt">Int</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">FunctionFromInt</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span> <span class="co">-- equivalent to `Int -&gt; Char`</span></span></code></pre></div>
-<h1 id="laziness">Laziness</h1>
+<h1 data-number="2" id="laziness"><span class="header-section-number">2</span> Laziness</h1>
 <p><small>This section derives from <a href="https://www.haskell.org/tutorial/functions.html">A Gentle Introduction to Haskell</a></small></p>
 <p>Suppose <code>bot</code> is defined by:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bot <span class="ot">=</span> bot</span></code></pre></div>
@@ -117,7 +138,7 @@ assignments requires careful attention to the ordering of the assignments: the
 meaning of the program depends on the order in which the assignments are
 executed. Definitions, in contrast, are much simpler: they can be presented in
 any order without affecting the meaning of the program.</p>
-<h1 id="recursion-inductive-method">Recursion: Inductive Method</h1>
+<h1 data-number="3" id="recursion-inductive-method"><span class="header-section-number">3</span> Recursion: Inductive Method</h1>
 <p>Inspired on <a href="http://ctp.di.fct.unl.pt/~amd/lap/teoricas/03.html">AMD - Teórica 3</a>.</p>
 <p>A well defined recursive function does case analysis over its parameters.</p>
 <p>The <strong>base cases</strong> are the ones that don’t lead to recursive calls of the
@@ -144,7 +165,7 @@ original problem <code>length (x:xs)</code> to the simpler <code>length xs</code
 <p>Assuming the simpler problem is already solved (what is the length of <code>xs</code>?), we
 can just think about the step to take to the solution, which is add <code>1</code> to the
 recursive call result.</p>
-<h1 id="recursive-data-structures">Recursive data structures</h1>
+<h1 data-number="4" id="recursive-data-structures"><span class="header-section-number">4</span> Recursive data structures</h1>
 <p>Data structures can use themselves to define themselves, or in other words,
 define themselves recursively. When they do so, they can be called <em>recursive
 data types</em>.</p>
@@ -193,7 +214,7 @@ operations on it</p>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ot">infList ::</span> n <span class="ot">-&gt;</span> <span class="dt">List</span> a</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>infList <span class="ot">=</span> <span class="fu">undefined</span></span></code></pre></div>
-<h1 id="type-classes">Type Classes</h1>
+<h1 data-number="5" id="type-classes"><span class="header-section-number">5</span> Type Classes</h1>
 <p>Previously we saw <em>parametric polymorphism</em>, and how a function needed to treat the polymorphic
 types agnostically, that is, the polymorphic type could be instanced by any type
 and the expression would still be valid. A common example is the map function</p>
@@ -254,7 +275,7 @@ keyword in the following way:</p>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        (<span class="dt">Mult</span> z w, <span class="dt">Mult</span> k p) <span class="ot">-&gt;</span> z <span class="op">==</span> k <span class="op">&amp;&amp;</span> w <span class="op">==</span> p</span>
 <span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>        (_, _) <span class="ot">-&gt;</span> <span class="dt">False</span></span></code></pre></div>
 <p>After which <code>allEqual [Const 2, Const 2]</code> would return <code>True</code>.</p>
-<h1 id="type-classes-kinds-constraints">Type Classes Kinds, Constraints</h1>
+<h1 data-number="6" id="type-classes-kinds-constraints"><span class="header-section-number">6</span> Type Classes Kinds, Constraints</h1>
 <p>Let’s begin with this set up</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Box</span> a <span class="ot">=</span> <span class="dt">MkBox</span> a</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -310,29 +331,10 @@ can comfortably sit on the left side of <code>=&gt;</code>. If we were, however,
 <p>We’d get an error complaining about how <code>Box a</code> should have kind <code>Constraint</code>,
 but in reality has kind <code>*</code>.</p>
 <p>Suggested reading: <a href="https://www.cis.upenn.edu/~cis194/spring13/lectures/05-type-classes.html">Type Classes</a></p>
-    </section>
-</article>
+
+    </article>
+</section>
 
         </main>
-        <nav>
-            <ul style="list-style-type: bengali">
-                <li class="logo"><a href="../">romes</a></li>
-                <li><a href="../posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-            <!-- <button onclick="document.body.classList.toggle('dark')">*</button> -->
-            <!-- <br/> -->
-            <!-- <button onclick="document.body.classList.toggle('noShadow')">**</button> -->
-        </nav>
-        <script>
-            /*
-            opt = ['bengali', 'cambodian', 'devanagari', 'georgian', 'hebrew', 'kannada', 'lao', 'mongolian', 'myanmar', 'oriya', 'thai', 'tibetan', 'hiragana', 'katakana-iroha']; // 'cjk-earthly-branch', 'cjk-heavenly-stem',
-            r = Math.floor(Math.random() * opt.length);
-            Array.prototype.map.call(document.getElementsByTagName('ul'), x => x.style['list-style-type'] = opt[r]);
-            */
-        </script>
     </body>
 </html>
