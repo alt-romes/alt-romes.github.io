@@ -3,9 +3,9 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>romes - Lecture 1</title>
+        <title>romes - Haskell 101 Lecture Notes</title>
         
-        <meta name="description" content="Introductory lecture on Haskell">
+        <meta name="description" content="Lecture notes from an introductory lesson on Haskell">
         
         <link rel="stylesheet" href="../css/default.css" />
         <link rel="stylesheet" href="../css/syntax.css" />
@@ -24,7 +24,7 @@
         <main>
             <header>
   <div class="title">
-    <h1>Lecture 1</h1>
+    <h1>Haskell 101 Lecture Notes</h1>
     <p class="post-metadata">
       
       May  4, 2022
@@ -32,7 +32,7 @@
     </p>
   </div>
   
-  <p class="description">Introductory lecture on Haskell</p>
+  <p class="description">Lecture notes from an introductory lesson on Haskell</p>
   
   <ul class="tags">
     <li class="tag-beginner">#<a href="../">beginner</a></li> <li class="tag-haskell">#<a href="../">haskell</a></li>
@@ -60,8 +60,8 @@ function abstraction.</p>
 </blockquote>
 <p>In functional programming languages, <em>computations</em> are based on function
 <em>abstraction</em> and <em>application</em>. An <em>abstraction</em>, a.k.a a function, is denoted
-by the lambda notation (<code>\x -&gt; ...</code>). An <em>application</em>, a.k.a function
-application, is denoted by a <em>space</em>: an expression followed by another
+through the lambda notation (<code>\x -&gt; ...</code>). An <em>application</em>, a.k.a function
+application, is denoted by <em>juxtaposition</em>: an expression followed by another
 expression represents the application of the first expression to the following
 one.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> \x <span class="ot">-&gt;</span> <span class="dv">4</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">2</span> <span class="co">-- `f` is an abstraction</span></span>
@@ -92,6 +92,7 @@ of the expressions?</p>
 one is a function abstraction, which is a value, the second one is a value
 constructed with the data constructors of <code>List</code>, but the third one, however, is a
 function application (<code>product</code> applied to <code>[1,2,3]</code>) which <em>evaluate</em>s to a <em>value</em>.</p>
+<p>Load up <code>ghci</code> and input <code>:type &lt;exp&gt;</code> to query the type of an expression.</p>
 <h1 data-number="3" id="adts-construction-deconstruction"><span class="header-section-number">3</span> ADTs, Construction, Deconstruction</h1>
 <p>Algebraic data types (ADTs) allow us to define our own <em>types</em> and <em>values</em>.</p>
 <p>To create a new <em>type</em> called <code>Point</code>, we define a new value <code>MkPoint</code> that has
@@ -179,19 +180,20 @@ associated <em>kind</em> which ensures that the type is used correctly.</p>
 <p>The same way all <em>expressions</em> have <em>types</em>, all <em>types</em>, <em>type constructors</em>,
 and in general <em>type expressions</em> have <em>kinds</em> (<em>kinds</em> are the <em>types</em> of
 <em>types</em>).</p>
-<p>All simple types have the kind <code>*</code> (star kind), also known as the <code>Type</code> kind, for example</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="op">*</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
-<p>Where <code>type Int :: *</code> means type <code>Int</code> has kind <em>star</em>, or <code>Int</code> has kind <em>Type</em></p>
+<p>All simple types have the kind <code>Type</code>, for example</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Char</span><span class="ot"> ::</span> <span class="dt">Type</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Float</span><span class="ot"> ::</span> <span class="dt">Type</span></span></code></pre></div>
+<p>Where <code>type Int :: Type</code> means type <code>Int</code> has kind <em>Type</em></p>
 <p><em>Type constructors</em>, however, take types as arguments and only then are considered
 types themselves. In our example, <code>Box</code> isn’t a valid type, while <code>Box Int</code> is.
 With <em>kinds</em>, this is easily explained. The type constructor <code>Box</code> actually has
-kind <code>* -&gt; *</code>, meaning it takes a type (<code>*</code>) as an argument to become a type as
-well (<code>*</code>).</p>
+kind <code>Type -&gt; Type</code>, meaning it takes a type (<code>Type</code>) as an argument to become a type as
+well (<code>Type</code>).</p>
 <p>What’s the kind of <code>DoubleBox</code>?</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">Box</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> <span class="dt">DoubleBox</span><span class="ot"> ::</span> <span class="op">?</span></span></code></pre></div>
+<p>Try this out in <code>ghci</code> by inputting <code>:kind &lt;type&gt;</code> to query the type of a type.</p>
 <p>To watch on kinds: <a href="https://youtu.be/JleVecHAad4">An introduction to Haskell’s kinds</a></p>
 
 </article>

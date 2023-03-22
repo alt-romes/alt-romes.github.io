@@ -34,155 +34,170 @@
 }
 
 .sourceCode {
-  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; /* --xfont-code */
+    font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; /* --xfont-code */
 }
 
 html {
-  /* background-image: url("/images/us.jpeg"); */
-  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; /* --xfont-main */
-  scroll-behavior: smooth;
+    /* background-image: url("/images/us.jpeg"); */
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; /* --xfont-main */
+    scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  padding-bottom: 2em;
+    margin: 0;
+    padding-bottom: 2em;
 }
 
 main {
-  max-width: 55rem;
-  margin: 0 auto;
-  padding: 0em 1.5em;
-  font-size: 105%;
+    max-width: 55rem;
+    margin: 0 auto;
+    padding: 0em 1.5em;
+    font-size: 105%;
 }
 
 body > nav {
-  /* gap: 1.5rem; */
-  /* align-items: center; */
-  border-bottom: 1px solid black;
+    /* gap: 1.5rem; */
+    /* align-items: center; */
+    border-bottom: 1px solid black;
 }
 
 body > nav > ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 1rem 2rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 1rem 2rem;
 
-  display: flex;
-  gap: 2em;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    gap: 2em;
+    justify-content: center;
+    align-items: center;
 }
 
 h1, h2, h3, h4 {
-  font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
+    font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
 }
 
 h1,h2,h3 {
-  margin-top: 1.75rem;
+    margin-top: 1.75rem;
 }
 
 .header-section-number {
-  color: orange;
-  margin-right: 0.25em;
+    color: orange;
+    margin-right: 0.25em;
 }
 
 main > header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* justify-content: space-between; */
-  padding: 2em 2em 2em 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: space-between; */
+    padding: 2em 2em 2em 2em;
 }
 
 main > header div.title {
-  display: flex;
-  align-items: flex-end;
-  gap: 1em;
+    display: flex;
+    align-items: flex-end;
+    gap: 1em;
 }
 
 main > header > div.title > h1 {
-  margin: 1em 0;
+    margin: 1em 0;
 }
 
 main > header > div.title > p {
-  margin: 1em 0;
+    margin: 1em 0;
 }
 
 main > header > .description {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 /* Tags
    ---- */
 ul.tags {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
 }
 
 ul.tags > li {
-  border-radius: 0.2em;
-  background-color: black;
-  padding: 0.25em 0.5em;
-  color: white;
+    border-radius: 0.2em;
+    background-color: black;
+    padding: 0.25em 0.5em;
+    color: white;
+    cursor: pointer;
+    transition-duration: 0.1s;
+}
+
+ul.tags > li:hover,
+ul.tags > li:focus
+{
+    box-shadow: 0 0.5em 0.5em -0.4em black;
+    transform: translateY(-0.1em);
+    transition-duration: 0.1s;
 }
 
 ul.tags > li > a {
-  text-decoration: none;
-  color: white;
+    text-decoration: none;
+    color: white;
 }
 
 ul.tags > li > a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 /* Table of Contents
    ----------------- */
 .toc {
-  padding: 1em 0 1em 2em; /* top right bottom left */
-  float: right;
-  font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
+    padding: 1em 0 1em 2em; /* top right bottom left */
+    float: right;
+    font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
 }
 
 .toc > .header {
-  font-weight: bold;
-  margin-bottom: 0.5em;
-  text-align: center;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    text-align: center;
 }
 
 .toc > ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  line-height: 150%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    line-height: 150%;
 }
 
 .toc .toc-section-number {
-  color: orange;
-  margin-right: 0.5em;
+    color: orange;
+    margin-right: 0.5em;
 }
 
 .toc a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .toc a:hover {
-  text-decoration: underline;
+    /* text-decoration: underline; */
+    color: orange;
 }
 
 @media only screen and (max-width: 768px) {
-  .toc {
-    float: none;
-    padding: 1em 2em 1em 2em; /* if we aren't floating right, we want to the padding to be even */
-  }
+    .toc {
+        float: none;
+        padding: 1em 2em 1em 2em; /* if we aren't floating right, we want to the padding to be even */
+    }
 }
 
 /* Specific tags
    ------------- */
 .tag-haskell {
     background: linear-gradient(90deg, #5e5086, #8f4e8b);
+}
+
+.tag-beginner {
+    background: linear-gradient(-45deg, lightgreen, green);
 }
 
 /* TODO: MATHJAX */
