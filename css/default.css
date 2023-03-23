@@ -31,6 +31,7 @@
   --xfont-cursive: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
 
   /* ROMES:TODO: Colorscheme */
+  --black: black;
 }
 
 .sourceCode {
@@ -124,7 +125,6 @@ ul.tags {
 
 ul.tags > li {
     border-radius: 0.2em;
-    background-color: black;
     padding: 0.25em 0.5em;
     color: white;
     cursor: pointer;
@@ -155,6 +155,11 @@ ul.tags.inline-tags {
 ul.tags.inline-tags > li {
   padding: 0.1em 0.2em;
 }
+
+/* ul.tag-cloud > li {
+     -webkit-text-fill-color: transparent;
+     -webkit-background-clip: text;
+   } */
 
 /* Table of Contents
    ----------------- */
@@ -199,13 +204,27 @@ ul.tags.inline-tags > li {
 }
 
 /* Specific tags
-   ------------- */
+   -------------
+
+Note: simple colors need !important because the css selector that sets the
+default color for tags has priority over the simple class selector.
+Alternative: don't set to black, and simply have a color for each tag!
+ */
+
 .tag-haskell {
     background: linear-gradient(90deg, #5e5086, #8f4e8b);
 }
 
 .tag-beginner {
-    background: linear-gradient(-45deg, lightgreen, green);
+    background-color: #FFE5B4;
+}
+
+.tag-vim {
+    background-color: #007f00;
+}
+
+.tag-all {
+    background-color: #007f00;
 }
 
 /* TODO: MATHJAX */

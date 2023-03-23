@@ -9,7 +9,7 @@ import Data.Map (Map, singleton)
 import Data.Text (Text)
 import qualified Data.Text as T
 
-import Text.Blaze.Html5.Attributes (href, class_)
+import Text.Blaze.Html5.Attributes (href, class_, style)
 import Text.Blaze.Html.Renderer.String (renderHtml)
 import Text.Blaze.Html5 (toHtml, (!), toValue)
 import qualified Text.Blaze.Html5 as H
@@ -101,9 +101,7 @@ main = hakyllWith config $ do
     match "posts/**" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
-            -- (We moved the post-specific header layout to default because all
-            -- pages use that header layout)
-            -- >>= loadAndApplyTemplate "templates/post.html" postCtx
+            >>= loadAndApplyTemplate "templates/post.html" postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -113,7 +111,7 @@ main = hakyllWith config $ do
             posts <- recentFirst =<< loadAll "posts/**"
             let postsCtx =
                     listField "posts" postCtx (pure posts) <>
-                    constField "title" "Romes' Post Library"               <>
+                    constField "title" "Romes' Post Library" <>
                     -- constField "description" "Musings" <>
                     defaultContext
 
@@ -127,7 +125,10 @@ main = hakyllWith config $ do
         compile $ do
 
             posts <- recentFirst =<< loadAll "posts/**"
-            let indexCtx = listField "posts" postCtx (pure $ take 5 posts) <> defaultContext
+            let indexCtx = listField "posts" postCtx (pure $ take 5 posts)
+                            <> tagsFieldWith (const $ pure $ map fst $ tagsMap tags) renderLink mconcat "tags" tags
+                            -- <> tagCloudFieldWith "tag-cloud" renderTagCloudLink mconcat 80 125 tags -- for now, no tag cloud.
+                            <> defaultContext
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
@@ -143,16 +144,30 @@ postCtx' tags = dateField "date" "%B %e, %Y" <>
   where
     tagsListField :: String -> Tags -> Context a
     tagsListField = tagsFieldWith getTags renderLink mconcat
-       where
-          renderLink :: String -> Maybe FilePath -> Maybe H.Html
-          renderLink tag Nothing      = Just $ do
-            H.li ! class_ ("tag-" <> fromString tag) $ do
-               "#"
-               H.a ! href "/" $ toHtml tag
-          renderLink tag (Just url) = Just $ do
-            H.li ! class_ ("tag-" <> fromString tag) $ do
-               "#"
-               H.a ! href (toValue url) $ toHtml tag
+
+renderLink :: String -> Maybe FilePath -> Maybe H.Html
+renderLink tag Nothing      = Just $ do
+  H.li ! class_ ("tag-" <> fromString tag) $ do
+     "#"
+     H.a ! href "/" $ toHtml tag
+renderLink tag (Just url) = Just $ do
+  H.li ! class_ ("tag-" <> fromString tag) $ do
+     "#"
+     H.a ! href (toValue url) $ toHtml tag
+
+renderTagCloudLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
+renderTagCloudLink minSize maxSize tag url count min' max' =
+    -- Inlined from Hakyll
+    -- Show the relative size of one 'count' in percent
+    let diff     = 1 + fromIntegral max' - fromIntegral min'
+        relative = (fromIntegral count - fromIntegral min') / diff
+        size     = floor $ minSize + relative * (maxSize - minSize) :: Int
+    in renderHtml $
+        H.li ! class_ ("tag-" <> fromString tag) $ do
+          "#"
+          H.a ! style (toValue $ "font-size: " ++ show size ++ "%")
+              ! href (toValue url)
+              $ toHtml tag
 
 -- | Styled pandoc compiler
 pandocCompilerS :: Compiler (Item String)

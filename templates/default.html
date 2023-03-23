@@ -22,27 +22,7 @@
       </ul>
     </nav>
     <main>
-      <header>
-        <div class="title">
-          <h1>$title$</h1>
-          <p>
-            $if(date)$
-            $date$
-            $endif$
-          </p>
-        </div>
-        $if(description)$
-        <p class="description">$description$</p>
-        $endif$
-        $if(tags)$
-        <ul class="tags">
-          $tags$
-        </ul>
-        $endif$
-      </header>
-      <article>
-        $body$
-      </article>
+      $body$
     </main>
   </body>
 </html>
