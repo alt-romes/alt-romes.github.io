@@ -1,28 +1,48 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>romes - $title$</title>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>$title$</title>
+    $if(description)$
+    <meta name="description" content="$description$">
+    $endif$
+    <link rel="stylesheet" href="/css/default.css" />
+    <link rel="stylesheet" href="/css/syntax.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="/">romes</a></li>
+        <li><a href="/posts.html">posts</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+        <div class="title">
+          <h1>$title$</h1>
+          <p>
+            $if(date)$
+            $date$
+            $endif$
+          </p>
+        </div>
         $if(description)$
-        <meta name="description" content="$description$">
+        <p class="description">$description$</p>
         $endif$
-        <link rel="stylesheet" href="/css/default.css" />
-        <link rel="stylesheet" href="/css/syntax.css" />
-    </head>
-    <body>
-        <nav>
-            <ul>
-                <li class="logo"><a href="/">romes</a></li>
-                <li><a href="/posts.html">posts</a></li>
-                <li>music</li>
-                <!-- <li><a href="/papers.html">publications</a></li> -->
-                <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
-                <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
-            </ul>
-        </nav>
-        <main>
-            $body$
-        </main>
-    </body>
+        $if(tags)$
+        <ul class="tags">
+          $tags$
+        </ul>
+        $endif$
+      </header>
+      <article>
+        $body$
+      </article>
+    </main>
+  </body>
 </html>

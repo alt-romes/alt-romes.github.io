@@ -53,7 +53,7 @@ main = hakyllWith config $ do
     match "templates/*" $
         compile templateBodyCompiler
 
-    tags <- buildTags ("posts/*") (fromCapture "tags/*.html")
+    tags <- buildTags "posts/**" (fromCapture "tags/*.html")
 
     let postCtx = postCtx' tags
 
@@ -66,7 +66,6 @@ main = hakyllWith config $ do
     -- match "assignments/*" $ do
     --     route $ setExtension "html"
     --     compile $ pandocCompilerS
-    --         >>= loadAndApplyTemplate "templates/post.html"    postCtx
     --         >>= loadAndApplyTemplate "templates/default.html" postCtx
     --         >>= relativizeUrls
 
@@ -74,7 +73,6 @@ main = hakyllWith config $ do
     match "archive/*.md" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
@@ -100,37 +98,40 @@ main = hakyllWith config $ do
 
     -- TODO: match "projects/*" $ do
 
-    match "posts/*" $ do
+    match "posts/**" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
-            >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            -- (We moved the post-specific header layout to default because all
+            -- pages use that header layout)
+            -- >>= loadAndApplyTemplate "templates/post.html" postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
     create ["posts.html"] $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
-            let archiveCtx =
-                    listField "posts" postCtx (return posts) <>
-                    constField "title" "Posts"               <>
+            posts <- recentFirst =<< loadAll "posts/**"
+            let postsCtx =
+                    listField "posts" postCtx (pure posts) <>
+                    constField "title" "Romes' Post Library"               <>
+                    -- constField "description" "Musings" <>
                     defaultContext
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/posts.html" archiveCtx
-                >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                >>= loadAndApplyTemplate "templates/posts.html" postsCtx
+                >>= loadAndApplyTemplate "templates/default.html" postsCtx
                 >>= relativizeUrls
 
     match "index.html" $ do
         route idRoute
         compile $ do
 
-            posts <- recentFirst =<< loadAll "posts/*"
-            let indexCtx = listField "posts" postCtx (return posts) <> defaultContext
+            posts <- recentFirst =<< loadAll "posts/**"
+            let indexCtx = listField "posts" postCtx (pure $ take 5 posts) <> defaultContext
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
-                >>= loadAndApplyTemplate "templates/default.html" indexCtx -- TODO: Index template, use posts from context?
+                >>= loadAndApplyTemplate "templates/default.html" indexCtx
                 >>= relativizeUrls
 
 
@@ -141,13 +142,17 @@ postCtx' tags = dateField "date" "%B %e, %Y" <>
                defaultContext
   where
     tagsListField :: String -> Tags -> Context a
-    tagsListField key tags =
-       field key (const $ renderList tags)
+    tagsListField = tagsFieldWith getTags renderLink mconcat
        where
-          renderList = renderTags makeLink unwords
-          makeLink tag url _ _ _ = renderHtml $ H.li ! class_ ("tag-" <> fromString tag) $ do
-             "#"
-             H.a ! href (toValue url) $ toHtml tag
+          renderLink :: String -> Maybe FilePath -> Maybe H.Html
+          renderLink tag Nothing      = Just $ do
+            H.li ! class_ ("tag-" <> fromString tag) $ do
+               "#"
+               H.a ! href "/" $ toHtml tag
+          renderLink tag (Just url) = Just $ do
+            H.li ! class_ ("tag-" <> fromString tag) $ do
+               "#"
+               H.a ! href (toValue url) $ toHtml tag
 
 -- | Styled pandoc compiler
 pandocCompilerS :: Compiler (Item String)

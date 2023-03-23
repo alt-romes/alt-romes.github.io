@@ -49,7 +49,7 @@ body {
 }
 
 main {
-    max-width: 55rem;
+    max-width: 50rem;
     margin: 0 auto;
     padding: 0em 1.5em;
     font-size: 105%;
@@ -134,7 +134,7 @@ ul.tags > li {
 ul.tags > li:hover,
 ul.tags > li:focus
 {
-    box-shadow: 0 0.5em 0.5em -0.4em black;
+    box-shadow: 0 0.5em 0.5em -0.4em gray;
     transform: translateY(-0.1em);
     transition-duration: 0.1s;
 }
@@ -146,6 +146,14 @@ ul.tags > li > a {
 
 ul.tags > li > a:hover {
     text-decoration: underline;
+}
+
+ul.tags.inline-tags {
+  gap: 0.25em;
+  font-size: 0.8em;
+}
+ul.tags.inline-tags > li {
+  padding: 0.1em 0.2em;
 }
 
 /* Table of Contents
