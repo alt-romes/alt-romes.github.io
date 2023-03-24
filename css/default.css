@@ -29,9 +29,13 @@
 
   /* Cursive */
   --xfont-cursive: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+}
 
+:root {
   /* ROMES:TODO: Colorscheme */
   --black: black;
+  --link: blue;
+  --accent-1: orange;
 }
 
 .sourceCode {
@@ -51,8 +55,14 @@ body {
 body > main {
   max-width: 50rem;
   margin: 0 auto;
-  padding: 2em 1.5em;
+  padding: 2em 1em;
   font-size: 105%;
+}
+
+@media only screen and (max-width: 768px) {
+  body > main {
+      font-size: 100%; /* Otherwise we can only have like 5 words per line */
+  }
 }
 
 body > nav {
@@ -95,7 +105,7 @@ ul {
 }
 
 .header-section-number {
-  color: orange;
+  color: var(--accent-1);
   margin-right: 0.25em;
 }
 
@@ -104,8 +114,15 @@ main > header {
   flex-direction: column;
   align-items: center;
   /* justify-content: space-between; */
-  padding: 2em;
+  padding: 2em 4em;
   padding-top: 0em; /* account for the padding in the <main> tag */
+}
+
+@media only screen and (max-width: 768px) {
+  main > header {
+      padding: 2em 1em; /* Smaller side padding on smaller devices */
+      padding-top: 0em; /* account for the padding in the <main> tag */
+  }
 }
 
 main > header div.title {
@@ -186,7 +203,7 @@ ul.inline-tags > li {
 }
 
 .toc .toc-section-number {
-  color: orange;
+  color: var(--accent-1);
   margin-right: 0.5em;
 }
 
@@ -194,15 +211,23 @@ ul.inline-tags > li {
   text-decoration: none;
 }
 
+.toc a:visited {
+  /* text-decoration: underline; */
+  color: var(--link);
+}
+
 .toc a:hover {
   /* text-decoration: underline; */
-  color: orange;
+  color: var(--accent-1);
 }
 
 @media only screen and (max-width: 768px) {
   .toc {
     float: none;
-    padding: 1em 2em 1em 2em; /* if we aren't floating right, we want to the padding to be even */
+    padding: 1em 0; /* if we aren't floating right, we want to the
+                       padding to be even, but because the page is
+                       already small, we simply don't use left and
+                       right padding */
   }
 }
 
@@ -213,11 +238,23 @@ ul.inline-tags > li {
   margin-bottom: 0;
 }
 
+.post > header > h3 > a {
+  color: var(--black);
+}
+
 .post > header > .post-metadata {
   display: flex;
   align-items: center;
   gap: 0.2em;
+  font-size: 0.85em;
+  margin: 0.2em 0;
+  color: gray;
 }
+
+.post > header > .post-metadata a:visited {
+  color: var(--link);
+}
+
 
 .post > section > p {
   margin-top: 0;
