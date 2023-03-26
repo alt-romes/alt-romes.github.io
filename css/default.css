@@ -48,7 +48,7 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+html, body {
   margin: 0;
 }
 
@@ -69,6 +69,10 @@ body > nav {
   /* gap: 1.5rem; */
   /* align-items: center; */
   border-bottom: 1px solid black;
+}
+
+body > nav a:visited {
+    color: var(--link);
 }
 
 body > nav > ul {
@@ -98,14 +102,14 @@ a:hover {
   text-decoration: underline;
 }
 
-ul {
+ul.tags, ul.inline-tags, .toc ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 img {
-    display: block;
+    max-width: 100%;
 }
 
 .header-section-number {

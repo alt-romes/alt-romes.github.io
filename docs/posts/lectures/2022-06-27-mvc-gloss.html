@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Graphical Applications in Haskell with MVC and Gloss</title>
     
-    <meta name="description" content="This is the first of two parts on creating interactive graphical applications with functional programming, in Haskell, using the <strong>Model-View-Controller</strong> pattern in its functional flavour. The <strong>MVC</strong> pattern is common accross all languages and goes by many names. For example, it's how smartphone applications are structured in Android Studio.">
+    <meta name="description" content="This is the first of two parts on creating interactive graphical applications with functional programming, in Haskell; this first part, using the <strong>Model-View-Controller</strong> pattern in its functional flavour through <code>gloss</code>. The <strong>MVC</strong> pattern is common accross all languages and goes by many names. For example, it's how smartphone applications are structured in Android Studio.">
     
     <link rel="stylesheet" href="../../css/default.css" />
     <link rel="stylesheet" href="../../css/syntax.css" />
@@ -32,10 +32,10 @@
     </p>
   </div>
   
-  <p class="description">This is the first of two parts on creating interactive graphical applications with functional programming, in Haskell, using the <strong>Model-View-Controller</strong> pattern in its functional flavour. The <strong>MVC</strong> pattern is common accross all languages and goes by many names. For example, it's how smartphone applications are structured in Android Studio.</p>
+  <p class="description">This is the first of two parts on creating interactive graphical applications with functional programming, in Haskell; this first part, using the <strong>Model-View-Controller</strong> pattern in its functional flavour through <code>gloss</code>. The <strong>MVC</strong> pattern is common accross all languages and goes by many names. For example, it's how smartphone applications are structured in Android Studio.</p>
   
   <ul class="tags">
-    <li class="tag-haskell">#<a href="../../">haskell</a></li><li class="tag-beginner">#<a href="../../">beginner</a></li>
+    <li class="tag-haskell">#<a href="../../tags/haskell.html">haskell</a></li><li class="tag-beginner">#<a href="../../tags/beginner.html">beginner</a></li>
   </ul>
 </header>
 <article>
@@ -73,8 +73,11 @@ define that when a player drags a piece in the board, the position of that
 piece in the board <em>model</em> changes to the new position, the current turn
 changes to the other player, and the time passed is reset to zero.</p></li>
 </ul>
-<p>And the three relate in the following manner:
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/MVC-Process.svg/400px-MVC-Process.svg.png" alt="Wikipedia: MVC" /></p>
+<p>And the three relate in the following manner:</p>
+<figure>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/MVC-Process.svg/400px-MVC-Process.svg.png" alt="MVC diagram from Wikipedia" />
+<figcaption aria-hidden="true">MVC diagram from Wikipedia</figcaption>
+</figure>
 <h1 data-number="2" id="functional-mvc-gloss"><span class="header-section-number">2</span> Functional MVC: Gloss</h1>
 <p>How does the model-view-controller idea translate into functional programming?
 It turns out to be quite simple because the three parts match basic FP concepts.</p>

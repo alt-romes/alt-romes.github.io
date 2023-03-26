@@ -98,6 +98,18 @@ main = hakyllWith config $ do
 
     -- TODO: match "projects/*" $ do
 
+    tagsRules tags $ \tag pattern -> do
+        route   idRoute
+        compile $ do
+          posts <- recentFirst =<< loadAll pattern
+          let postsCtx =
+                  listField "posts" postCtx (pure posts) <>
+                  defaultContext
+          makeItem ""
+           >>= loadAndApplyTemplate "templates/posts.html" postsCtx
+           >>= loadAndApplyTemplate "templates/default.html" postsCtx
+           >>= relativizeUrls
+
     match "posts/**" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
@@ -153,7 +165,7 @@ renderLink tag Nothing      = Just $ do
 renderLink tag (Just url) = Just $ do
   H.li ! class_ ("tag-" <> fromString tag) $ do
      "#"
-     H.a ! href (toValue url) $ toHtml tag
+     H.a ! href ("/" <> toValue url) $ toHtml tag
 
 renderTagCloudLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
 renderTagCloudLink minSize maxSize tag url count min' max' =
