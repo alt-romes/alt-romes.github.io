@@ -1,3 +1,10 @@
+---
+
+title: Haskell 108 Assignment
+tags: haskell, beginner
+description: An assignment for an introductory class on Haskell
+
+---
 
 # Movies Tracker
 
@@ -64,7 +71,7 @@ using an independent module.
 For extra complexity you can save the hash of the password in the JSON file
 rather than password itself.
 
-## Example usage:
+## Example usage
 
 This example assumes the server is already running, and you've loaded the client
 module in GHCi
@@ -80,7 +87,7 @@ module in GHCi
 > findMovies tok2 "Love"
   -- []
 ```
-## Details:
+## Details
 
 When defining a server application with `Servant`, remember there are
 essentially three steps:

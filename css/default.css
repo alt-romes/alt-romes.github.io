@@ -104,6 +104,10 @@ ul {
   list-style: none;
 }
 
+img {
+    display: block;
+}
+
 .header-section-number {
   color: var(--accent-1);
   margin-right: 0.25em;
@@ -190,6 +194,7 @@ ul.inline-tags > li {
   padding: 1em 0 1em 2em; /* top right bottom left */
   float: right;
   font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
+  max-width: 25em;
 }
 
 .toc > .header {

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Haskell 108 Assignment</title>
+    
+    <meta name="description" content="An assignment for an introductory class on Haskell">
+    
+    <link rel="stylesheet" href="../../css/default.css" />
+    <link rel="stylesheet" href="../../css/syntax.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../../">romes</a></li>
+        <li><a href="../../posts.html">posts</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Haskell 108 Assignment</h1>
+    <p>
+      
+      June 22, 2022
+      
+    </p>
+  </div>
+  
+  <p class="description">An assignment for an introductory class on Haskell</p>
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../../">haskell</a></li><li class="tag-beginner">#<a href="../../">beginner</a></li>
+  </ul>
+</header>
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#movies-tracker" id="toc-movies-tracker"><span class="toc-section-number">1</span> Movies Tracker</a>
+<ul>
+<li><a href="#example-usage" id="toc-example-usage"><span class="toc-section-number">1.1</span> Example usage</a></li>
+<li><a href="#details" id="toc-details"><span class="toc-section-number">1.2</span> Details</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 data-number="1" id="movies-tracker"><span class="header-section-number">1</span> Movies Tracker</h1>
+<p>For this assignment, you will build a simple movie platform where any user can
+register and add movies to their watched list.</p>
+<p>You should write two programs for this assignment.</p>
+<p>The first program is the movie platform server. When run, the program will
+launch a server that will keep running until explicitly killed. This server
+accepts HTTP requests to a handful of endpoints and replies accordingly to the
+user making the request.</p>
+<p>The server will write in a JSON database the registered users and their list of
+watched movies. When the server is started it should load the existing JSON
+database. (You can discuss the design of this JSON file with me)</p>
+<p>The server should listen on port 7143 and react to the following HTTP requests:</p>
+<ul>
+<li><p><code>POST /register --data {user:"rodrigo", password:"1234"}</code>
+When a user sends a POST request to the /register path, with a user and a
+password, the server should add a new user to the JSON database and reply
+with a unique token (can be a string) that the user can use to manipulate
+their movies. If the user already exists, we check the password matches the
+registered one and return their unique token. If the user exists but the
+password doesn’t match, return error code 403. Example reply
+<code>yrpghst3reczxplg</code></p></li>
+<li><p><code>POST /movie --data {token:"yrpghst3reczxplg", movie:{name: "In The Mood For Love", rating:9}}</code>
+When a user sends a POST request to the /movie path, with a token and a
+movie, the server should add the movie to the user corresponding to the
+token. If the user doesn’t exist, return the 403 error code, otherwise
+return the code 200</p></li>
+<li><p><code>GET /movies?token=yrpghst3reczxplg&amp;query="Mood"</code>
+When a user sends a GET request to hte /movie path, with a query param for
+the token and a query param for the query, the server should search in the
+list of movies of the user corresponding to the token.
+If the user doesn’t exist, return the 403 error code, otherwise
+return the list of movies whose names include the query (returning all
+movies if the movie query doesn’t exist)</p></li>
+</ul>
+<p>The second program should be a client for this server. That is, it’s a program
+that, when run, will send HTTP requests to the server according to the user
+need. You can implement this either as a library (and run it with ghci), or as a
+REPL (though I’m not sure it would be worth the trouble)</p>
+<p>This program should define at least these three functions</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Get the server token by registering/logging in with the given username and password</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ot">register ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Token</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Add a movie to your user list in the server, given the user token, the name</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- of the movie and the rating</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">addMovie ::</span> <span class="dt">Token</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- | Search for movies given a user token and a query string</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ot">findMovies ::</span> <span class="dt">Token</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> [<span class="dt">Movie</span>]</span></code></pre></div>
+<p>There might be some code you want to share between the client and the server,
+using an independent module.</p>
+<p>For extra complexity you can save the hash of the password in the JSON file
+rather than password itself.</p>
+<h2 data-number="1.1" id="example-usage"><span class="header-section-number">1.1</span> Example usage</h2>
+<p>This example assumes the server is already running, and you’ve loaded the client
+module in GHCi</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> tok <span class="ot">&lt;-</span> register <span class="st">&quot;Rodrigo&quot;</span> <span class="st">&quot;1234&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> addMovie tok <span class="st">&quot;In The Mood For Love&quot;</span> <span class="dv">9</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> addMovie tok <span class="st">&quot;Punch-Drunk Love&quot;</span> <span class="dv">7</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> addMovie tok <span class="st">&quot;The Matrix&quot;</span> <span class="dv">10</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> findMovies tok <span class="st">&quot;Love&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- [Movie &quot;In The Mood For Love&quot; 9, Movie &quot;Punch-Drunk Love&quot; 7]</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> tok2 <span class="ot">&lt;-</span> register <span class="st">&quot;Liam&quot;</span> <span class="st">&quot;5678&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> findMovies tok2 <span class="st">&quot;Love&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- []</span></span></code></pre></div>
+<h2 data-number="1.2" id="details"><span class="header-section-number">1.2</span> Details</h2>
+<p>When defining a server application with <code>Servant</code>, remember there are
+essentially three steps:</p>
+<ul>
+<li>Model the API as a type</li>
+<li>Describe/implement a <code>Server</code> for this API/Type</li>
+<li>Start the server by 1. transforming it to a WAI application 2. using the
+<code>Warp.run</code> function</li>
+</ul>
+<p>Remember to create a cabal project and add both <code>servant</code>, <code>servant-server</code>,
+<code>warp</code>, <code>aeson</code> and <code>http-conduit</code> as dependencies, and remember to keep your
+project under version control using <code>git</code>. You can additionally create a
+repository on GitHub so that I can better comment on your progress. If you
+eventually see the need to share code between the client and the server, you
+might want to run <code>cabal init --interactive</code> and edit the cabal file to have 2
+applications and 1 library under the same package – but do consult me on this,
+if you do want to do so.</p>
+<p>For this project you have more freedom, but as usual I will give you hints to
+guide your progress when needed.</p>
+
+</article>
+
+    </main>
+  </body>
+</html>

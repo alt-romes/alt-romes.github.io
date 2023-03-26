@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DOM applications using Functional Reactive Programming</title>
+    
+    <meta name="description" content="The Functional Reactive Programming paradigm and the <code>reflex</code> library, and using them to create DOM-based graphical applications with the <code>reflex-dom</code> library...">
+    
+    <link rel="stylesheet" href="../../css/default.css" />
+    <link rel="stylesheet" href="../../css/syntax.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../../">romes</a></li>
+        <li><a href="../../posts.html">posts</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>DOM applications using Functional Reactive Programming</h1>
+    <p>
+      
+      July 10, 2022
+      
+    </p>
+  </div>
+  
+  <p class="description">The Functional Reactive Programming paradigm and the <code>reflex</code> library, and using them to create DOM-based graphical applications with the <code>reflex-dom</code> library...</p>
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../../">haskell</a></li><li class="tag-frp">#<a href="../../">frp</a></li>
+  </ul>
+</header>
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#graphics-with-haskell-reflex" id="toc-graphics-with-haskell-reflex"><span class="toc-section-number">1</span> Graphics with Haskell: Reflex</a></li>
+<li><a href="#functional-reactive-programming" id="toc-functional-reactive-programming"><span class="toc-section-number">2</span> Functional Reactive Programming</a></li>
+<li><a href="#behaviours" id="toc-behaviours"><span class="toc-section-number">3</span> Behaviours</a></li>
+<li><a href="#events" id="toc-events"><span class="toc-section-number">4</span> Events</a></li>
+<li><a href="#reflex" id="toc-reflex"><span class="toc-section-number">5</span> Reflex</a></li>
+<li><a href="#building-uis-with-reflex-dom" id="toc-building-uis-with-reflex-dom"><span class="toc-section-number">6</span> Building UIs with Reflex-Dom</a></li>
+<li><a href="#reflex-combinators" id="toc-reflex-combinators"><span class="toc-section-number">7</span> Reflex Combinators</a></li>
+<li><a href="#companies" id="toc-companies"><span class="toc-section-number">8</span> 101companies</a></li>
+<li><a href="#acknowledgments" id="toc-acknowledgments"><span class="toc-section-number">9</span> Acknowledgments</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="graphics-with-haskell-reflex"><span class="header-section-number">1</span> Graphics with Haskell: Reflex</h1>
+<p>This is the second of two parts on displaying graphics and user interfaces with
+the functional programming paradigm, in Haskell.</p>
+<p>In this part we’ll look at <strong>Functional Reactive Programming</strong> (or <strong>FRP</strong> for
+short), and particularly on how it can be used to build an interactive UI.</p>
+<h1 data-number="2" id="functional-reactive-programming"><span class="header-section-number">2</span> Functional Reactive Programming</h1>
+<p>Functional reactive programming is a general paradigm well suited to programming
+<em>real-time systems</em> in a high-level and functional way.</p>
+<p><em>Real-time systems</em> or <em>reactive systems</em> are those that handle continuous
+time-varying values, discrete events in real time, and react accordingly. A good
+example of these systems is a <em>mobile robot</em>. They must take into consideration
+continuous inputs like wheel speed, orientation, and discrete events such as
+detection of another object.</p>
+<p>The class of reactive systems we’re interested in here is interactive <em>graphical
+UIs</em>. A user interface has multiple components that can be seen as discrete
+events and continuous time-varying values. An input box, where one might write
+their name, is an example of a time varying value (it continously changes –
+whenever the user types something); a button is an example of a discrete event
+in time: at certain points in time the user will click the button. This will
+make more sense with practice and code samples.</p>
+<p>So the promise of functional reactive programming is that we can program these
+complicated reactive systems in a pure functional way. But how?</p>
+<p>Functional Reactive Programming introduces two key concepts: <strong>Behaviours</strong> and <strong>Events</strong>.</p>
+<ul>
+<li><p><strong>Behaviours</strong> are first-class values that vary over continuous time.</p>
+<p>That means a behaviour is a value that changes with time and can be passed
+to/returned by functions.</p></li>
+<li><p><strong>Events</strong> are first-class values that occur at some points in time.</p>
+<p>They may refer, e.g., to happenings in the real world time – such as a
+mouse click or a key press.</p></li>
+</ul>
+<p>And then, it says that the FRP implementation will handle all time-related
+details so that the programmer can describe their <em>reactive system</em> without
+thinking about what happens at <strong>any</strong> particular point in time, but rather thinking
+about what happens accross <strong>all</strong> points in time.</p>
+<p>This type of <em>wholemeal programming</em> (working with the whole, not the individual
+part) is quite common in functional programming. When working with lists, the
+same pattern appears: we think and define functions in terms of entire lists,
+rather than about any particular element in the list.</p>
+<p>Functional reactive programming just takes it further by abstracting over <em>time
+itself</em>.</p>
+<p>In the end, the programmer doesn’t need to worry about any of the <em>how</em>, just
+the <em>what</em> (which quite nicely aligns with the original paper on FRP[1], which
+distinguishes <em>presentation</em> from <em>modelling</em>). So, we manipulate time-dependent
+<em>behaviours</em> and <em>events</em>, but we never directly see the <em>time</em>.</p>
+<p>In fact, both <strong>Behaviors</strong> and <strong>Events</strong> are usually <em>abstract data types</em>,
+meaning we don’t even need to know how they are defined.</p>
+<p>Later we’ll see what this actually looks like.</p>
+<ul>
+<li>[1] <em>Functional Reactive Animation, …</em></li>
+</ul>
+<h1 data-number="3" id="behaviours"><span class="header-section-number">3</span> Behaviours</h1>
+<p>A <strong>Behaviour</strong> is a first-class value that varies over continuous time. In
+other words, a Behaviour is a value that can be passed to and returned by
+functions (is first-class) and this value is defined for all time (and can
+change accross time)</p>
+<p>Intuitively, it can be seen as a function from time to value (<code>b :: Time -&gt; Value</code>) and
+could be visualized as:</p>
+<p><img src="https://github.com/hansroland/reflex-dom-inbits/raw/master/images//behavior.png" /></p>
+<p>Note how this function is pure (there are no side effects): we simply map all
+points in time to a value.</p>
+<p>A behaviour is an abstract type constructor, meaning we know nothing about its
+data constructors. We interact with behaviours through the combinators
+and functions defined by the FRP implementation we’re using. The type parameter
+of <code>Behavior</code> indicates the type of the values.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Behavior</span> a</span></code></pre></div>
+<p>Behaviors are usually <strong>Functors</strong> (it depends on the FRP implementation, in
+<em>Reflex</em> they are). We can imagine that if we have a behaviour (<code>x :: Behavior Int</code>) which is for all points in time equal to 1 (you might imagine the 2D graph
+of the constant math function <code>f(x) = 1</code>), there is an easy way to define a
+behavior <code>y</code> which is constantly equal to 2: <code>fmap (+1) x :: Behavior Int</code>.</p>
+<p>Let’s write a short example of a function that transforms a <code>Behavior String</code>
+into a <code>Behavior (Maybe Color)</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Color</span> <span class="ot">=</span> <span class="dt">Yellow</span> <span class="op">|</span> <span class="dt">Magenta</span> <span class="op">|</span> <span class="dt">Cyan</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ot">color ::</span> <span class="dt">Behavior</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Behavior</span> (<span class="dt">Maybe</span> <span class="dt">Color</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>color bstr <span class="ot">=</span> <span class="fu">fmap</span> toColor bstr</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    toColor <span class="st">&quot;yellow&quot;</span>  <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">Yellow</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    toColor <span class="st">&quot;magenta&quot;</span> <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">Magenta</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    toColor <span class="st">&quot;cyan&quot;</span>    <span class="ot">=</span> <span class="dt">Just</span> <span class="dt">Cyan</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    toColor _         <span class="ot">=</span> <span class="dt">Nothing</span></span></code></pre></div>
+<p>An example of a behaviour we’ll use is the value in an input text box. This box
+has a string at all times. Before the user writes anything, the value is the
+empty string. The value at some time after the user has written “123” is “123”.</p>
+<h1 data-number="4" id="events"><span class="header-section-number">4</span> Events</h1>
+<p>An <strong>Event</strong> is a first-class value that occurs at discrete points in time. In
+other words, an Event is a value that can be passed to and returned by
+functions (is first-class) and this value is defined at only some points in
+time. If the event is occuring, <em>and if it is</em>, what its
+value is.</p>
+<p>It’s a bit harder to think about intuitively, but one can imagine an event as a
+function from time to maybe a value (<code>e :: Time -&gt; Maybe Value</code>) or as a list of
+values and the times at which they occur (<code>e :: [(Time, Value)]</code>).</p>
+<p><img src="https://github.com/hansroland/reflex-dom-inbits/raw/master/images//event.png" /></p>
+<p>An event is also an abstract type constructor, meaning we know nothing about its
+data constructors. As with behaviors, we interact with events through the combinators
+and functions defined by the FRP implementation we’re using. The type parameter
+of <code>Event</code> also indicates the type of the values.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Event</span> a</span></code></pre></div>
+<p>Above, <code>a</code> is the type of the value the event carries when it occurs.</p>
+<p>Events are functors! You can think of them being functors the same way you would about
+Behaviors.</p>
+<p>An example of an event we’ll use is the one generated by a button. Everytime the
+button is clicked, an event occurs of type <code>Event ()</code> (a button click has no
+associated value, unlike, e.g., key presses, which would have type <code>Event Char</code>).</p>
+<p>Ahead we’ll see how we can manipulate and put together events and behaviors to
+build a reactive application.</p>
+<h1 data-number="5" id="reflex"><span class="header-section-number">5</span> Reflex</h1>
+<p><a href="https://hackage.haskell.org/package/reflex">Reflex</a> is a haskell library for
+functional reactive programming in haskell.</p>
+<blockquote>
+<p>Interactive programs without callbacks or side-effects. Functional Reactive
+Programming (FRP) uses composable events and time-varying values to describe
+interactive systems as pure functions. Just like other pure functional code,
+functional reactive code is easier to get right on the first try, maintain,
+and reuse.</p>
+</blockquote>
+<blockquote>
+<p>Reflex is a fully-deterministic, higher-order Functional Reactive Programming
+interface and an engine that efficiently implements that interface.</p>
+</blockquote>
+<p>Reflex provides the above described abstractions (behaviors and events),
+functions to work with them, and an additional abstraction called <strong>Dynamics</strong>.
+For our intents and purposes, <strong>we’ll consider dynamics to be the same as
+behaviors</strong>, since discussing the details of it would be out of the scope of
+this tutorial[2].</p>
+<ul>
+<li>[2] In a <em>very</em> short note: Reflex is implemented with push-pull evaluation,
+and thus often requires explicit push notifications to update things like
+the DOM. Event push notifications when they occur, but Behaviors don’t push
+anything. A Dynamic is a combination of an Event and Behavior, meaning it’s
+a continuous time-varying value that pushes notification whenever it
+changes, and fills the spaces where we need a behaviour <em>and</em> to know when
+the value changes.</li>
+</ul>
+<h1 data-number="6" id="building-uis-with-reflex-dom"><span class="header-section-number">6</span> Building UIs with Reflex-Dom</h1>
+<p>To build a UI we’ll use
+<a href="https://hackage.haskell.org/package/reflex-dom">reflex-dom</a> which is a haskell
+library that provides a monadic interface for building a DOM-based UI with
+functional reactive programming abstractions from <em>reflex</em>.</p>
+<p>A DOM user interface is defined with element tags. A webpage can have many
+elements such as <em>divisions</em> and text <em>paragraphs</em>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is a paragraph.<span class="kw">&lt;/p&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;button&gt;</span>Button below the paragraph<span class="kw">&lt;/button&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is the second division.<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span></code></pre></div>
+<p>Would define a webpage with two divisions (<code>&lt;div&gt;</code>). The first division has a
+paragraph (<code>&lt;p&gt;</code>) and a button (<code>&lt;button&gt;</code>), the second, a paragraph and and a
+text-box for input (<code>&lt;input&gt;</code>).</p>
+<p>Reflex-dom defines the <code>Widget</code> monad[3] and multiple functions with which we can
+create our UI. However, some of these functions do more than build the UI: they
+return and accept events and behaviors! Let’s look at a few.</p>
+<p>We can put text on the UI, without creating a new element. Notice how the
+returned <code>Widget</code> is a computation that builds the UI and the resulting value of
+the said computation has type <code>()</code>.</p>
+<pre><code>text :: Text -&gt; Widget ()</code></pre>
+<p>The most basic element-creating function is <code>el</code>. It takes the name of the
+element as a string, a <code>Widget</code> computation, and returns another <code>Widget</code>
+computation. This still does nothing regarding FRP.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">el ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> a <span class="ot">-&gt;</span> <span class="dt">Widget</span> a</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ex1 <span class="ot">=</span> el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;This is a paragraph&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;p&gt;This is a paragraph&lt;/p&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>ex2 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> (el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Other paragraph&quot;</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;div&gt;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;This is a paragraph&lt;/p&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;/div&gt;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>ex3 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;First paragraph&quot;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Second paragraph&quot;</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;First paragraph&lt;/p&gt;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;Second paragraph&lt;/p&gt;</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>A button can be clicked at some points in time. We can model a button click with
+an event! There is a convenient function that returns a <code>Widget</code> computation
+that creates a button and returns an event that occurs when the button is
+clicked. We’ll see ahead an example in which we this event.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">button ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> (<span class="dt">Event</span> t ()) </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ex4 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;Before button&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        clickEvt <span class="ot">&lt;-</span> button <span class="st">&quot;Click me!&quot;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (text <span class="st">&quot;After button&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;Before button&lt;/p&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;button&gt;Click me!&lt;/button&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;After button&lt;/p&gt;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>An input text box has a continuous time-varying value: What the user has input
+in the box. We can model the value inside the input box with a behavior! As with
+the button, we already have a function that returns a <code>Widget</code> computation that
+creates an input box and which returns a behavior of the value in the text box.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">input ::</span> <span class="dt">Widget</span> (<span class="dt">Dynamic</span> <span class="dt">Text</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ex5 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        inputBehavior <span class="ot">&lt;-</span> input</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> ()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- would correspond to</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">--  &lt;div&gt;</span></span></code></pre></div>
+<p>Lastly, we have a function for displaying a behavior of a string. Whatever the
+value of the string is at the current time, is what’s displayed on the string.
+Non-surprisingly, this function is called <code>dynText</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dynText ::</span> <span class="dt">Dynamic</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> ()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>ex6 <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        inputBehavior <span class="ot">&lt;-</span> input</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (dynText inputBehavior)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- what would this look like?</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;div&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;input&gt;&lt;/input&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">--      &lt;p&gt;???&lt;/p&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">-- &lt;/div&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">-- not so simple, would require javascript</span></span></code></pre></div>
+<p>Next we’ll look at some UI-independent combinators on events and behaviors, and
+an example of how we can use them in building a more complex UI.</p>
+<ul>
+<li>[3] In fact, <code>Widget x</code> is the monad (<code>Widget :: * -&gt; * -&gt; *</code>), where <code>x</code>
+is a type parameter to guarantee contexts don’t get mixed.</li>
+</ul>
+<h1 data-number="7" id="reflex-combinators"><span class="header-section-number">7</span> Reflex Combinators</h1>
+<p>In this section we describe some reflex combinators for manipulating events and
+behaviors. Remember that for our purposes we’ll consider dynamics to be the same
+as behaviors but with a different name.</p>
+<p>We can create a behavior which is constant over all time, given the constant
+value.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ot">constDyn ::</span> a <span class="ot">-&gt;</span> <span class="dt">Dynamic</span> a</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>d1 <span class="ot">=</span> constDyn <span class="dv">2</span> <span class="co">-- is 2 at all points in time</span></span></code></pre></div>
+<p>We can create a behavior that changes to the value of an event every time said
+event occurs, provided an initial value for the behavior to have before the
+first occurrence of the event is given.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ot">holdDyn ::</span> a <span class="ot">-&gt;</span> <span class="dt">Event</span> a <span class="ot">-&gt;</span> <span class="dt">Widget</span> (<span class="dt">Dynamic</span> a)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">=</span> holdDyn <span class="ch">'A'</span> keyPress <span class="co">-- until the first event occurrence is 'A', and then it's the value of the event occurrence</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span><span class="ot"> keyPress ::</span> <span class="dt">Event</span> <span class="dt">Char</span></span></code></pre></div>
+<p>We can create a behavior that changes everytime an event occurs, provided the
+function to fold the event value with the current value, and an initial value.
+This is somewhat similar to a list fold, but it’s a actually a fold <em>across time</em>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldDyn ::</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> <span class="dt">Event</span> a <span class="ot">-&gt;</span> m (<span class="dt">Dynamic</span> b)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- Note: foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; b</span></span></code></pre></div>
+<p>As an example, we can now define an application that displays a button and the
+number of times said button has been clicked (remember how behaviors instance
+<code>Functor</code>)</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>app <span class="ot">=</span> el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>        clickEvt <span class="ot">&lt;-</span> button <span class="st">&quot;Click me!&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        clickAmount <span class="ot">&lt;-</span> foldDyn (\_ acc <span class="ot">-&gt;</span> acc<span class="op">+</span><span class="dv">1</span>) <span class="dv">0</span> clickEvt</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;p&quot;</span> (dynText (displayAmt <span class="op">&lt;$&gt;</span> clickAmount))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        displayAmt x <span class="ot">=</span> <span class="st">&quot;Clicked &quot;</span> <span class="op">&lt;&gt;</span> showT x <span class="op">&lt;&gt;</span> <span class="st">&quot; times.&quot;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">-- Note how length for normal functions can be defined as</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span> ls <span class="ot">=</span> <span class="fu">foldr</span> (\_ acc <span class="ot">-&gt;</span> acc<span class="op">+</span><span class="dv">1</span>) <span class="dv">0</span> ls</span></code></pre></div>
+<p>This might be a bit confusing so we’ll walk through each value.</p>
+<ul>
+<li><code>clickEvt</code> has type <code>Event ()</code>, representing the occurrences of a button click
+through time</li>
+<li><code>clickAmount</code> has type <code>Dynamic Int</code>. We start with the value <code>0</code>, and
+when the <code>Event ()</code> occurs, we apply the lambda of type <code>() -&gt; Int -&gt; Int</code>
+which ignores the first argument and adds <code>+1</code> to the existing counter.</li>
+<li><code>displayAmt &lt;$&gt; clickAmount</code> has type <code>Dynamic Text</code>, meaning we can display
+it with <code>dynText</code>. Note that <code>displayAmt :: Int -&gt; Text</code>, and we <code>fmap</code> it
+over <code>Dynamic Int</code> (hence why we get <code>Dynamic Text</code>).</li>
+</ul>
+<p>If you were something similar[4] to this code, you’d see an application with a
+button and a text paragraph with a counter. Every time you click the button the
+counter will increase.</p>
+<p>Lastly, we’ll cover a function that allows us to sample the value of a behavior
+every time an event occurs.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tagPromptlyDyn ::</span> <span class="dt">Dynamic</span> a <span class="ot">-&gt;</span> <span class="dt">Event</span> b <span class="ot">-&gt;</span> <span class="dt">Event</span> a</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- e1 will occur with the value of the input box every time the button is clicked</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ot">e1 ::</span> <span class="dt">Event</span> <span class="dt">Text</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>e1 <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    click <span class="ot">&lt;-</span> button <span class="st">&quot;Sample input box value&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    valBehv <span class="ot">&lt;-</span> input</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span> (tagPromptlyDyn valBehv click)</span></code></pre></div>
+<p>Next we’ll build a simple application for the Company example.</p>
+<ul>
+<li>[4] A full runnable example of this program is provided in the appendix(?)</li>
+</ul>
+<h1 data-number="8" id="companies"><span class="header-section-number">8</span> 101companies</h1>
+<p>For our 101 companies example we’ll build a simple application with three
+distinct divisions. One for information where we display the total price of the
+employees, one for the hiring form with which we can add employees to our
+company, and one with the list of the employees in the company.</p>
+<p><img src="../../images/101companies-frp-demo.png" /></p>
+<p>Our application models and displays the changes in a company over time. We’ll
+model the company with a behavior. Initially, the company will be the sample
+company. Whenever an employee is hired the company behavior changes accordingly.</p>
+<p>The first section is a simple division with a text that changes according to a
+behavior. We only want to display the total value of a company that changes over
+time, so we’ll capture this idea with this function:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">info ::</span> <span class="dt">Dynamic</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>info c <span class="ot">=</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    el <span class="st">&quot;div&quot;</span> <span class="op">$</span> <span class="kw">do</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Info&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        dynText (companyToTotal <span class="op">&lt;$&gt;</span> c)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    companyToTotal ::</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Text</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    companyToTotal c <span class="ot">=</span> <span class="st">&quot;Total cost: $&quot;</span> <span class="op">&lt;&gt;</span> showT (total c)</span></code></pre></div>
+<p>Our hiring department defines a company that changes over time: It defines the
+button that will add an employee to the company everytime it’s clicked, and
+otherwise doesn’t take any arguments.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">hiring ::</span> <span class="dt">Widget</span> x (<span class="dt">Dynamic</span> <span class="dt">Company</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>hiring <span class="ot">=</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    el <span class="st">&quot;div&quot;</span> <span class="kw">do</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Hiring&quot;</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        name    <span class="ot">&lt;-</span> input <span class="st">&quot;Name&quot;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        address <span class="ot">&lt;-</span> input <span class="st">&quot;Addr.&quot;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        salary  <span class="ot">&lt;-</span> input <span class="st">&quot;Salary&quot;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        clickEv <span class="ot">&lt;-</span> button <span class="st">&quot;Hire&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span><span class="ot"> behaviorEmployee ::</span> <span class="dt">Dynamic</span> <span class="dt">Employee</span> <span class="ot">=</span> <span class="dt">Employee</span> <span class="op">&lt;$&gt;</span> name <span class="op">&lt;*&gt;</span> address <span class="op">&lt;*&gt;</span> (readSalary <span class="op">&lt;$&gt;</span> salary)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span><span class="ot"> hireEmployee     ::</span> <span class="dt">Event</span> <span class="dt">Employee</span> <span class="ot">=</span> tagPromptlyDyn behaviorEmployee clickEv</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        foldDyn addEmployee sampleCompany hireEmployee</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">where</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="ot">    addEmployee ::</span> <span class="dt">Employee</span> <span class="ot">-&gt;</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Company</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    addEmployee e (<span class="dt">Company</span> n es) <span class="ot">=</span> <span class="dt">Company</span> n (e<span class="op">:</span>es)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    readSalary ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Salary</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    readSalary <span class="ot">=</span> <span class="fu">read</span> <span class="op">.</span> unpack</span></code></pre></div>
+<ul>
+<li><code>input</code> is a helper function defined in our module with type <code>Text -&gt; Widget x     (Dynamic Text)</code>. It takes a text to display above the input, and returns the
+DOM-building computation that returns a behavior of the value inside the
+input box.</li>
+<li>We make three input boxes and get three behaviors of text.</li>
+<li>We make a button and get <code>clickEvt :: Event ()</code>.</li>
+<li>We make a new behavior <code>behaviorEmployee</code> that combines the continuos values
+in the input boxes to define an employee that changes over continuous time.
+(We make use of applicative functor syntax here)</li>
+<li>We create a new event <code>hireEmployee</code> by combining the click event with the
+employee behavior. This event fires every time the button is clicked, and
+the value will be the current employee described in the input boxes at that
+time.</li>
+<li>In the last line, we return the behavior of the company by folding (<code>foldDyn</code>)
+over the employee-creating event <code>hireEmployee</code> and starting with the
+initial company <code>sampleCompany</code>. That is, every time the event fires, we
+apply <code>addEmployee</code> to the value of the event and to the current value of
+the behavior (which initially is equal to <code>sampleCompany</code>).</li>
+</ul>
+<p>Finally, we’ll display the list of employees. We’ll make use of a reflex
+function called <code>simpleList :: Dynamic t [v] -&gt; (Dynamic t v -&gt; Widget a) -&gt; Widget x ()</code>[5]. It basically says that with a behavior of a list of values, and
+with a function that can turn the behavior of each value in the list into a
+widget, we get a widget which applies the function to every element of the list.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">employeesList ::</span> <span class="dt">Dynamic</span> <span class="dt">Company</span> <span class="ot">-&gt;</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>employeesList c <span class="ot">=</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    section <span class="kw">do</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;h3&quot;</span> (text <span class="st">&quot;Employees&quot;</span>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        el <span class="st">&quot;table&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>            el <span class="st">&quot;tr&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Name&quot;</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Address&quot;</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;td&quot;</span> (text <span class="st">&quot;Salary&quot;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>            simpleList (employees <span class="op">&lt;$&gt;</span> c) \dEmployee <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                el <span class="st">&quot;tr&quot;</span> <span class="kw">do</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dName <span class="ot">=</span> <span class="fu">fmap</span> emplName dEmployee</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dAddr <span class="ot">=</span> <span class="fu">fmap</span> emplAddr dEmployee</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">let</span> dSalr <span class="ot">=</span> <span class="fu">fmap</span> emplSalr dEmployee</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dName)</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dAddr)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>                    el <span class="st">&quot;td&quot;</span> (dynText dSalr)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span> ()</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>            <span class="kw">where</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                emplName (<span class="dt">Employee</span> n _ _) <span class="ot">=</span> n</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>                emplAddr (<span class="dt">Employee</span> _ a _) <span class="ot">=</span> a</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>                emplSalr (<span class="dt">Employee</span> _ _ s) <span class="ot">=</span> <span class="st">&quot;$&quot;</span> <span class="op">&lt;&gt;</span> (<span class="fu">pack</span> <span class="op">.</span> <span class="fu">show</span>) s</span></code></pre></div>
+<ul>
+<li>We’re creating an HTML table. It consists of table rows (<code>&lt;tr&gt;</code>) and each
+table row has multiple cells called table data (<code>&lt;td&gt;</code>).</li>
+<li>We display a row with the headers Name, Address, and Salary.</li>
+<li>We apply the simple list function to the list of employees in the company.
+Note how <code>c :: Dynamic Company</code>, and <code>employees :: Company -&gt; [Employee]</code>,
+so <code>employees &lt;$&gt; c :: Dynamic [Employee]</code>.</li>
+<li>The function to display each element of the list displays the name, address,
+and salary of the employee in a table row. We get the behavior of each
+individual attribute (name, salary, employee) by using <code>fmap</code> on the
+behavior of the employee with the utility functions defined below.</li>
+</ul>
+<p>Finally, we put together these three things in one widget:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">body ::</span> <span class="dt">Widget</span> x ()</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>body <span class="ot">=</span> mdo</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    info dynamicCompany</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    dynamicCompany <span class="ot">&lt;-</span> hiring</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    employeesList dynamicCompany</span></code></pre></div>
+<p><code>hiring</code> defines the behavior of the company, and both <code>info</code> and
+<code>employeesList</code> consume it. We then define main using a main reflex-dom
+function to run the body of the application:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode hs"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> mainWidgetWithCss style body</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>style <span class="ot">=</span> <span class="st">&quot;body { padding: 2em; margin: auto; max-width: 50em; } h3 {...&quot;</span></span></code></pre></div>
+<p>You might note that we pass <code>dynamicCompany</code> to <code>info</code> <em>before</em> it’s actually
+defined. I think we’ve seen enough mind-blowing things for this post, but in
+short, we’re making use of an extension called <code>RecursiveDo</code> that allows us to
+do these logic-defying things.</p>
+<ul>
+<li>[5] Simplified version of the signature for our purposes… The actual one is
+<code>simpleList :: (Adjustable t m, MonadHold t m, PostBuild t m, MonadFix m) =&gt;     Dynamic t [v] -&gt; (Dynamic t v -&gt; m a) -&gt; m (Dynamic t [a])</code></li>
+</ul>
+<h1 data-number="9" id="acknowledgments"><span class="header-section-number">9</span> Acknowledgments</h1>
+<p>Ask John to review this?</p>
+
+</article>
+
+    </main>
+  </body>
+</html>
