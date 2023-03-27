@@ -36,10 +36,15 @@
   --black: black;
   --link: blue;
   --accent-1: orange;
+  --gray: gray;
 }
 
-.sourceCode {
+div.sourceCode {
   font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; /* --xfont-code */
+  box-sizing: border-box;
+  padding: 0.75em;
+  border-radius: 0.2em;
+  border: 1px solid var(--gray);
 }
 
 html {
