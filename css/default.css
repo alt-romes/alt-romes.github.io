@@ -52,6 +52,11 @@ html, body {
   margin: 0;
 }
 
+
+h1 a {
+  color: var(--link);
+}
+
 body > main {
   max-width: 50rem;
   margin: 0 auto;
@@ -102,6 +107,7 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Uls without the default settings */
 ul.tags, ul.inline-tags, .toc ul {
   margin: 0;
   padding: 0;
@@ -161,22 +167,43 @@ ul.tags {
 }
 
 ul.tags > li {
-  border-radius: 0.2em;
-  padding: 0.25em 0.5em;
-  color: white;
+  color: var(--link);
   cursor: pointer;
   transition-duration: 0.1s;
+  position: relative;
+  /* border-radius: 0.2em; */
+  /* padding: 0.25em 0.5em; */
 }
 
 ul.tags > li:hover,
 ul.tags > li:focus
 {
-  box-shadow: 0 0.5em 0.5em -0.4em gray;
-  transform: translateY(-0.1em);
+  /* box-shadow: 0 0.5em 0.5em -0.4em gray; */
+  /* transform: translateY(-0.1em); */
+}
+
+ul.tags > li::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 15%;
+  z-index: -1;
+  transition: opacity 300ms, transform 300ms;
+  /* background: var(--accent-1); */
+  transform: skew(-22deg) scale(0.8);
+  transform-origin: center;
+}
+
+ul.tags > li:hover::before,
+ul.tags > li:focus::before {
+  opacity: 1;
+  transform: skew(-22deg) scale(1);
 }
 
 ul.tags > li > a {
-  color: white;
+  color: var(--link);
+  text-decoration: none;
 }
 
 ul.inline-tags {
@@ -281,20 +308,20 @@ default color for tags has priority over the simple class selector.
 Alternative: don't set to black, and simply have a color for each tag!
  */
 
-.tag-haskell {
+.tag-haskell::before {
   background: linear-gradient(90deg, #5e5086, #8f4e8b);
 }
 
-.tag-beginner {
+.tag-beginner::before {
   background: #FFE5B4;
 }
 
-.tag-vim {
+.tag-vim::before {
   background: #007f00;
 }
 
-.tag-all {
-  background: #007f00;
+.tag-frp::before {
+  background: orange
 }
 
 /* TODO: MATHJAX */

@@ -1,19 +1,4 @@
-<header>
-  <div class="title">
-    <h1>$title$</h1>
-    <p>
-      $if(date)$
-      $date$
-      $endif$
-    </p>
-  </div>
-  $if(description)$
-  <p class="description">$description$</p>
-  $endif$
-  <ul class="tags">
-    $tags$
-  </ul>
-</header>
+$partial("templates/header.html")$
 <article>
   $body$
 </article>
