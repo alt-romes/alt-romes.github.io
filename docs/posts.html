@@ -20,7 +20,10 @@
       </ul>
     </nav>
     <main>
-      
+      <header>
+  <h1>All my write-ups <button onclick="collapse()">collapse</button></h1>
+</header>
+
   <article class="post">
     <header>
       <h3>
@@ -96,6 +99,16 @@
     </section>
   </article>
 
+
+
+<script>
+  const posts = document.getElementsByClassName("post");
+  function collapse() {
+    for (const e of posts) {
+      e.lastElementChild.classList.toggle("hidden");
+    }
+  }
+</script>
 
     </main>
   </body>

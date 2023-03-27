@@ -37,6 +37,8 @@
   --link: blue;
   --accent-1: orange;
   --gray: gray;
+  --background: white;
+  --info: skyblue;
 }
 
 div.sourceCode {
@@ -56,7 +58,6 @@ html {
 html, body {
   margin: 0;
 }
-
 
 h1 a {
   color: var(--link);
@@ -83,6 +84,10 @@ body > nav {
 
 body > nav a:visited {
     color: var(--link);
+}
+
+body > nav a:active {
+    color: var(--accent-1) !important;
 }
 
 body > nav > ul {
@@ -162,6 +167,16 @@ main > header > .description {
   margin-top: 0;
 }
 
+.alert {
+    border: 1px solid var(--gray);
+    padding: 0.75em;
+    border-radius: 0.2em;
+}
+
+.alert.info {
+    background: var(--info);
+}
+
 /* Tags
    ---- */
 
@@ -175,7 +190,7 @@ ul.tags > li {
   color: var(--link);
   cursor: pointer;
   transition-duration: 0.1s;
-  position: relative;
+  position: relative
   /* border-radius: 0.2em; */
   /* padding: 0.25em 0.5em; */
 }
@@ -211,6 +226,10 @@ ul.tags > li > a {
   text-decoration: none;
 }
 
+ul.tags > li > a:active {
+  color: var(--accent-1);
+}
+
 ul.inline-tags {
   display: flex;
   flex-wrap: wrap;
@@ -231,6 +250,7 @@ ul.inline-tags > li {
   float: right;
   font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
   max-width: 25em;
+  background: var(--background);
 }
 
 .toc > .header {
@@ -296,6 +316,9 @@ ul.inline-tags > li {
   color: var(--link);
 }
 
+ul.tags > li > a:active {
+  color: var(--accent-1);
+}
 
 .post > section > p {
   margin-top: 0;
@@ -330,3 +353,11 @@ Alternative: don't set to black, and simply have a color for each tag!
 }
 
 /* TODO: MATHJAX */
+
+/* Utils
+   ----- */
+
+.hidden {
+  display: none;
+}
+

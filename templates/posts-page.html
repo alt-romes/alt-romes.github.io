@@ -1,0 +1,13 @@
+<header>
+  <h1>All my write-ups <button onclick="collapse()">collapse</button></h1>
+</header>
+$partial("templates/posts.html")$
+
+<script>
+  const posts = document.getElementsByClassName("post");
+  function collapse() {
+    for (const e of posts) {
+      e.lastElementChild.classList.toggle("hidden");
+    }
+  }
+</script>

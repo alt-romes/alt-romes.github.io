@@ -129,7 +129,7 @@ main = hakyllWith config $ do
                     defaultContext
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/posts.html" postsCtx
+                >>= loadAndApplyTemplate "templates/posts-page.html" postsCtx
                 >>= loadAndApplyTemplate "templates/default.html" postsCtx
                 >>= relativizeUrls
 
@@ -138,7 +138,7 @@ main = hakyllWith config $ do
         compile $ do
 
             posts <- recentFirst =<< loadAll "posts/**"
-            let indexCtx = listField "posts" postCtx (pure $ take 5 posts)
+            let indexCtx = listField "posts" postCtx (pure $ take 3 posts)
                             <> tagsFieldWith (const $ pure $ map fst $ tagsMap tags) renderLink mconcat "tags" tags
                             -- <> tagCloudFieldWith "tag-cloud" renderTagCloudLink mconcat 80 125 tags -- for now, no tag cloud.
                             <> defaultContext
