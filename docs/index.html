@@ -23,8 +23,28 @@
     </nav>
     <main>
       <style>
-aside h3:first-child {
+.columns > aside h3:first-child {
   margin-top: 0.5em;
+}
+.columns {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap-reverse;
+}
+.preview {
+    display:block;
+    margin: auto;
+}
+@media screen and (min-width: 800px) {
+    .preview {
+        width: 35em;
+        height: 22rem;
+        float:right;
+        margin:1em;
+        /* margin-top:0em; */
+        margin-right:0em;
+    }
 }
 </style>
 
@@ -32,6 +52,7 @@ aside h3:first-child {
   <h1>Welcome to Romes' Musings</h1>
 </header>
 
+<section class="top">
 <p>
 I'm a student at <a href="https://fct.unl.pt">Faculdade de Ciências e Tecnologia</a> in Lisbon,
 currently writing my Master thesis on type-checking linear types in
@@ -40,11 +61,13 @@ intermediate language.
 </p>
 
 <p>
-I write interdisciplinary articles, am a Haskell enthusiast and GHC
+I try to write interdisciplinary articles, am a Haskell enthusiast and GHC
 contributor. I'm currently focused on type-checking linear types in GHC Core
 for my Master Thesis, developing a shader-centric and type-heavy 3d renderer /
-game engine, and learning Music Theory
+game engine, and learning Music Theory. You can find below my latests posts.
 </p>
+
+<img class="preview" src="https://discourse.haskell.org/uploads/default/optimized/2X/a/a5b90072a0337f8129111c8f43a649b0e52f60d9_2_690x389.png">
 
 <!-- <p>This website is under construction, check back later.</p> -->
 <!-- <p>Lorem ipsum dolor sit amet, malis incorrupte et qui, modo alienum et eam. -->
@@ -53,13 +76,12 @@ game engine, and learning Music Theory
 <!-- convenire. In aeque utamur feugiat his, tacimates repudiare mel ut.</p> -->
 <!-- <p>占だよべわ協豊ツサ少3図ヨホケ議覧ぎみの社手っレうも靖施ざす表60話せ盗美ツウヒユ納査ミ目問27条必弱業ヒウ枚持排撲隣枠げ。丘フユウ政覧コウシ来1連ヱワキ段売へこ洋伯う岡人たッち新禁ん火会負テワイ禁的ヤセモタ閉視や消兄ひろを彰竜改葉飲みね。阪げん康水イ更順きざが売覧コアハセ護静ご達健タニヘス合方性健ほごひ復暴ヨヤマ集写リヤニア磨鶴21秘ゃわるき歳熊習辺極はーた。</p> -->
 
-<aside style="max-width:20em; float: left; margin-right: 1em;">
 <!-- <h1>Latest posts</h1> -->
 
   <article class="post">
     <header>
       <h3>
-        <a href="./posts/2023-03-23-haskell-unicode-syntax-vim.html">Haskell's Unicode Syntax with Vim</a>
+        <a href="./posts/2023-03-23-haskell-unicode-syntax-vim.html">Writing prettier Haskell with Unicode Syntax and Vim</a>
       </h3>
       <div class="post-metadata">
         <time>March 23, 2023</time>
@@ -102,7 +124,8 @@ game engine, and learning Music Theory
   </article>
 
 
-</aside>
+
+</section>
 
 <!-- <p>Лорем ипсум долор сит амет, сит харум цонсулату цонсецтетуер цу. Харум -->
 <!--   алияуандо вих но, ессе лаореет патриояуе хис ин. Еам ан постеа цоммодо. Мутат -->
