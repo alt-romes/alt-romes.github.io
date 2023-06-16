@@ -42,6 +42,7 @@ executable control-site
     build-depends:
         base >= 4,
         hakyll >= 4.15,
+        hakyll-images,
         pandoc >= 2.18,
         skylighting >= 0.12,
         clay,
@@ -49,6 +50,7 @@ executable control-site
         blaze-html,
         blaze-markup,
         bytestring,
+        filepath,
         text,
         time,
         yaml,

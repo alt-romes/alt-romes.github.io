@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monthly Update on a Haskell Game Engine</title>
+    
+    <meta name="description" content="I've been working the past month or two in a game engine (called <code>Ghengin</code>). This is not yet a release, and version 0.1.0 is far into the future. However, I've come a long way and I'd like to share a few pictures of my progress.">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">posts</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li>publications</li>
+        <li><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Monthly Update on a Haskell Game Engine</h1>
+    <p>
+      
+      January  1, 2023
+      
+    </p>
+  </div>
+  
+  <p class="description">I've been working the past month or two in a game engine (called <code>Ghengin</code>). This is not yet a release, and version 0.1.0 is far into the future. However, I've come a long way and I'd like to share a few pictures of my progress.</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-graphics">#<a href="../tags/graphics.html">graphics</a></li><li class="tag-game-engine">#<a href="../tags/game-engine.html">game-engine</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#ghengin" id="toc-ghengin"><span class="toc-section-number">1</span> Ghengin</a>
+<ul>
+<li><a href="#bullets-on-technical-details" id="toc-bullets-on-technical-details"><span class="toc-section-number">1.1</span> Bullets on Technical Details</a></li>
+<li><a href="#the-small-victories" id="toc-the-small-victories"><span class="toc-section-number">1.2</span> The Small Victories</a></li>
+<li><a href="#a-peek-into-the-code" id="toc-a-peek-into-the-code"><span class="toc-section-number">1.3</span> A peek into the code</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 data-number="1" id="ghengin"><span class="header-section-number">1</span> Ghengin</h1>
+<p>I’ve been working the past month or two in a game engine (called <a href="https://github.com/alt-romes/ghengin"><code>Ghengin</code></a>).
+This is not yet a release, and version 0.1.0 is far into the future. However,
+I’ve come a long way and I’d like to share a few pictures of my progress.
+This post was migrated from the discussion at the
+<a href="https://discourse.haskell.org/t/monthly-update-on-a-haskell-game-engine/5515?u=romes">Haskell Discourse</a></p>
+<p>The demo I’ve been working on is based on Sebastian Lague’s series <a href="https://www.youtube.com/playlist?list=PLFt_AvWsXl0cONs3T0By4puYy6GM22ko8">Procedural Planets</a>.
+It is a showcase of procedurally generated planets you can move around in and
+tweak the procedural generation parameters of the planets to create oceans and
+continents.</p>
+<figure>
+<img src="../images/ghengin/devlog8.jpeg" alt="Fig 1. Screenshot of planets demo" />
+<figcaption aria-hidden="true">Fig 1. Screenshot of planets demo</figcaption>
+</figure>
+<h2 data-number="1.1" id="bullets-on-technical-details"><span class="header-section-number">1.1</span> Bullets on Technical Details</h2>
+<p>I hope to, soon enough, write a more substantial explanation of the engine’s
+technical challenges and overall design decisions so far, and on the game
+developer’s facing side of the engine. In the meantime, here are a few key
+points regarding the technical feats of the engine along with the main libraries
+it currently depends on, which help create a picture of how it is working:</p>
+<ul>
+<li><p>The renderer is written using the <a href="https://hackage.haskell.org/package/vulkan">great bindings to the Vulkan API</a></p></li>
+<li><p>The shaders are crucial in the overall design, and a lot of code depends on
+their definition (e.g. preparing render pipelines, allocating descriptor sets
+and textures, everything materials related …). The shaders are written using
+<a href="https://gitlab.com/sheaf/fir">FIR</a>, an amazing shader language embedded in
+Haskell!</p></li>
+<li><p>The entity management, scene graph and render queue are done/created through
+the <a href="https://hackage.haskell.org/package/apecs-0.9.4">apecs</a> entity component
+system.</p></li>
+<li><p>Vectors and matrices are from <a href="https://hackage.haskell.org/package/geomancy-0.2.4.1">geomancy</a></p></li>
+<li><p><a href="https://hackage.haskell.org/package/GLFW-b">GLFW-b</a> for window management and
+user input (used as the window backend for vulkan)</p></li>
+<li><p>The <a href="https://hackage.haskell.org/package/dear-imgui">dear-imgui bindings</a> for the GUI</p></li>
+<li><p><a href="https://hackage.haskell.org/package/JuicyPixels-3.3.8">JuicyPixels</a> for loading textures</p></li>
+</ul>
+<p><a href="https://gitlab.com/sheaf/fir">FIR</a> is a really cool shader library and unlike
+any you’ve likely tried before (it’s embeded in Haskell, but that’s just the
+start). The shader’s “interfaces” are defined at the type level, and in
+<code>ghengin</code> that type information is used to validate the
+game-developer-defined-materials. In short, if you define materials incompatible
+with your shaders, the program will fail at compile time</p>
+<h2 data-number="1.2" id="the-small-victories"><span class="header-section-number">1.2</span> The Small Victories</h2>
+<p>ROMES:TODO: Small grid of images!</p>
+<p>The very first achievement was rendering a triangle:
+<img src="../images/ghengin/devlog2.jpeg" alt="Fig 2. Rendering a triangle" /></p>
+<p>Then I rendered a simple cube and was able to rotate it with a simple model
+transform matrix:
+<img src="../images/ghengin/devlog3.jpeg" alt="Fig 3. Rendering a rotating cube" /></p>
+<p>Later I got a perspective camera which could move around the world. I was
+generating spheres at this point and the colors show that I was getting closer
+to generating the normals right too.
+<img src="../images/ghengin/devlog4.jpeg" alt="Devlog 4" /></p>
+<p>I managed to integrate dear-imgui into the renderer at this point, and later on fixed a dreaded <a href="https://github.com/haskell-game/dear-imgui.hs/pull/166">off by one error</a> which kept making the GUI behave funny and crash. I was also experimenting with simple diffuse lighting here.
+<img src="../images/ghengin/devlog5.jpeg" alt="Devlog 5" /></p>
+<p>With the GUI in place, I started focusing on developing planets by generating single sphere and modifying the height value of each point on the sphere by noise value: generating terrain and mountains.
+<img src="../images/ghengin/devlog6.jpeg" alt="Devlog 6" /></p>
+<p>After the terrain generation I spent some long weeks on the internals of the renderer before achieving more visual results with the exception of the following color-based-on-height-relative-to-min-and-max-heights planet:
+<img src="../images/ghengin/devlog7.jpeg" alt="Devlog 7" /></p>
+<p>Those weeks were spent in internal technical challenges which I hope to describe on a subsequent post with the resulting design and implementation (and hopefully avoid to some extent the arduous process of understanding and reaching a design and implementation).</p>
+<p>This week, with the material system working great for a first iteration, I spent finally some more time on the procedural planets: I added specular highlights to the lighting model (using the blinn-phong model) and added a (gradient based) texture to the planet that is sampled according to the height of each point in the planet. The result is a nicely lit planet with colors depending on the height (lower height = blue for water, middle = green for grass, higher = brown for mountains)
+<img src="../images/ghengin/devlog1.jpeg" alt="Devlog 1" /></p>
+<h2 data-number="1.3" id="a-peek-into-the-code"><span class="header-section-number">1.3</span> A peek into the code</h2>
+<p>PS: I don’t expect it to be useful without a proper explanation, but the development is going on @ <a href="https://github.com/alt-romes/ghengin">https://github.com/alt-romes/ghengin</a>. The next feature which is almost done is a gradient editor in the GUI.</p>
+<p>Here’s a quick look at the Main module of the procedural planets game.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">initG ::</span> <span class="dt">Ghengin</span> <span class="dt">World</span> ()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>initG <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Planet settings used to generate the planet and which are edited through the UI</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  ps <span class="ot">&lt;-</span> makeSettings <span class="op">@</span><span class="dt">PlanetSettings</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  (planetMesh,minmax) <span class="ot">&lt;-</span> newPlanet ps</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Load the planet gradient texture</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  sampler <span class="ot">&lt;-</span> createSampler <span class="dt">FILTER_NEAREST</span> <span class="dt">SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  tex         <span class="ot">&lt;-</span> texture <span class="st">&quot;assets/planet_gradient.png&quot;</span> sampler</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Create the render pipeline based on the shader definition</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  planetPipeline <span class="ot">&lt;-</span> makeRenderPipeline Shader.shaderPipeline</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Create a material which will be validated against the render pipeline at compile time</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  m1 <span class="ot">&lt;-</span> material (<span class="dt">Texture2DBinding</span> tex <span class="op">.</span> <span class="dt">StaticBinding</span> (vec3 <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span>) <span class="op">.</span> <span class="dt">StaticBinding</span> minmax) planetPipeline</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Create a render packet with the mesh, material, and pipeline.</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- All entities with a RenderPacket component are rendered according to it.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> p1 <span class="ot">=</span> renderPacket planetMesh m1 planetPipeline</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Define our scene graph</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  sceneGraph <span class="kw">do</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- A planet entity, with the planet render packet and a transform</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    e1 <span class="ot">&lt;-</span> newEntity ( p1, <span class="dt">Transform</span> (vec3 <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span>) (vec3 <span class="dv">1</span> <span class="dv">1</span> <span class="dv">1</span>) (vec3 <span class="dv">0</span> (<span class="fu">pi</span><span class="op">/</span><span class="dv">2</span>) <span class="dv">0</span>) )</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- A camera</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    newEntity ( <span class="dt">Camera</span> (<span class="dt">Perspective</span> (radians <span class="dv">65</span>) <span class="fl">0.1</span> <span class="dv">100</span>) <span class="dt">ViewTransform</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>              , <span class="dt">Transform</span> (vec3 <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span>) (vec3 <span class="dv">1</span> <span class="dv">1</span> <span class="dv">1</span>) (vec3 <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span>))</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- The planet UI component based on the `ps` settings</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    newEntityUI <span class="st">&quot;Planet&quot;</span>  <span class="op">$</span> makeComponents ps (e1,tex)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> ()</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="ot">updateG ::</span> () <span class="ot">-&gt;</span> <span class="dt">DeltaTime</span> <span class="ot">-&gt;</span> <span class="dt">Ghengin</span> <span class="dt">World</span> <span class="dt">Bool</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>updateG () dt <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Every frame we update the first person camera with the user inputs and the planet's rotation</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  cmapM <span class="op">$</span> \(<span class="ot">_ ::</span> <span class="dt">Camera</span>,<span class="ot"> tr ::</span> <span class="dt">Transform</span>) <span class="ot">-&gt;</span> updateFirstPersonCameraTransform dt tr</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  cmap <span class="op">$</span> \(<span class="ot">_ ::</span> <span class="dt">RenderPacket</span>,<span class="ot"> tr ::</span> <span class="dt">Transform</span>) <span class="ot">-&gt;</span> (tr{rotation <span class="ot">=</span> withVec3 tr<span class="op">.</span>rotation (\x y z <span class="ot">-&gt;</span> vec3 x (y<span class="op">+</span><span class="fl">0.5</span><span class="op">*</span>dt) z) }<span class="ot"> ::</span> <span class="dt">Transform</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pure</span> <span class="dt">False</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="ot">main ::</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- Run the game with this init, update and end function</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  ghengin w initG <span class="fu">undefined</span> updateG endG</span></code></pre></div>
+<p>If you are curious about the full source of the planets game, beware of dragons :slight_smile:. It is not ready as a learning resource whatsoever.</p>
+
+</article>
+
+    </main>
+  </body>
+</html>

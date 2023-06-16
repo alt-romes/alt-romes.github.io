@@ -1,13 +1,4 @@
 <header>
-  <h1>Write-ups <button onclick="collapse()">collapse</button></h1>
+  <h1>All the posts I've published</h1>
 </header>
 $partial("templates/posts.html")$
-
-<script>
-  const posts = document.getElementsByClassName("post");
-  function collapse() {
-    for (const e of posts) {
-      e.lastElementChild.classList.toggle("hidden");
-    }
-  }
-</script>

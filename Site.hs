@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
 
 import Data.String
 import Data.List (intersperse)
@@ -19,8 +20,12 @@ import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..))
 import Skylighting (Style(..), ToColor(..), TokenType(..), TokenStyle(..), defStyle)
 
 import Hakyll
+import Hakyll.Images (loadImage, compressJpgCompiler)
 import Data.Functor.Identity
 import qualified Text.Pandoc.Templates as Pandoc
+import Data.Maybe (mapMaybe, isJust, catMaybes)
+
+import System.FilePath.Posix
 
 -- import Media
 
@@ -29,7 +34,11 @@ import qualified Text.Pandoc.Templates as Pandoc
 main :: IO ()
 main = hakyllWith config $ do
     -- Copy images
-    match "images/*" $ do
+    match "images/**.jpeg" $ do
+        route   idRoute
+        compile $ loadImage >>= compressJpgCompiler 100
+
+    match "images/**" $ do
         route   idRoute
         compile copyFileCompiler
 
@@ -138,7 +147,12 @@ main = hakyllWith config $ do
         compile $ do
 
             posts <- recentFirst =<< loadAll "posts/**"
-            let indexCtx = listField "posts" postCtx (pure $ take 3 posts)
+            posts_metadata <- mapM (getMetadata . itemIdentifier) posts
+            let posts_with_preview = catMaybes $ zipWith (\meta p -> (itemIdentifier p,) <$> lookupString "preview" meta) posts_metadata posts
+                indexCtx = listField "posts" postCtx (pure $ take 4 posts)
+                            <> headField "latest-preview" (map snd posts_with_preview)
+                            <> headField "latest-preview-desc" (mapMaybe (lookupString "preview-desc") posts_metadata)
+                            <> headField "latest-preview-url" (map ((-<.> "html") . toFilePath . fst) posts_with_preview)
                             <> tagsFieldWith (const $ pure $ map fst $ tagsMap tags) renderLink mconcat "tags" tags
                             -- <> tagCloudFieldWith "tag-cloud" renderTagCloudLink mconcat 80 125 tags -- for now, no tag cloud.
                             <> defaultContext
@@ -150,6 +164,7 @@ main = hakyllWith config $ do
 
 
 --------------------------------------------------------------------------------
+
 postCtx' :: Tags -> Context String
 postCtx' tags = dateField "date" "%B %e, %Y" <>
                tagsListField "tags" tags <>
@@ -237,3 +252,11 @@ tocTemplate = either error id . runIdentity . Pandoc.compileTemplate "" $ T.unli
   , "</div>"
   , "$body$"
   ]
+
+----- Utils -------------------------------------------------------------------
+
+headField :: String -> [String] -> Context a
+headField _ [] = mempty
+headField s (x:_) = constField s x
+
+
