@@ -41,6 +41,10 @@
   --info: skyblue;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 div.sourceCode {
   font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace; /* --xfont-code */
   box-sizing: border-box;
@@ -122,6 +126,10 @@ ul.tags, ul.inline-tags, .toc ul {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+figcaption {
+    text-align: center;
 }
 
 img {
