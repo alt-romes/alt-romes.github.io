@@ -65,6 +65,9 @@ html, body {
 h1 a {
   color: var(--link);
 }
+h1 a:visited {
+  color: var(--link); /* clear visited for links in headings */
+}
 
 body > main {
   max-width: 60rem;
@@ -103,11 +106,11 @@ a:hover {
 }
 
 a:active {
-  color: var(--link-active) !important; /* Important because some `a`s override their colors, but we want to globally set :active */
+  color: var(--link-active);
 }
 
 a:visited {
-    /* ROMES:TODO */
+  color: var(--link-visited);
 }
 
 
@@ -143,9 +146,6 @@ main > header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: space-between; */
-  /* padding: 2em 4em; */
-  /* padding-top: 0em; /1* account for the padding in the <main> tag *1/ */
 }
 
 @media only screen and (max-width: 768px) {
@@ -189,8 +189,6 @@ main > header > .description {
    ------ */
 
 body > nav {
-  /* gap: 1.5rem; */
-  /* align-items: center; */
   border-bottom: 1px solid black;
 }
 
@@ -217,20 +215,11 @@ ul.tags {
 
 ul.tags > li {
   color: var(--link);
-  cursor: pointer;
-  transition-duration: 0.1s;
-  position: relative
-  /* border-radius: 0.2em; */
-  /* padding: 0.25em 0.5em; */
+  position: relative;
 }
 
-ul.tags > li:hover,
-ul.tags > li:focus
-{
-  /* box-shadow: 0 0.5em 0.5em -0.4em gray; */
-  /* transform: translateY(-0.1em); */
-}
-
+/* Tags skewed thick underline */
+/* ---------------------------
 ul.tags > li::before {
   content: "";
   position: absolute;
@@ -244,18 +233,16 @@ ul.tags > li::before {
 
 ul.tags > li:hover::before,
 ul.tags > li:focus::before {
-  opacity: 1;
-  /* transition: opacity 300ms, transform 300ms; */
-  transform: skew(-22deg) scaleX(0.9);
-}
-
-ul.tags > li:active {
-  transform: scaleX(0.8);
+  transform: skew(-22deg) scaleX(0.8) translateX(0.3rem);
 }
 
 ul.tags > li > a {
-  color: inherit !important; /* override a:active important */
   text-decoration: none;
+}
+*/
+
+ul.tags > li > a:visited {
+  color: var(--link); /*tags don't get visited*/
 }
 
 ul.inline-tags {
@@ -263,14 +250,6 @@ ul.inline-tags {
   flex-wrap: wrap;
   gap: 0.2em;
 }
-
-ul.inline-tags > li {
-  /* -webkit-text-fill-color: transparent; */
-  /* -webkit-background-clip: text; */
-  cursor: pointer;
-  background: white;
-}
-
 
 /* Table of Contents
    ----------------- */
@@ -336,7 +315,7 @@ ul.inline-tags > li {
   gap: 0.2em;
   font-size: 0.85em;
   margin: 0.2em 0;
-  color: gray;
+  color: var(--gray);
 }
 
 .post > header > .post-metadata a:visited {
@@ -367,30 +346,33 @@ default color for tags has priority over the simple class selector.
 Alternative: don't set to black, and simply have a color for each tag!
  */
 
-.tag-haskell::before {
+.tag-haskell {
   /* background: linear-gradient(90deg, #5e5086, #8f4e8b) */
-  background: #8f4e8b
+  color: #8f4e8b !important
 }
+.tag-haskell::before { background: #8f4e8b }
+.tag-haskell > a:active { color: #8f4e8b !important }
 
-.tag-beginner::before {
-  background: #FFE5B4
-}
+.tag-beginner { color: #FFE5B4 !important }
+.tag-beginner::before { background: #FFE5B4 }
+.tag-beginner > a:active { color: #FFE5B4 !important }
 
-.tag-vim::before {
-  background: #007f00
-}
+.tag-vim { color: #007f00 !important }
+.tag-vim::before { background: #007f00 }
+.tag-vim > a:active { color: #007f00 !important }
 
-.tag-frp::before {
-  background: orange
-}
+.tag-frp { color: orange !important }
+.tag-frp::before { background: orange }
+.tag-frp > a:active { color: orange !important }
 
-.tag-graphics::before {
-  background: red
-}
+.tag-graphics { color: red !important }
+.tag-graphics::before { background: red }
+.tag-graphics > a:active { color: red !important }
 
-.tag-game-engine::before {
-  background: black
-}
+.tag-game-engine { color: black !important }
+.tag-game-engine::before { background: black }
+.tag-game-engine > a:active { color: black !important }
+
 
 /* TODO: MATHJAX */
 
