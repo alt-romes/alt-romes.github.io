@@ -67,40 +67,86 @@ with your shaders, the program will fail at compile time
 
 ## The Small Victories
 
-ROMES:TODO: Small grid of images!
+To give a general sense of progress, I put together a small roadmap of victories
+attained while developing the engine, both in words and in screenshots.
 
-The very first achievement was rendering a triangle:
-![Fig 2. Rendering a triangle](/images/ghengin/devlog2.jpeg)
+* The very first achievement was rendering a triangle (Fig. 2). This is a given
+classic in graphics programming.
 
-Then I rendered a simple cube and was able to rotate it with a simple model
-transform matrix:
+* Then, I rendered a simple cube and was able to rotate it with a simple model
+transform matrix (Fig. 3).
+
+* Later, I got a perspective camera which could move around the world. I was
+generating spheres at this point and the colors show that I was getting closer
+to generating the normals right too (Fig. 4).
+
+* I managed to integrate dear-imgui into the renderer after that, and even
+fixed upstream a dreaded [off by one error](https://github.com/haskell-game/dear-imgui.hs/pull/166) which kept making
+the GUI behave funny and crash. I was also experimenting with simple diffuse
+lighting here (Fig. 5).
+
+* With the GUI in place, I started focusing on developing planets by generating
+    single sphere and modifying the height value of each point on the sphere by
+    noise value: generating terrain and mountains (Fig. 6).
+
+* After the terrain generation I spent some long weeks on the internals of the
+    renderer before achieving more visual results with the exception of the
+    following color-based-on-height-relative-to-min-and-max-heights planet (Fig. 7).
+    Those weeks were spent in internal technical challenges which I hope to
+    describe on a subsequent post with the resulting design and implementation
+    (and hopefully avoid to some extent the arduous process of understanding and
+    reaching a design and implementation).
+
+* This week, with the material system working great for a first iteration, I spent
+finally some more time on the procedural planets: I added specular highlights to
+the lighting model (using the blinn-phong model) and added a (gradient based)
+texture to the planet that is sampled according to the height of each point in
+the planet. The result is a nicely lit planet with colors depending on the
+height: lower height -> blue for water, middle -> green for grass, higher -> brown for mountains (Fig. 8).
+
+<style>
+.showcase {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.showcase > figure {
+    width: 40%;
+}
+
+.showcase img {
+    width: 25rem;
+    height: 16rem;
+}
+</style>
+
+<div class="showcase">
+![Fig 2. Hello World! - Rendering a triangle](/images/ghengin/devlog2.jpeg)
+
 ![Fig 3. Rendering a rotating cube](/images/ghengin/devlog3.jpeg)
 
-Later I got a perspective camera which could move around the world. I was
-generating spheres at this point and the colors show that I was getting closer
-to generating the normals right too.
-![Devlog 4](/images/ghengin/devlog4.jpeg)
+![Fig 4. A moving camera and some broken spheres](/images/ghengin/devlog4.jpeg)
 
-I managed to integrate dear-imgui into the renderer at this point, and later on fixed a dreaded [off by one error](https://github.com/haskell-game/dear-imgui.hs/pull/166) which kept making the GUI behave funny and crash. I was also experimenting with simple diffuse lighting here.
-![Devlog 5](/images/ghengin/devlog5.jpeg)
- 
-With the GUI in place, I started focusing on developing planets by generating single sphere and modifying the height value of each point on the sphere by noise value: generating terrain and mountains.
-![Devlog 6](/images/ghengin/devlog6.jpeg)
+![Fig 5. DearImGUI and simple diffuse lighting](/images/ghengin/devlog5.jpeg)
 
-After the terrain generation I spent some long weeks on the internals of the renderer before achieving more visual results with the exception of the following color-based-on-height-relative-to-min-and-max-heights planet:
-![Devlog 7](/images/ghengin/devlog7.jpeg)
+![Fig 6. The very first planets](/images/ghengin/devlog6.jpeg)
 
-Those weeks were spent in internal technical challenges which I hope to describe on a subsequent post with the resulting design and implementation (and hopefully avoid to some extent the arduous process of understanding and reaching a design and implementation).
+![Fig 7. The height influences the color](/images/ghengin/devlog7.jpeg)
 
-This week, with the material system working great for a first iteration, I spent finally some more time on the procedural planets: I added specular highlights to the lighting model (using the blinn-phong model) and added a (gradient based) texture to the planet that is sampled according to the height of each point in the planet. The result is a nicely lit planet with colors depending on the height (lower height = blue for water, middle = green for grass, higher = brown for mountains)
-![Devlog 1](/images/ghengin/devlog1.jpeg)
+![Fig 8. Texture sampling based on the color!](/images/ghengin/devlog1.jpeg)
+</div>
+
+
 
 ## A peek into the code
 
-PS: I don't expect it to be useful without a proper explanation, but the development is going on @ [https://github.com/alt-romes/ghengin](https://github.com/alt-romes/ghengin). The next feature which is almost done is a gradient editor in the GUI.
+Unfortunately, I don't expect it to be useful without a proper explanation, but
+nonetheless I'll present a small snippet of the Main module of the procedural
+planets game. Additionally, the [full source is avaliable](https://github.com/alt-romes/ghengin)[^1] -- that's
+also where engine development is happening. The next feature I've just completed,
+at the time of writing, is a gradient editor for the in game GUI (Fig. 1).
 
-Here's a quick look at the Main module of the procedural planets game.
-
+As promised, here's a quick look at the Main module of the procedural planets game:
 ```haskell
 initG :: Ghengin World ()
 initG = do
@@ -153,4 +199,5 @@ main = do
   ghengin w initG undefined updateG endG
 ```
 
-If you are curious about the full source of the planets game, beware of dragons :slight_smile:. It is not ready as a learning resource whatsoever.
+[^1]: If you are curious about the full source of the planets game, beware of dragons
+        :slightly_smiling_face:. It is not ready as a learning resource whatsoever.

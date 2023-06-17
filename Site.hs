@@ -9,6 +9,7 @@ import Data.List (intersperse)
 import Data.Map (Map, singleton)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Set as Set
 
 import Text.Blaze.Html5.Attributes (href, class_, style)
 import Text.Blaze.Html.Renderer.String (renderHtml)
@@ -16,7 +17,7 @@ import Text.Blaze.Html5 (toHtml, (!), toValue)
 import qualified Text.Blaze.Html5 as H
 
 import Text.Pandoc.Highlighting (styleToCss)
-import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..))
+import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..), Extension(..), enableExtension)
 import Skylighting (Style(..), ToColor(..), TokenType(..), TokenStyle(..), defStyle)
 
 import Hakyll
@@ -33,6 +34,7 @@ import System.FilePath.Posix
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyllWith config $ do
+
     -- Copy images
     match "images/**.jpeg" $ do
         route   idRoute
@@ -199,11 +201,18 @@ renderTagCloudLink minSize maxSize tag url count min' max' =
               ! href (toValue url)
               $ toHtml tag
 
--- | Styled pandoc compiler
+-- | Styled pandoc compiler with emoji support and much more!
 pandocCompilerS :: Compiler (Item String)
 pandocCompilerS =
     pandocCompilerWith
         defaultHakyllReaderOptions
+            { readerExtensions = enableExtension Ext_tex_math_dollars $
+                                 enableExtension Ext_tex_math_double_backslash $
+                                 enableExtension Ext_emoji $
+                                 enableExtension Ext_inline_notes $
+                                 enableExtension Ext_footnotes $
+                                   readerExtensions defaultHakyllReaderOptions
+            }
         defaultHakyllWriterOptions
             { writerHighlightStyle  = Just pandocCodeStyle
             , writerTableOfContents = True

@@ -35,14 +35,13 @@
   /* ROMES:TODO: Colorscheme */
   --black: black;
   --link: blue;
+  --link-active: red;
+  --link-hover: green;
+  --link-visited: purple;
   --accent-1: orange;
   --gray: gray;
   --background: white;
   --info: skyblue;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 div.sourceCode {
@@ -71,7 +70,7 @@ body > main {
   max-width: 60rem;
   margin: 0 auto;
   padding: 2em 1em;
-  font-size: 105%;
+  /* font-size: 105%; */
 }
 
 @media only screen and (max-width: 768px) {
@@ -80,29 +79,11 @@ body > main {
   }
 }
 
-body > nav {
-  /* gap: 1.5rem; */
-  /* align-items: center; */
-  border-bottom: 1px solid black;
-}
-
-body > nav a:visited {
-    color: var(--link);
-}
-
-body > nav a:active {
-    color: var(--accent-1) !important;
-}
-
-body > nav > ul {
-  list-style-type: none;
+/* uls without the default settings */
+ul.tags, ul.inline-tags, .toc ul {
   margin: 0;
-  padding: 1rem 2rem;
-
-  display: flex;
-  gap: 2em;
-  justify-content: center;
-  align-items: center;
+  padding: 0;
+  list-style: none;
 }
 
 h1, h2, h3, h4 {
@@ -121,12 +102,22 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Uls without the default settings */
-ul.tags, ul.inline-tags, .toc ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+a:active {
+  color: var(--link-active) !important; /* Important because some `a`s override their colors, but we want to globally set :active */
 }
+
+a:visited {
+    /* ROMES:TODO */
+}
+
+
+.header-section-number {
+  color: var(--accent-1);
+  margin-right: 0.25em;
+}
+
+/* Figures
+   ------- */
 
 figure {
     text-align:center;
@@ -137,17 +128,16 @@ figcaption {
 }
 
 img {
+    box-sizing: border-box;
     max-width: 100%;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 5px;
     border: 2px solid black;
     margin:auto;
 }
 
-.header-section-number {
-  color: var(--accent-1);
-  margin-right: 0.25em;
-}
+/* Header
+   ------ */
 
 main > header {
   display: flex;
@@ -184,6 +174,7 @@ main > header > .description {
   max-width: 50em;
 }
 
+/** Header Alerts **/
 .alert {
     border: 1px solid var(--gray);
     padding: 0.75em;
@@ -192,6 +183,26 @@ main > header > .description {
 
 .alert.info {
     background: var(--info);
+}
+
+/* Navbar
+   ------ */
+
+body > nav {
+  /* gap: 1.5rem; */
+  /* align-items: center; */
+  border-bottom: 1px solid black;
+}
+
+body > nav > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 1rem 2rem;
+
+  display: flex;
+  gap: 2em;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Tags
@@ -227,25 +238,24 @@ ul.tags > li::before {
   width: 100%;
   height: 15%;
   z-index: -1;
-  transition: opacity 300ms, transform 300ms;
-  /* background: var(--accent-1); */
-  transform: skew(-22deg) scale(0.8);
+  transform: skew(-22deg) scaleX(0);
   transform-origin: center;
 }
 
 ul.tags > li:hover::before,
 ul.tags > li:focus::before {
   opacity: 1;
-  transform: skew(-22deg) scale(1);
+  /* transition: opacity 300ms, transform 300ms; */
+  transform: skew(-22deg) scaleX(0.9);
+}
+
+ul.tags > li:active {
+  transform: scaleX(0.8);
 }
 
 ul.tags > li > a {
-  color: var(--link);
+  color: inherit !important; /* override a:active important */
   text-decoration: none;
-}
-
-ul.tags > li > a:active {
-  color: var(--accent-1);
 }
 
 ul.inline-tags {
@@ -260,6 +270,7 @@ ul.inline-tags > li {
   cursor: pointer;
   background: white;
 }
+
 
 /* Table of Contents
    ----------------- */
@@ -291,12 +302,10 @@ ul.inline-tags > li {
 }
 
 .toc a:visited {
-  /* text-decoration: underline; */
   color: var(--link);
 }
 
 .toc a:hover {
-  /* text-decoration: underline; */
   color: var(--accent-1);
 }
 
@@ -334,16 +343,20 @@ ul.inline-tags > li {
   color: var(--link);
 }
 
-ul.tags > li > a:active {
-  color: var(--accent-1);
-}
-
 .post > section > p {
   margin-top: 0;
 }
 
 .post time {
   font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
+}
+
+/* Footnotes
+   ---------
+ */
+
+.footnote-ref:hover {
+    text-decoration: none; /* No underline for footnote links */
 }
 
 /* Specific tags
@@ -355,19 +368,28 @@ Alternative: don't set to black, and simply have a color for each tag!
  */
 
 .tag-haskell::before {
-  background: linear-gradient(90deg, #5e5086, #8f4e8b);
+  /* background: linear-gradient(90deg, #5e5086, #8f4e8b) */
+  background: #8f4e8b
 }
 
 .tag-beginner::before {
-  background: #FFE5B4;
+  background: #FFE5B4
 }
 
 .tag-vim::before {
-  background: #007f00;
+  background: #007f00
 }
 
 .tag-frp::before {
   background: orange
+}
+
+.tag-graphics::before {
+  background: red
+}
+
+.tag-game-engine::before {
+  background: black
 }
 
 /* TODO: MATHJAX */
