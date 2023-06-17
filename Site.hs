@@ -151,7 +151,7 @@ main = hakyllWith config $ do
             posts <- recentFirst =<< loadAll "posts/**"
             posts_metadata <- mapM (getMetadata . itemIdentifier) posts
             let posts_with_preview = catMaybes $ zipWith (\meta p -> (itemIdentifier p,) <$> lookupString "preview" meta) posts_metadata posts
-                indexCtx = listField "posts" postCtx (pure $ take 4 posts)
+                indexCtx = listField "posts" postCtx (pure $ take 8 posts)
                             <> headField "latest-preview" (map snd posts_with_preview)
                             <> headField "latest-preview-desc" (mapMaybe (lookupString "preview-desc") posts_metadata)
                             <> headField "latest-preview-url" (map ((-<.> "html") . toFilePath . fst) posts_with_preview)

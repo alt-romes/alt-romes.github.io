@@ -70,17 +70,19 @@ h1 a:visited {
 }
 
 body > main {
-  max-width: 60rem;
+  max-width: 55rem;
   margin: 0 auto;
   padding: 2em 1em;
   /* font-size: 105%; */
 }
 
+/*
 @media only screen and (max-width: 768px) {
   body > main {
-      font-size: 100%; /* Otherwise we can only have like 5 words per line */
+      font-size: 100%; /1* Otherwise we can only have like 5 words per line *1/
   }
 }
+*/
 
 /* uls without the default settings */
 ul.tags, ul.inline-tags, .toc ul {
@@ -100,17 +102,14 @@ h1,h2,h3 {
 a {
   text-decoration: none;
 }
-
 a:hover {
   text-decoration: underline;
 }
-
-a:active {
-  color: var(--link-active);
-}
-
 a:visited {
   color: var(--link-visited);
+}
+a:active {
+  color: var(--link-active);
 }
 
 
@@ -161,10 +160,7 @@ main > header div.title {
   gap: 1em;
 }
 
-main > header > div.title > h1 {
-  margin: 1em 0;
-}
-
+main > header > div.title > h1,
 main > header > div.title > p {
   margin: 1em 0;
 }
@@ -201,6 +197,13 @@ body > nav > ul {
   gap: 2em;
   justify-content: center;
   align-items: center;
+}
+
+body > nav a:visited {
+  color: var(--link); /* nav links don't get visited */
+}
+body > nav a:active {
+  color: var(--link-active); /* re-set link-active */
 }
 
 /* Tags
@@ -257,8 +260,13 @@ ul.inline-tags {
   padding: 1em 0 1em 2em; /* top right bottom left */
   float: right;
   font-family: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif; /* --xfont-heading */
-  max-width: 25em;
   background: var(--background);
+}
+
+@media only screen and (min-width: 768px) {
+    .toc {
+      max-width: 25em;
+    }
 }
 
 .toc > .header {
@@ -281,11 +289,11 @@ ul.inline-tags {
 }
 
 .toc a:visited {
-  color: var(--link);
+  color: var(--link); /* toc links don't get visited */
 }
 
 .toc a:hover {
-  color: var(--accent-1);
+  color: var(--accent-1); /* hover differently */
 }
 
 @media only screen and (max-width: 768px) {
@@ -338,48 +346,6 @@ ul.inline-tags {
     text-decoration: none; /* No underline for footnote links */
 }
 
-/* Specific tags
-   -------------
+/* MATHJAX expressions can be spliced in with $$ latex syntax -- pandoc FTW */
 
-Note: simple colors need !important because the css selector that sets the
-default color for tags has priority over the simple class selector.
-Alternative: don't set to black, and simply have a color for each tag!
- */
-
-.tag-haskell {
-  /* background: linear-gradient(90deg, #5e5086, #8f4e8b) */
-  color: #8f4e8b !important
-}
-.tag-haskell::before { background: #8f4e8b }
-.tag-haskell > a:active { color: #8f4e8b !important }
-
-.tag-beginner { color: #FFE5B4 !important }
-.tag-beginner::before { background: #FFE5B4 }
-.tag-beginner > a:active { color: #FFE5B4 !important }
-
-.tag-vim { color: #007f00 !important }
-.tag-vim::before { background: #007f00 }
-.tag-vim > a:active { color: #007f00 !important }
-
-.tag-frp { color: orange !important }
-.tag-frp::before { background: orange }
-.tag-frp > a:active { color: orange !important }
-
-.tag-graphics { color: red !important }
-.tag-graphics::before { background: red }
-.tag-graphics > a:active { color: red !important }
-
-.tag-game-engine { color: black !important }
-.tag-game-engine::before { background: black }
-.tag-game-engine > a:active { color: black !important }
-
-
-/* TODO: MATHJAX */
-
-/* Utils
-   ----- */
-
-.hidden {
-  display: none;
-}
-
+/* ROMES:TODO: Should post titles also be :active link-active? */

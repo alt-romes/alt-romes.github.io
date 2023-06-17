@@ -110,8 +110,10 @@ height: lower height -> blue for water, middle -> green for grass, higher -> bro
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.showcase > figure {
-    width: 40%;
+@media only screen and (min-width: 768px) {
+    .showcase > figure {
+        width: 40%;
+    }
 }
 
 .showcase img {

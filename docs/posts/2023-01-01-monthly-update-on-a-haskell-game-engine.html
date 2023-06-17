@@ -8,13 +8,14 @@
     <meta name="description" content="I've been working the past month or two in a game engine (called <code>Ghengin</code>). This is not yet a release, and version 0.1.0 is far into the future. However, I've come a long way and I'd like to share a few pictures of my progress.">
     
     <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
     <link rel="stylesheet" href="../css/syntax.css" />
   </head>
   <body>
     <nav>
       <ul>
         <li class="logo"><a href="../">romes</a></li>
-        <li><a href="../posts.html">posts</a></li>
+        <li><a href="../posts.html">blog</a></li>
         <li>music</li>
         <!-- <li><a href="/papers.html">publications</a></li> -->
         <li>publications</li>
@@ -134,8 +135,10 @@ height: lower height -&gt; blue for water, middle -&gt; green for grass, higher 
     flex-wrap: wrap;
     justify-content: space-between;
 }
-.showcase > figure {
-    width: 40%;
+@media only screen and (min-width: 768px) {
+    .showcase > figure {
+        width: 40%;
+    }
 }
 
 .showcase img {
