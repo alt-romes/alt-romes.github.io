@@ -31,8 +31,7 @@
   --xfont-cursive: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
 }
 
-:root {
-  /* ROMES:TODO: Colorscheme */
+/* :root {
   --black: black;
   --link: blue;
   --link-active: red;
@@ -42,6 +41,20 @@
   --gray: gray;
   --background: white;
   --info: skyblue;
+} */
+
+/* kanagawa.nvim */
+:root {
+  --black: #16161D;
+  --link: blue;
+  --link-active: #E82424;
+  /* --link-hover: #76946A; */
+  --link-visited: purple; /* #E46876; or #957FB8; */
+  --accent-1: #FF9E3B;
+  --accent-2: #D27E99;
+  --gray: #727169;
+  --background: white; /* doesn't work: #DCD7BA; */
+  --info: #7FB4CA;
 }
 
 div.sourceCode {
@@ -60,6 +73,8 @@ html {
 
 html, body {
   margin: 0;
+  background: var(--background);
+  color: var(--black);
 }
 
 h1 a {
@@ -72,7 +87,7 @@ h1 a:visited {
 body > main {
   max-width: 55rem;
   margin: 0 auto;
-  padding: 2em 1em;
+  padding: 0em 1em 2em 1em; /* T R B L */
   /* font-size: 105%; */
 }
 
@@ -134,7 +149,7 @@ img {
     max-width: 100%;
     object-fit: cover;
     border-radius: 5px;
-    border: 2px solid black;
+    border: 2px solid var(--black);
     margin:auto;
 }
 
@@ -185,7 +200,8 @@ main > header > .description {
    ------ */
 
 body > nav {
-  border-bottom: 1px solid black;
+  /* font-family: ; */
+  /* border-bottom: 1px solid black; */
 }
 
 body > nav > ul {
@@ -199,15 +215,27 @@ body > nav > ul {
   align-items: center;
 }
 
+body > nav a {
+  /* color: var(--accent-2); */
+  color: var(--accent-2);
+}
+body > nav a:hover {
+  text-decoration: none; /* nav links don't get hovered */
+}
 body > nav a:visited {
-  color: var(--link); /* nav links don't get visited */
+  color: var(--accent-2); /* nav links don't get visited */
 }
-body > nav a:active {
-  color: var(--link-active); /* re-set link-active */
-}
+/* body > nav a:active { */
+/*   color: var(--link-active); /1* re-set link-active *1/ */
+/* } */
 
 /* Tags
    ---- */
+ul.tags
+/* , ul.inline-tags */
+{
+    font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+}
 
 ul.tags {
   display: flex;
@@ -317,6 +345,10 @@ ul.inline-tags {
   color: var(--black);
 }
 
+.post > header > h3 > a:active {
+  color: var(--link-active);
+}
+
 .post > header > .post-metadata {
   display: flex;
   align-items: center;
@@ -349,3 +381,18 @@ ul.inline-tags {
 /* MATHJAX expressions can be spliced in with $$ latex syntax -- pandoc FTW */
 
 /* ROMES:TODO: Should post titles also be :active link-active? */
+
+
+/* Utils
+   -----
+ */
+
+@media only screen and (max-width: 768px) {
+    .hidden-small {
+        display: none;
+    }
+}
+
+.font-handwritten {
+    font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+}
