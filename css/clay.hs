@@ -7,13 +7,16 @@ import Data.Text (Text)
 import qualified Data.Text.Lazy.IO as T
 import Clay
 
+-- font_handwritten :: Css
+-- font_handwritten = fontFamily ["Segoe Print", "Bradley Hand", "Chilanka", "TSCu_Comic", "casual"] [cursive]
+
 link, link_active :: Color
 link = "#7FB4CA"
 link_active = "#E82424"
 
 -- | Generate CSS for a specific tag type from name and color
 tag :: Text -> Color -> Css
-tag name col = ".tags" ? do
+tag name col = (".tags" <> "h1") ? do
   let tagname = element (".tag-" <> name)
   tagname ? do
     important (color col)
