@@ -43,18 +43,23 @@
   --info: skyblue;
 } */
 
-/* kanagawa.nvim */
 :root {
-  --black: #16161D;
-  --link: blue;
-  --link-active: #E82424;
-  /* --link-hover: #76946A; */
-  --link-visited: purple; /* #E46876; or #957FB8; */
-  --accent-1: #FF9E3B;
-  --accent-2: #D27E99;
+  --black: #241623; /* dark_purple */
   --gray: #727169;
   --background: white; /* doesn't work: #DCD7BA; */
-  --info: #7FB4CA;
+
+  --accent-1: #FF9F1C;
+  --accent-2: #D27E99;
+  --accent-3: #D00000;
+  --accent-4: #457b9d;
+  /* TODO: Try generating palletes from images */
+
+  --info:         var(--accent-4);
+
+  --link:         var(--accent-4);
+  --link-active:  var(--accent-1);
+  --link-visited: var(--accent-2); /* or accent-3 */
+  /* --link-hover: black; */
 }
 
 div.sourceCode {

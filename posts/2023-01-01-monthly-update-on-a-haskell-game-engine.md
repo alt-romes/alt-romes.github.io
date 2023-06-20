@@ -2,10 +2,11 @@
 
 title: Monthly Update on a Haskell Game Engine
 
-description: I've been working the past month or two in a game engine (called <code>Ghengin</code>).
+description: I've been working the past month or two in a game engine called <code>Ghengin</code>.
              This is not yet a release, and version 0.1.0 is far into the future.
              However, I've come a long way and I'd like to share a few pictures
-             of my progress.
+             of my progress. This post was migrated from the discussion at the
+             Haskell Discourse.
 
 tags: haskell, graphics, game-engine
 
@@ -16,11 +17,11 @@ preview-desc: Screenshot of planets demo
 
 # Ghengin
 
-I've been working the past month or two in a game engine (called [`Ghengin`](https://github.com/alt-romes/ghengin)).
+I've been working the past month or two in a game engine called [`Ghengin`](https://github.com/alt-romes/ghengin).
 This is not yet a release, and version 0.1.0 is far into the future. However,
 I've come a long way and I'd like to share a few pictures of my progress.
 This post was migrated from the discussion at the
-[Haskell Discourse](https://discourse.haskell.org/t/monthly-update-on-a-haskell-game-engine/5515?u=romes)
+[Haskell Discourse](https://discourse.haskell.org/t/monthly-update-on-a-haskell-game-engine/5515?u=romes).
 
 The demo I've been working on is based on Sebastian Lague's series [Procedural Planets](https://www.youtube.com/playlist?list=PLFt_AvWsXl0cONs3T0By4puYy6GM22ko8).
 It is a showcase of procedurally generated planets you can move around in and

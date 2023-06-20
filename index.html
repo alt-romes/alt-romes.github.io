@@ -27,7 +27,7 @@ description: I write interdisciplinary articles, am a Haskell enthusiast and
     .preview {
         width: 32rem;
         float:right;
-        margin: 1rem 0 1rem 1rem;
+        margin: 1rem 0 0.5rem 1rem;
     }
 
     .preview > img {
@@ -42,6 +42,12 @@ Use gray instead of multicolors for the frontpage
     color: var(--gray) !important;
 }
 */
+section.top p a:visited {
+  color: var(--link); /* links in top page don't get visited */
+}
+section.top p a:active {
+  color: var(--link-active); /* links in top page don't get visited */
+}
 </style>
 
 <header>
@@ -53,8 +59,7 @@ Use gray instead of multicolors for the frontpage
 I'm a student at Faculdade de Ciências e Tecnologia in Lisbon, currently
 writing my Master thesis on type-checking linear types in the <a
 href="https://gitlab.haskell.org/ghc/ghc">Glasgow Haskell Compiler</a>'s Core.
-I also work as part of the GHC Team at <a
-href="https://well-typed.com/">Well-Typed</a>.
+I work at <a href="https://well-typed.com/">Well-Typed</a> as part of the GHC Team.
 </p>
 
 <p>

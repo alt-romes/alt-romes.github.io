@@ -42,7 +42,7 @@
     .preview {
         width: 32rem;
         float:right;
-        margin: 1rem 0 1rem 1rem;
+        margin: 1rem 0 0.5rem 1rem;
     }
 
     .preview > img {
@@ -57,6 +57,12 @@ Use gray instead of multicolors for the frontpage
     color: var(--gray) !important;
 }
 */
+section.top p a:visited {
+  color: var(--link); /* links in top page don't get visited */
+}
+section.top p a:active {
+  color: var(--link-active); /* links in top page don't get visited */
+}
 </style>
 
 <header>
@@ -67,7 +73,7 @@ Use gray instead of multicolors for the frontpage
 <p>
 I'm a student at Faculdade de Ciências e Tecnologia in Lisbon, currently
 writing my Master thesis on type-checking linear types in the <a href="https://gitlab.haskell.org/ghc/ghc">Glasgow Haskell Compiler</a>'s Core.
-I also work as part of the GHC Team at <a href="https://well-typed.com/">Well-Typed</a>.
+I work at <a href="https://well-typed.com/">Well-Typed</a> as part of the GHC Team.
 </p>
 
 <p>
@@ -97,7 +103,7 @@ learning Music Theory. You can find below my latests posts.
         <a href="./posts/2023-03-23-haskell-unicode-syntax-vim.html">Writing prettier Haskell with Unicode Syntax and Vim</a>
       </h3>
       <div class="post-metadata">
-        <time>March 23, 2023</time>
+        <time>Mar 23, 2023</time>
         <ul class="inline-tags"><li class="tag-haskell">#<a href="./tags/haskell.html">haskell</a></li><li class="tag-vim">#<a href="./tags/vim.html">vim</a></li></ul>
       </div>
     </header>
@@ -112,12 +118,12 @@ learning Music Theory. You can find below my latests posts.
         <a href="./posts/2023-01-01-monthly-update-on-a-haskell-game-engine.html">Monthly Update on a Haskell Game Engine</a>
       </h3>
       <div class="post-metadata">
-        <time>January  1, 2023</time>
+        <time>Jan  1, 2023</time>
         <ul class="inline-tags"><li class="tag-haskell">#<a href="./tags/haskell.html">haskell</a></li><li class="tag-graphics">#<a href="./tags/graphics.html">graphics</a></li><li class="tag-game-engine">#<a href="./tags/game-engine.html">game-engine</a></li></ul>
       </div>
     </header>
     <section>
-      <p>I've been working the past month or two in a game engine (called <code>Ghengin</code>). This is not yet a release, and version 0.1.0 is far into the future. However, I've come a long way and I'd like to share a few pictures of my progress.</p>
+      <p>I've been working the past month or two in a game engine called <code>Ghengin</code>. This is not yet a release, and version 0.1.0 is far into the future. However, I've come a long way and I'd like to share a few pictures of my progress. This post was migrated from the discussion at the Haskell Discourse.</p>
     </section>
   </article>
 
@@ -127,7 +133,7 @@ learning Music Theory. You can find below my latests posts.
         <a href="./posts/lectures/2022-07-10-frp.html">Graphical Applications in Haskell with FRP and Reflex</a>
       </h3>
       <div class="post-metadata">
-        <time>July 10, 2022</time>
+        <time>Jul 10, 2022</time>
         <ul class="inline-tags"><li class="tag-haskell">#<a href="./tags/haskell.html">haskell</a></li><li class="tag-frp">#<a href="./tags/frp.html">frp</a></li><li class="tag-beginner">#<a href="./tags/beginner.html">beginner</a></li></ul>
       </div>
     </header>
@@ -142,7 +148,7 @@ learning Music Theory. You can find below my latests posts.
         <a href="./posts/lectures/2022-06-27-mvc-gloss.html">Graphical Applications in Haskell with MVC and Gloss</a>
       </h3>
       <div class="post-metadata">
-        <time>June 27, 2022</time>
+        <time>Jun 27, 2022</time>
         <ul class="inline-tags"><li class="tag-haskell">#<a href="./tags/haskell.html">haskell</a></li><li class="tag-beginner">#<a href="./tags/beginner.html">beginner</a></li></ul>
       </div>
     </header>

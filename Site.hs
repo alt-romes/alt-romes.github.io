@@ -168,7 +168,7 @@ main = hakyllWith config $ do
 --------------------------------------------------------------------------------
 
 postCtx' :: Tags -> Context String
-postCtx' tags = dateField "date" "%B %e, %Y" <>
+postCtx' tags = dateField "date" "%b %e, %Y" <>
                tagsListField "tags" tags <>
                defaultContext
   where
