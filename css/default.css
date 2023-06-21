@@ -71,6 +71,12 @@ div.sourceCode {
   border: 1px solid var(--gray);
 }
 
+code:not(.sourceCode) {
+  background-color: #f8f8f8;
+  border-radius: 2px;
+  padding: 0.04em 0.25em;
+}
+
 html {
   /* background-image: url("/images/us.jpeg"); */
   font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif; /* --xfont-main */
@@ -93,7 +99,7 @@ h1 a:visited {
 body > main {
   max-width: 50rem;
   margin: 0 auto;
-  padding: 0em 1em 2em 1em; /* T R B L */
+  padding: 0em 1em 5em 1em; /* T R B L */
   /* font-size: 105%; */
 }
 
@@ -138,6 +144,13 @@ a:active {
 .header-section-number {
   color: var(--accent-1);
   margin-right: 0.25em;
+}
+
+kbd {
+    padding: 0.05em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--gray);
+    background-color: var(--code-bg);
 }
 
 /* Figures
@@ -410,4 +423,8 @@ ul.inline-tags {
 
 .font-handwritten {
     font-family: 'Segoe Print', 'Bradley Hand', Chilanka, TSCu_Comic, casual, cursive;
+}
+
+.smallcaps {
+    font-variant: small-caps;
 }

@@ -47,10 +47,91 @@
 <article>
   <div class="toc"><div class="header">Contents</div>
 <ul>
-<li><a href="#unicodesyntax" id="toc-unicodesyntax"><span class="toc-section-number">1</span> UnicodeSyntax</a></li>
+<li><a href="#haskells-unicode-syntax-extension" id="toc-haskells-unicode-syntax-extension"><span class="toc-section-number">1</span> Haskell’s Unicode Syntax Extension</a></li>
+<li><a href="#digraphs-in-vim" id="toc-digraphs-in-vim"><span class="toc-section-number">2</span> Digraphs in Vim</a>
+<ul>
+<li><a href="#custom-digraphs" id="toc-custom-digraphs"><span class="toc-section-number">2.1</span> Custom Digraphs</a></li>
+</ul></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">3</span> Conclusion</a></li>
 </ul>
 </div>
-<h1 data-number="1" id="unicodesyntax"><span class="header-section-number">1</span> UnicodeSyntax</h1>
+<h1 data-number="1" id="haskells-unicode-syntax-extension"><span class="header-section-number">1</span> Haskell’s Unicode Syntax Extension</h1>
+<p>Haskell (well, GHC Haskell) features an extension called <code>UnicodeSyntax</code>. When
+enabled, this extension allows the use of certain unicode symbols in place of
+their corresponding keywords. A great example is the <code>forall</code> keyword being
+equivalent to the unicode symbol <code>∀</code>, the two of which can be used
+interchangebly when <code>UnicodeSyntax</code> is enabled.</p>
+<p>Furthermore, with Haskell being a unicode-friendly language, one can define
+common Haskell functions, operators or type variables using unicode symbols –
+which doesn’t even require <code>UnicodeSyntax</code> to be enabled. For example, one can
+define the predicate <code>∈</code> on lists as an alias for <code>elem</code> as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- 5 ∈ [1,3,5] == True</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(∈)<span class="ot"> ::</span> ∀ α<span class="op">.</span> <span class="dt">Eq</span> α <span class="ot">=&gt;</span> α <span class="ot">-&gt;</span> [α] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>(∈) <span class="ot">=</span> <span class="fu">elem</span></span></code></pre></div>
+<p>In practice, I use just a handful of unicode symbols both as keywords and as
+identifiers, but somewhat comprehensive list of the keywords that have unicode
+alternatives is presented in the GHC user’s guide <a href="https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/unicode_syntax.html"><code>UnicodeSyntax</code> extension
+page</a>.
+Specifically, in most of my programs you can be sure to find the following:</p>
+<ul>
+<li><code>∀</code> instead of <code>forall</code>, which is faster to input than the whole word.</li>
+<li>A lot of unicode type variables, <code>α</code>, <code>β</code>, <code>τ</code>, <code>σ</code>, <code>δ</code>, <code>κ</code>, <code>ρ</code> – they are
+really easy to type too.</li>
+<li><code>⊸</code> instead of <code>%1 -&gt;</code>, to use the so-called “lollipop” notation for linear
+functions.
+<!-- , which is read "lollipop" rather than "what the h★ll" --></li>
+</ul>
+<p>In my opinion, those are low-hanging niceties (with vim) that make the program
+look better overall, but there are others that I haven’t yet reached for
+which you may still find good/useful. For example, there’s a library in
+hackage, <a href="https://hackage.haskell.org/package/containers-unicode-symbols">containers-unicode-symbols</a>,
+which exposes multiple unicode variants of functions on containers
+(<code>Map</code>s,<code>Set</code>s,…) such as <code>∈</code>,<code>∉</code>,<code>∅</code>,<code>∪</code>,<code>∩</code>,<code>⊆</code>,<code>⊈</code>.</p>
+<p>Finally, I usually add <code>default-extensions: UnicodeSyntax</code> field to my cabal
+file to make the extension available by default on all modules. However, you can
+also enable it on a per module basis as usual with <code>{-# LANGUAGE UnicodeSyntax #-}</code> at the top of the module.</p>
+<h1 data-number="2" id="digraphs-in-vim"><span class="header-section-number">2</span> Digraphs in Vim</h1>
+<p>To experiment with <code>UnicodeSyntax</code>, or if you’re already convinced that using
+unicode symbols makes the programs nicer to look at, all that’s left is to be
+able to input these symbols easily.
+Vim has a built-in feature called <em>digraphs</em> that makes inputting unicode
+symbols a joy. The feature is called <em>digraphs</em> because it maps combinations of
+two letters to a unicode symbol (see also <code>:help digraph</code>).</p>
+<p>To input a digraph, in <span class="smallcaps">insert mode</span>, press
+<kbd>Ctrl</kbd>+<kbd>k</kbd> followed by two letters which define the digraph.
+Here are a few useful, <em>built-in</em>, combinations:</p>
+<ul>
+<li><kbd>Ctrl-k</kbd>+<kbd>FA</kbd> inputs <code>∀</code>.</li>
+<li><kbd>Ctrl-k</kbd>+
+<ul>
+<li><kbd>a*</kbd> inputs <code>α</code>.</li>
+<li><kbd>b*</kbd> inputs <code>β</code>.</li>
+<li><kbd>t*</kbd> inputs <code>τ</code>.</li>
+<li>In general, <kbd>Ctrl-k</kbd>+<kbd>letter</kbd>+<kbd>*</kbd> inputs the greek letter variant
+of that letter</li>
+</ul></li>
+<li><kbd>Ctrl-k</kbd>+<kbd>(-</kbd> inputs <code>∈</code>.</li>
+<li><kbd>Ctrl-k</kbd>+<kbd>TE</kbd> inputs <code>∃</code>.</li>
+</ul>
+<h2 data-number="2.1" id="custom-digraphs"><span class="header-section-number">2.1</span> Custom Digraphs</h2>
+<p>Besides the built-in ones, it’s <em>very</em> useful to define your own digraphs. Both
+for customization/personalization and ergonomics, but also to introduce digraphs
+which simply do not exist by default.</p>
+<p>To add a digraph, use the <code>digraph</code> VimScript keyword with the two characters
+that input it, and the decimal numeric representation of the Unicode character
+it is mapped to. In the following <code>.vimrc</code> snippet, I defined the digraph <code>ll</code>
+with <code>8888</code> (the unicode decimal representation of ⊸), which effectively maps
+<kbd>Ctrl-k</kbd>+<kbd>ll</kbd> to <code>⊸</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>digraph ll <span class="dv">8888</span> <span class="st">&quot; ⊸</span></span></code></pre></div>
+<h1 data-number="3" id="conclusion"><span class="header-section-number">3</span> Conclusion</h1>
+<p>Concluding, vim makes it really easy, through <em>digraphs</em>, to input unicode
+symbols which are understood by Haskell, and even more so with its
+<code>UnicodeSyntax</code> extension. Combining these features we can easily write more beautiful
+Haskell programs. I’d argue it’s as fast to write</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lid ::</span> ∀ α<span class="op">.</span> α ⊸ α</span></code></pre></div>
+<p>as it is to write</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">lid ::</span> <span class="kw">forall</span> a<span class="op">.</span> a <span class="op">%</span><span class="dv">1</span> <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>while the former is arguably more aesthetically pleasing.</p>
 
 </article>
 
