@@ -109,19 +109,22 @@ main = hakyllWith config $ do
 
     -- TODO: match "projects/*" $ do
 
+    -- Tags pages (posts by tag)
     tagsRules tags $ \tag pattern -> do
         route   idRoute
         compile $ do
           posts <- recentFirst =<< loadAll pattern
           let postsCtx =
+                  constField "title" ("Posts tagged #" <> tag) <> 
                   listField "posts" postCtx (pure posts) <>
                   constField "tag" tag <>
                   defaultContext
           makeItem ""
-           >>= loadAndApplyTemplate "templates/tags.html" postsCtx
+           >>= loadAndApplyTemplate "templates/posts-tagged-x.html" postsCtx
            >>= loadAndApplyTemplate "templates/default.html" postsCtx
            >>= relativizeUrls
 
+    -- Posts
     match "posts/**" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
@@ -129,21 +132,25 @@ main = hakyllWith config $ do
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
+    -- Blog page (posts index)
     create ["posts.html"] $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/**"
             let postsCtx =
                     listField "posts" postCtx (pure posts) <>
+                    -- listField "tags" (field "tag" (pure . itemBody)) (mapM (makeItem . fst) $ tagsMap tags) <>
+                    tagCloudFieldWith "tag-cloud" renderTagCloudLink mconcat 80 125 tags <>
                     constField "title" "Romes' Post Library" <>
                     -- constField "description" "Musings" <>
                     defaultContext
 
             makeItem ""
-                >>= loadAndApplyTemplate "templates/posts-page.html" postsCtx
+                >>= loadAndApplyTemplate "templates/all-posts.html" postsCtx
                 >>= loadAndApplyTemplate "templates/default.html" postsCtx
                 >>= relativizeUrls
 
+    -- Main page
     match "index.html" $ do
         route idRoute
         compile $ do
@@ -171,9 +178,9 @@ postCtx' :: Tags -> Context String
 postCtx' tags = dateField "date" "%b %e, %Y" <>
                tagsListField "tags" tags <>
                defaultContext
-  where
-    tagsListField :: String -> Tags -> Context a
-    tagsListField = tagsFieldWith getTags renderLink mconcat
+
+tagsListField :: String -> Tags -> Context a
+tagsListField = tagsFieldWith getTags renderLink mconcat
 
 renderLink :: String -> Maybe FilePath -> Maybe H.Html
 renderLink tag Nothing      = Just $ do
