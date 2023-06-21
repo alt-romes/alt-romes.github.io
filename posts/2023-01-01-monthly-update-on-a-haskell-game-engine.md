@@ -2,11 +2,11 @@
 
 title: Monthly Update on a Haskell Game Engine
 
-description: I've been working the past month or two in a game engine called <code>Ghengin</code>.
-             This is not yet a release, and version 0.1.0 is far into the future.
-             However, I've come a long way and I'd like to share a few pictures
-             of my progress. This post was migrated from the discussion at the
-             Haskell Discourse.
+description: I've been working the past month or two in a shader-centric and
+             type-heavy 3d-renderer/game engine,
+             written in Haskell. In this post I present some of the current
+             implementation details and pictures of the multiple achievements and
+             progress done so far.
 
 tags: haskell, graphics, game-engine
 
@@ -17,11 +17,16 @@ preview-desc: Screenshot of planets demo
 
 # Ghengin
 
-I've been working the past month or two in a game engine called [`Ghengin`](https://github.com/alt-romes/ghengin).
-This is not yet a release, and version 0.1.0 is far into the future. However,
-I've come a long way and I'd like to share a few pictures of my progress.
-This post was migrated from the discussion at the
-[Haskell Discourse](https://discourse.haskell.org/t/monthly-update-on-a-haskell-game-engine/5515?u=romes).
+I've been working the past month or two in a game engine titled
+[`Ghengin`](https://github.com/alt-romes/ghengin) (pronounced /ɡɛn-ʤɪn/, never /ɡɛn-ɡɪn/). This is not yet a release,
+and version 0.1.0 is far into the future. However, I've come a long way and I'd
+like to share a few pictures of my progress. This post was migrated from the
+discussion at the [Haskell Discourse](https://discourse.haskell.org/t/monthly-update-on-a-haskell-game-engine/5515?u=romes)
+
+<!-- It is my belief that shaders -->
+<!-- should be more of a centerpiece in beginner and intermediate-level game -->
+<!-- development. -->
+
 
 The demo I've been working on is based on Sebastian Lague's series [Procedural Planets](https://www.youtube.com/playlist?list=PLFt_AvWsXl0cONs3T0By4puYy6GM22ko8).
 It is a showcase of procedurally generated planets you can move around in and
