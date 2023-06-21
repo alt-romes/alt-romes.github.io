@@ -171,6 +171,21 @@ main = hakyllWith config $ do
                 >>= loadAndApplyTemplate "templates/default.html" indexCtx
                 >>= relativizeUrls
 
+    -- RSS Feed
+    create ["rss.xml"] $ do
+        route idRoute
+        compile $ do
+          posts <- recentFirst =<< loadAll "posts/**"
+          -- All our posts have a description, so no snapshots are needed
+          renderRss feedConfiguration postCtx posts
+
+    -- Atom Feed
+    create ["atom.xml"] $ do
+        route idRoute
+        compile $ do
+          posts <- recentFirst =<< loadAll "posts/**"
+          -- All our posts have a description, so no snapshots are needed
+          renderAtom feedConfiguration postCtx posts
 
 --------------------------------------------------------------------------------
 
@@ -193,20 +208,6 @@ renderLink tag (Just url) = Just $ do
      "#"
      H.a ! href ("/" <> toValue url)
          $ toHtml tag
-
-renderTagCloudLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
-renderTagCloudLink minSize maxSize tag url count min' max' =
-    -- Inlined from Hakyll
-    -- Show the relative size of one 'count' in percent
-    let diff     = 1 + fromIntegral max' - fromIntegral min'
-        relative = (fromIntegral count - fromIntegral min') / diff
-        size     = floor $ minSize + relative * (maxSize - minSize) :: Int
-    in renderHtml $
-        H.li ! class_ ("tag-" <> fromString tag) $ do
-          "#"
-          H.a ! style (toValue $ "font-size: " ++ show size ++ "%")
-              ! href (toValue url)
-              $ toHtml tag
 
 -- | Styled pandoc compiler with emoji support and much more!
 pandocCompilerS :: Compiler (Item String)
@@ -268,6 +269,29 @@ tocTemplate = either error id . runIdentity . Pandoc.compileTemplate "" $ T.unli
   , "</div>"
   , "$body$"
   ]
+
+feedConfiguration :: FeedConfiguration
+feedConfiguration = FeedConfiguration
+    { feedTitle       = "Romes' Blog RSS Feed"
+    , feedDescription = "Romes' Blog RSS Feed"
+    , feedAuthorName  = "Rodrigo Mesquita"
+    , feedAuthorEmail = "rodrigo.m.mesquita@gmail.com"
+    , feedRoot        = "http://alt-romes.github.io"
+    }
+
+renderTagCloudLink :: Double -> Double -> String -> String -> Int -> Int -> Int -> String
+renderTagCloudLink minSize maxSize tag url count min' max' =
+    -- Inlined from Hakyll
+    -- Show the relative size of one 'count' in percent
+    let diff     = 1 + fromIntegral max' - fromIntegral min'
+        relative = (fromIntegral count - fromIntegral min') / diff
+        size     = floor $ minSize + relative * (maxSize - minSize) :: Int
+    in renderHtml $
+        H.li ! class_ ("tag-" <> fromString tag) $ do
+          "#"
+          H.a ! style (toValue $ "font-size: " ++ show size ++ "%")
+              ! href (toValue url)
+              $ toHtml tag
 
 ----- Utils -------------------------------------------------------------------
 
