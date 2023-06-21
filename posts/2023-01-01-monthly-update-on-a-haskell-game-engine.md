@@ -2,7 +2,7 @@
 
 title: Monthly Update on a Haskell Game Engine
 
-description: I've been working the past month or two in a shader-centric and
+description: I've been working the past month or two in a shader-centric,
              type-heavy 3d-renderer/game engine,
              written in Haskell. In this post I present some of the current
              implementation details and pictures of the multiple achievements and
