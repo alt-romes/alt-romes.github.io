@@ -28,7 +28,7 @@ define the predicate `∈` on lists as an alias for `elem` as follows:
 (∈) = elem
 ```
 In practice, I use just a handful of unicode symbols both as keywords and as
-identifiers, but somewhat comprehensive list of the keywords that have unicode
+identifiers, but a mostly comprehensive list of the keywords that have unicode
 alternatives is presented in the GHC user's guide [`UnicodeSyntax` extension
 page](https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/unicode_syntax.html).
 Specifically, in most of my programs you can be sure to find the following:
@@ -47,7 +47,7 @@ hackage, [containers-unicode-symbols](https://hackage.haskell.org/package/contai
 which exposes multiple unicode variants of functions on containers
 (`Map`s,`Set`s,...) such as `∈`,`∉`,`∅`,`∪`,`∩`,`⊆`,`⊈`.
 
-Finally, I usually add `default-extensions: UnicodeSyntax` field to my cabal
+Finally, I usually add `default-extensions: UnicodeSyntax` to my cabal
 file to make the extension available by default on all modules. However, you can
 also enable it on a per module basis as usual with `{-# LANGUAGE UnicodeSyntax
 #-}` at the top of the module.
@@ -59,10 +59,10 @@ unicode symbols makes the programs nicer to look at, all that's left is to be
 able to input these symbols easily.
 Vim has a built-in feature called *digraphs* that makes inputting unicode
 symbols a joy. The feature is called *digraphs* because it maps combinations of
-two letters to a unicode symbol (see also `:help digraph`).
+exactly two letters to a unicode symbol (see also `:help digraph`).
 
 To input a digraph, in <span class="smallcaps">insert mode</span>, press
-<kbd>Ctrl</kbd>+<kbd>k</kbd> followed by two letters which define the digraph.
+<kbd>Ctrl</kbd>+<kbd>k</kbd> followed by the two letters which define the digraph.
 Here are a few useful, *built-in*, combinations:
 
 - <kbd>Ctrl-k</kbd>+<kbd>FA</kbd> inputs `∀`.
@@ -75,13 +75,13 @@ Here are a few useful, *built-in*, combinations:
 - <kbd>Ctrl-k</kbd>+<kbd>(-</kbd> inputs `∈`.
 - <kbd>Ctrl-k</kbd>+<kbd>TE</kbd> inputs `∃`.
 
-## Custom Digraphs
+<!-- ## Custom Digraphs -->
 
 Besides the built-in ones, it's *very* useful to define your own digraphs. Both
 for customization/personalization and ergonomics, but also to introduce digraphs
 which simply do not exist by default.
 
-To add a digraph, use the `digraph` VimScript keyword with the two characters
+To create a digraph, use the `digraph` VimScript keyword with the two characters
 that input it, and the decimal numeric representation of the Unicode character
 it is mapped to. In the following `.vimrc` snippet, I defined the digraph `ll`
 with `8888` (the unicode decimal representation of ⊸), which effectively maps

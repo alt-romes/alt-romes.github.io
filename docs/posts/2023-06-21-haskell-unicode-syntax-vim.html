@@ -48,10 +48,7 @@
   <div class="toc"><div class="header">Contents</div>
 <ul>
 <li><a href="#haskells-unicode-syntax-extension" id="toc-haskells-unicode-syntax-extension"><span class="toc-section-number">1</span> Haskell’s Unicode Syntax Extension</a></li>
-<li><a href="#digraphs-in-vim" id="toc-digraphs-in-vim"><span class="toc-section-number">2</span> Digraphs in Vim</a>
-<ul>
-<li><a href="#custom-digraphs" id="toc-custom-digraphs"><span class="toc-section-number">2.1</span> Custom Digraphs</a></li>
-</ul></li>
+<li><a href="#digraphs-in-vim" id="toc-digraphs-in-vim"><span class="toc-section-number">2</span> Digraphs in Vim</a></li>
 <li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">3</span> Conclusion</a></li>
 </ul>
 </div>
@@ -69,7 +66,7 @@ define the predicate <code>∈</code> on lists as an alias for <code>elem</code>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(∈)<span class="ot"> ::</span> ∀ α<span class="op">.</span> <span class="dt">Eq</span> α <span class="ot">=&gt;</span> α <span class="ot">-&gt;</span> [α] <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>(∈) <span class="ot">=</span> <span class="fu">elem</span></span></code></pre></div>
 <p>In practice, I use just a handful of unicode symbols both as keywords and as
-identifiers, but somewhat comprehensive list of the keywords that have unicode
+identifiers, but a mostly comprehensive list of the keywords that have unicode
 alternatives is presented in the GHC user’s guide <a href="https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/unicode_syntax.html"><code>UnicodeSyntax</code> extension
 page</a>.
 Specifically, in most of my programs you can be sure to find the following:</p>
@@ -87,7 +84,7 @@ which you may still find good/useful. For example, there’s a library in
 hackage, <a href="https://hackage.haskell.org/package/containers-unicode-symbols">containers-unicode-symbols</a>,
 which exposes multiple unicode variants of functions on containers
 (<code>Map</code>s,<code>Set</code>s,…) such as <code>∈</code>,<code>∉</code>,<code>∅</code>,<code>∪</code>,<code>∩</code>,<code>⊆</code>,<code>⊈</code>.</p>
-<p>Finally, I usually add <code>default-extensions: UnicodeSyntax</code> field to my cabal
+<p>Finally, I usually add <code>default-extensions: UnicodeSyntax</code> to my cabal
 file to make the extension available by default on all modules. However, you can
 also enable it on a per module basis as usual with <code>{-# LANGUAGE UnicodeSyntax #-}</code> at the top of the module.</p>
 <h1 data-number="2" id="digraphs-in-vim"><span class="header-section-number">2</span> Digraphs in Vim</h1>
@@ -96,9 +93,9 @@ unicode symbols makes the programs nicer to look at, all that’s left is to be
 able to input these symbols easily.
 Vim has a built-in feature called <em>digraphs</em> that makes inputting unicode
 symbols a joy. The feature is called <em>digraphs</em> because it maps combinations of
-two letters to a unicode symbol (see also <code>:help digraph</code>).</p>
+exactly two letters to a unicode symbol (see also <code>:help digraph</code>).</p>
 <p>To input a digraph, in <span class="smallcaps">insert mode</span>, press
-<kbd>Ctrl</kbd>+<kbd>k</kbd> followed by two letters which define the digraph.
+<kbd>Ctrl</kbd>+<kbd>k</kbd> followed by the two letters which define the digraph.
 Here are a few useful, <em>built-in</em>, combinations:</p>
 <ul>
 <li><kbd>Ctrl-k</kbd>+<kbd>FA</kbd> inputs <code>∀</code>.</li>
@@ -113,11 +110,11 @@ of that letter</li>
 <li><kbd>Ctrl-k</kbd>+<kbd>(-</kbd> inputs <code>∈</code>.</li>
 <li><kbd>Ctrl-k</kbd>+<kbd>TE</kbd> inputs <code>∃</code>.</li>
 </ul>
-<h2 data-number="2.1" id="custom-digraphs"><span class="header-section-number">2.1</span> Custom Digraphs</h2>
+<!-- ## Custom Digraphs -->
 <p>Besides the built-in ones, it’s <em>very</em> useful to define your own digraphs. Both
 for customization/personalization and ergonomics, but also to introduce digraphs
 which simply do not exist by default.</p>
-<p>To add a digraph, use the <code>digraph</code> VimScript keyword with the two characters
+<p>To create a digraph, use the <code>digraph</code> VimScript keyword with the two characters
 that input it, and the decimal numeric representation of the Unicode character
 it is mapped to. In the following <code>.vimrc</code> snippet, I defined the digraph <code>ll</code>
 with <code>8888</code> (the unicode decimal representation of ⊸), which effectively maps
