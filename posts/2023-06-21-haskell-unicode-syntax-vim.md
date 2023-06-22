@@ -73,6 +73,9 @@ Here are a few useful, *built-in*, combinations:
     - In general, <kbd>Ctrl-k</kbd>+<kbd>letter</kbd>+<kbd>*</kbd> inputs the greek letter variant
         of that letter
 - <kbd>Ctrl-k</kbd>+<kbd>(-</kbd> inputs `∈`.
+- <kbd>Ctrl-k</kbd>+<kbd>::</kbd> inputs `∷`.
+- <kbd>Ctrl-k</kbd>+<kbd>=></kbd> inputs `⇒`.
+- <kbd>Ctrl-k</kbd>+<kbd>-></kbd> inputs `→`.
 - <kbd>Ctrl-k</kbd>+<kbd>TE</kbd> inputs `∃`.
 
 <!-- ## Custom Digraphs -->
