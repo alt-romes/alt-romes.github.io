@@ -60,6 +60,11 @@ main = hakyllWith config $ do
         compile $
             makeItem (styleToCss pandocCodeStyle)
 
+    -- Copy favicons to website root
+    match "favicon/*" $ do
+        route $ customRoute (takeFileName . toFilePath)
+        compile copyFileCompiler
+
     -- Compile templates
     match "templates/*" $
         compile templateBodyCompiler

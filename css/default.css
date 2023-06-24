@@ -53,6 +53,9 @@
   /* --accent-3: #D00000; */
   /* --accent-3: #3E2F5B; */
   --accent-4: #457b9d;
+  --accent-4-oppose: #F6B563;
+  --accent-4-pallete-1:#F68963;
+  --accent-4-pallete-2:#F6CF63;
   /* TODO: Try generating palletes from images */
 
   --info:         var(--accent-4);
