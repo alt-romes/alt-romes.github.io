@@ -6,6 +6,8 @@ challenges such as converting complex data types
 
 (Part 2 discusses iOS applications)
 
+I'm using XCode 15 and GHC 9.8
+
 ## Overview of Architecture
 
 Make diagram
@@ -18,15 +20,57 @@ This is the `Hello, World!` section:
     doubles an integer, using the C FFI
 2. Setup a SwiftUI app that calls `hs_double`
 3. Package the Haskell code into a shared library
-4. Create a Swift Framework `HaskellFramework` to export the Haskell functions
-   (imported from the stub C header files) that is linked against the Haskell
-   shared library
+4. Create a Swift module `HaskellFramework` to export the Haskell functions
+   (imported from the stub C header files), and setup linking against the
+   Haskell shared library
 5. Import `HaskellFramework` into the SwiftUI app, to bring `hs_double` into
    scope -- to then run the macOS app!
 
 You can follow along and view each step as a series of individual commits from ... (link to repo)
 
+The directory structure should be something like
+```
+SwiftHaskell (the XCode project)
+\--haskell-framework (which contains haskell-framework.cabal)
+```
+
+### The Swift Side
+
+Let's set-up a simple XCode project using SwiftUI for the main interface.  Fire
+up XCode and create a macOS Application, named `SwiftHaskell`, using SwiftUI,
+excluding tests. Choose a Personal Team rather than None - you might have to
+create a (free of charge) one.
+
+There should have been created `SwiftHaskellApp.swift` and `ContentView.swift`.
+Change `ContentView.swift` to instead display the result of calling
+`hs_double(9)`, even though `hs_double` is not yet in scope. It should have:
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        VStack {
+            Text("Hello, Haskell: \(hs_double(9))!")
+        }
+        .padding()
+    }
+}
+```
+
+Before proceeding, create a New File > Configuration Settings File (also known
+as a `.xcconfig` file) `BuildSettings.xcconfig`. We'll use this file to write
+all our build settings textually instead of using XCode's build settings
+navigator. To set this config as the default, go to the project tab, under `Info
+> Configurations`, to the BuildSettings (note that for the configuration to show
+up in XCode, the `.xcconfig` must be in the tree navigator (which happens by
+default if you created the module within XCode). You can read more, or see
+exactly how to set an `.xcconfig` file as the configuration, in this [great
+write-up on `xcconfig` by NSHipster](https://nshipster.com/xcconfig/)
+
 ### The Haskell library doubles the fun
+
+Create a folder `haskell-framework` within the XCode project, `cd` into it, and
+follow from there.
 
 We're jumping straight into a full-fledged Haskell projected managed with cabal,
 where we define a shared library using the `foreign-library` stanza.
@@ -150,6 +194,5 @@ where we define a shared library using the `foreign-library` stanza.
 
     rm -f conftest*
     ```
-    You should get "Foreign library successfully called!"
-
+    You should get `Foreign library successfully called!`!
 
