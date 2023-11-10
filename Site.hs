@@ -52,7 +52,7 @@ main = hakyllWith config $ do
     -- Make clay stylesheets
     match "css/*.hs" $ do
         route   $ setExtension "css"
-        compile $ getResourceString >>= withItemBody (unixFilter "cabal" ["exec", "runghc"])
+        compile $ getResourceString >>= withItemBody (unixFilter "cabal" ["exec", "runghc", "--allow-newer"])
 
     -- Create syntax stylesheet
     create ["css/syntax.css"] $ do

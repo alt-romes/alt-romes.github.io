@@ -29,12 +29,15 @@ tag name col = (".tags" <> "h1") ? do
 
 stylesheet :: Css
 stylesheet = do
-  tag "haskell" "#8f4e8b"
-  tag "vim" "#007f00"
-  tag "beginner" "#98BB6C"
-  tag "frp" "#FF9E3B"
-  tag "graphics" "#E82424"
+  tag "haskell"     "#8f4e8b"
+  tag "vim"         "#007f00"
+  tag "beginner"    "#98BB6C"
+  tag "frp"         "#FF9E3B"
+  tag "graphics"    "#E82424"
   tag "game-engine" "#16161D"
+  tag "swift"       "#E6BC52"
+  tag "macos"       "#7A93BD"
+  tag "interop"     "#8BC789"
 
 
 -- Output the compact version
