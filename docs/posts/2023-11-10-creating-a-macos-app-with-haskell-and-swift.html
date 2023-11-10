@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Creating a macOS app with Haskell and Swift</title>
+    
+    <meta name="description" content="This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="Creating a macOS app with Haskell and Swift" />
+    
+    <meta property="og:description" content="This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types" />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li>publications</li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Creating a macOS app with Haskell and Swift</h1>
+    <p>
+      
+      Nov 10, 2023
+      
+    </p>
+  </div>
+  
+  <p class="description">This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-swift">#<a href="../tags/swift.html">swift</a></li><li class="tag-interop">#<a href="../tags/interop.html">interop</a></li><li class="tag-macos">#<a href="../tags/macos.html">macos</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#overview-of-architecture" id="toc-overview-of-architecture"><span class="toc-section-number">0.1</span> Overview of Architecture</a></li>
+<li><a href="#hello-swift-its-haskell" id="toc-hello-swift-its-haskell"><span class="toc-section-number">0.2</span> Hello, Swift, its Haskell!</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">0.3</span> References</a></li>
+</ul>
+</div>
+<p>This is an in-depth guide into developing a native macOS application using
+Haskell with Swift and SwiftUI, covering the set-up required to … and tackling
+challenges such as converting complex data types</p>
+<p>(Part 2 discusses iOS applications)</p>
+<p>I’m using XCode 15 and GHC 9.8</p>
+<h2 data-number="0.1" id="overview-of-architecture"><span class="header-section-number">0.1</span> Overview of Architecture</h2>
+<p>Make diagram</p>
+<h2 data-number="0.2" id="hello-swift-its-haskell"><span class="header-section-number">0.2</span> Hello, Swift, its Haskell!</h2>
+<p>This is the <code>Hello, World!</code> section:</p>
+<ol type="1">
+<li>We’ll setup a Haskell (foreign) library exporting a function <code>hs_factorial</code> that
+doubles an integer, using the C FFI</li>
+<li>Setup a SwiftUI app that calls <code>hs_factorial</code></li>
+<li>Package the Haskell code into a shared library</li>
+<li>Create a Swift module <code>HaskellFramework</code> to export the Haskell functions
+(imported from the stub C header files), and setup linking against the
+Haskell shared library</li>
+<li>Import <code>HaskellFramework</code> into the SwiftUI app, to bring <code>hs_factorial</code> into
+scope – to then run the macOS app!</li>
+</ol>
+<p>You can follow along and view each step as a series of individual commits from … (link to repo)</p>
+<p>The directory structure should be something like</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>SwiftHaskell (the XCode project)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> haskell-framework (which contains haskell-framework.cabal)</span></code></pre></div>
+<h3 data-number="0.2.1" id="setting-up-the-swiftui-app"><span class="header-section-number">0.2.1</span> Setting up the SwiftUI app</h3>
+<p>Let’s set-up a simple XCode project using SwiftUI for the main interface. Fire
+up XCode and create a macOS Application, named <code>SwiftHaskell</code>, using SwiftUI,
+excluding tests. Choose a Personal Team rather than None - you might have to
+create a (free of charge) one.</p>
+<p>There should have been created <code>SwiftHaskellApp.swift</code> and <code>ContentView.swift</code>.
+Change <code>ContentView.swift</code> to instead display the result of calling
+<code>hs_factorial(5)</code>, even though <code>hs_factorial</code> is not yet in scope. It should have:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">SwiftUI</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> ContentView<span class="op">:</span> <span class="dt">View</span> <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">body</span><span class="op">:</span> some View <span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        VStack <span class="op">{</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            Text<span class="op">(</span><span class="st">&quot;Hello, Haskell: </span><span class="er">\(</span><span class="st">hs_factorial(5))!&quot;</span><span class="op">)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>padding<span class="op">()</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Before proceeding, create a New File &gt; Configuration Settings File (also known
+as a <code>.xcconfig</code> file) <code>BuildSettings.xcconfig</code>. We’ll use this file to write
+all our build settings textually instead of using XCode’s build settings
+navigator. To set this config as the default, go to the project tab, under <code>Info &gt; Configurations</code>, to the BuildSettings (note that for the configuration to show
+up in XCode, the <code>.xcconfig</code> must be in the tree navigator (which happens by
+default if you created the module within XCode). You can read more, or see
+exactly how to set an <code>.xcconfig</code> file as the configuration, in this <a href="https://nshipster.com/xcconfig/">write-up
+on <code>xcconfig</code> by NSHipster</a></p>
+<h3 data-number="0.2.2" id="setting-up-a-haskell-foreign-library"><span class="header-section-number">0.2.2</span> Setting up a Haskell foreign library</h3>
+<p>Create a folder <code>haskell-framework</code> within the XCode project, <code>cd</code> into it, and
+follow from there.</p>
+<p>We’re jumping straight into a full-fledged Haskell projected managed with cabal,
+where we define a shared library using the <code>foreign-library</code> stanza.</p>
+<p>Start with a normal cabal file with a <code>library</code> stanza that exposes <code>MyLib</code>, and
+add the function <code>hs_factorial</code> to <code>MyLib</code> that operates on <code>CInt</code>s:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyLib</span> <span class="kw">where</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.C</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ot">hs_factorial ::</span> <span class="dt">CInt</span> <span class="ot">-&gt;</span> <span class="dt">CInt</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>hs_factorial x <span class="ot">=</span> <span class="fu">product</span> [<span class="dv">1</span><span class="op">..</span>x]</span></code></pre></div>
+<p>The organization of the code here isn’t terribly important. Perhaps in a
+real project you could want to, for instance, only use C types like <code>CInt</code>
+in the foreign library bits, or perhaps you’d rather declare the <code>foreign export</code> together with the function declaration (we’ll instead have it
+by itself in the foreign-library, instead of moving everything there).</p>
+<p>In the cabal file, add a <code>foreign-library</code> stanza with</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>foreign<span class="op">-</span>library haskell<span class="op">-</span>foreign<span class="op">-</span>framework</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">type</span><span class="op">:</span> native<span class="op">-</span>shared</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- This should work on Mac, despite being undefined behaviour</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- See https://www.hobson.space/posts/haskell-foreign-library/ (great read)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    options<span class="op">:</span> standalone</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- We copy the C stub headers to a folder in the root.</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- If you have foreign-export declarations in the library</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- be sure to add this flag there too (so all stubs get added</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- to the `haskell-framework-include` folder)</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    ghc<span class="op">-</span>options<span class="op">:</span> <span class="op">-</span>stubdir<span class="ot">=</span>haskell<span class="op">-</span>framework<span class="op">-</span>include</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    other<span class="op">-</span>modules<span class="op">:</span> <span class="dt">MyForeignLib</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    build<span class="op">-</span>depends<span class="op">:</span> base, haskell<span class="op">-</span>framework</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    hs<span class="op">-</span>source<span class="op">-</span>dirs<span class="op">:</span> flib</span></code></pre></div>
+<p>Unfortunately, <code>options: standalone</code> is only officially supported (and
+required) by Windows, even though it is exactly what we need, however,
+unofficially, a macOS distribution should be able to safely use this option
+– for more information see this <a href="https://www.hobson.space/posts/haskell-foreign-library/">write-up explaining why this option is
+undefined for macOS</a>.
+<!---->
+In the future, this might work out of the box without being undefined
+behaviour, or the behaviour on mac may have changed s.t. this no longer
+works… but let’s hope for the former.
+<!---->
+We also output the C stub header files to a directory in the project root.
+Do add this to <code>.gitignore</code>.</p>
+<p>Create the file <code>flib/MyForeignLib.hs</code> that declares a <code>foreign export</code> of
+<code>hs_factorial</code> imported from <code>MyLib</code> and <code>foreign export</code>s it:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyForeignLib</span> <span class="kw">where</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.C</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">MyLib</span> (hs_factorial)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> hs_factorial ::</span> <span class="dt">CInt</span> <span class="ot">-&gt;</span> <span class="dt">CInt</span></span></code></pre></div>
+<p>It doesn’t seem that re-exporting the function is enough for it to be
+included in the shared library (might be a bug), we do need the <code>foreign export</code> here.</p>
+<p><code>cabal build</code> should now generate a <code>haskell-framework-include</code> folder with a
+<code>MyForeignLib_stub.h</code>, and a <code>libhaskell-foreign-framework.dylib</code> shared library
+somewhere under <code>dist-newstyle</code> (you can <code>find . -name libhaskell-foreign-framework.dylib</code> to find it)</p>
+<p>We’ll test linking against this library in a C main program to check whether it works as expected.
+Create <code>scripts/test-haskell-foreign-lib.sh</code> with a script that compiles a
+main function in C which calls <code>hs_factorial</code>. A few notes:
+- We need to pass the path to the built shared library (<code>$HS_FLIB_PATH</code>)
+to the compiler
+- We need to pass the path to the headers (<code>$HS_HEADERS_PATH</code>)
+- We hardcode the <span class="citation" data-cites="rpath">@rpath</span> linker variable to point to the relative shared
+library path (just for testing purposes).
+I think we can ship the executable pointing relatively to the shared
+library, at which point doing this will be more sensible (since
+we’ll be using relative paths within the installed app)
+- We need to call <code>hs_init</code> and <code>hs_exit</code> to init the runtime system
+(see the <a href="https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc">relevant GHC user guide section</a>)
+- We need to compile the C library using <code>ghc</code>, as it will automatically
+include and link the rts headers and library. To use a C compiler
+we’d also need to find the rts headers and library of our Haskell
+installation.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-e</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ot">! </span><span class="bu">test</span> <span class="at">-f</span> <span class="st">&quot;haskell-framework.cabal&quot;</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Run this script from the root of your project!&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="va">HS_FLIB_PATH</span><span class="op">=</span><span class="va">$(</span><span class="fu">dirname</span> <span class="va">$(</span><span class="fu">find</span> . <span class="at">-name</span> libhaskell-foreign-framework.dylib<span class="va">))</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="va">HS_HEADERS_PATH</span><span class="op">=</span>haskell-framework-include</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="st">#include &lt;stdio.h&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="st">#include &lt;MyForeignLib_stub.h&gt;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="st">#include &lt;HsFFI.h&gt;</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="st">int main(void) {</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="st">    hs_init(NULL, NULL);</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="st">    printf(</span><span class="dt">\&quot;</span><span class="st">%d\n</span><span class="dt">\&quot;</span><span class="st">, hs_factorial(5));</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="st">    hs_exit();</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="st">    return 0;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span> <span class="op">&gt;</span> conftestmain.c</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># We use `ghc` instead of `gcc` because otherwise we also need to provide the</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co"># include and lib path of the runtime system (Rts)</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="ex">ghc</span> <span class="at">-no-hs-main</span> <span class="at">-o</span> conftest conftestmain.c <span class="dt">\</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">-lhaskell-foreign-framework</span> <span class="dt">\</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">-I</span><span class="st">&quot;</span><span class="va">$HS_HEADERS_PATH</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span><span class="st">&quot;</span><span class="va">$HS_FLIB_PATH</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">-optl-Wl,-rpath,</span><span class="st">&quot;</span><span class="va">$HS_FLIB_PATH</span><span class="st">&quot;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="va">RESULT</span><span class="op">=</span><span class="va">$(</span><span class="ex">./conftest</span><span class="va">)</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> 120 <span class="ot">-eq</span> <span class="va">$RESULT</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Foreign library successfully called!&quot;</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Bad bad foreign library!&quot;</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> conftest<span class="pp">*</span></span></code></pre></div>
+<p>You should get <code>Foreign library successfully called!</code>!</p>
+<h3 data-number="0.2.3" id="calling-the-haskell-function-from-swiftui"><span class="header-section-number">0.2.3</span> Calling the Haskell function from SwiftUI</h3>
+<p>Here’s the recipe for invoking a foreign exported Haskell function in Swift:
+1. Create a Swift module exporting Haskell functions through a module map
+pointing to the headers exporting the Haskell functions
+2. Extend the module search path with the location of your new module map
+3. Import that module as a module in the SwiftUI code, and use the desired function
+4. At link time, the shared library with the symbols used by the program must be
+linked against, and must be found in the rpath which can be done by copying
+the shared library into the app bundled Frameworks</p>
+<p>To define a Swift module where Haskell functions will live, we create a module
+map listing all the headers exporting Haskell functions, using Clang’s module
+maps. A <a href="https://clang.llvm.org/docs/Modules.html">clang module</a> looks something like</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">HaskellFramework</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    header <span class="st">&quot;haskell-framework/haskell-framework-include/MyForeignLib.h&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    export <span class="op">*</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>which can then be imported into Swift code with <code>import HaskellFramework</code>, as
+long as it is available as <code>module.modulemap</code> in the module search path.
+Importing this module brings into scope all names exported from the listed header.</p>
+<p>For our use case, we will use the <a href="https://clang.llvm.org/docs/Modules.html#submodule-declaration"><strong>inferred submodules</strong></a>
+feature of modules.
+With inferred submodules, we can simply define an <strong>umbrella</strong> list of headers,
+and we get a submodule for each header in the directory (arbitrarily nested,
+where a header <code>A/B/C.h</code> becomes a submodule named <code>MainModule.A.B.C</code>)</p>
+<p>In the root of the XCode project, write a <code>module.modulemap</code> file with</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">HaskellFramework</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    umbrella <span class="st">&quot;haskell-framework/haskell-framework-include&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    explicit <span class="kw">module</span> <span class="op">*</span> {</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        export <span class="op">*</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>The <code>umbrella</code> keyword specifies the directory where to find the header files
+for our submodules, and the <code>explicit module *</code> lines are the <em>inferred
+submodule</em> part, as each header will result in a declaration roughly like
+<code>explicit module HeaderName { header "umbrella/HeaderName.h" ... }</code>
+In effect, our module above will expand to:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">HaskellFramework</span> {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    explicit <span class="kw">module</span> <span class="dt">MyForeignLib</span> {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        header <span class="st">&quot;haskell-framework/haskell-framework-include/MyForeignLib.h&quot;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        export <span class="op">*</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Again, to be clear, this is what our original <code>module.modulemap</code> using the
+<code>umbrella</code> keyword currently expands to, <strong>not the file we wrote</strong>.</p>
+<p>Having written our <code>module.modulemap</code>, we need to extend the compiler’s module
+search path to find this module. As we’ve also set-up our <code>xcconfig</code>-based
+configuration, we can do this by simply writing into <code>BuildSettings.xcconfig</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="va">SWIFT_INCLUDE_PATHS</span><span class="op">=</span><span class="va">$(</span><span class="ex">PROJECT_DIR</span><span class="va">)</span></span></code></pre></div>
+<p>This is equivalent to changing the “Swift Compiler - Search Paths &gt; Import
+Paths” build setting in XCode (in fact, you can inspect that setting on the
+rightmost inspector panel to see that its <code>xcconfig</code> name is indeed
+<code>SWIFT_INCLUDE_PATHS</code> – this is also all explained in the <a href="https://nshipster.com/xcconfig/"><code>xcconfig</code>
+article</a>).</p>
+<p>If you return to <code>ContentView.swift</code> where <code>hs_factorial</code> is being called, and
+add at the top of the file</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">HaskellFramework</span><span class="op">.</span><span class="im">MyForeignLib_stub</span></span></code></pre></div>
+<p>There is still a piece of the puzzle missing for our Haskell function call to be
+accepted at compile time: our stub header includes <code>&lt;HsFFI.h&gt;</code>, which XCode will
+not find when compiling. We need to extend our Header Search Path with the path
+to the RTS headers. We can find where our RTS headers are by invoking in the
+shell</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ghc-pkg</span> field rts include-dirs <span class="at">--simple-output</span></span></code></pre></div>
+<p>Currently, our <code>BuildSettings.xcconfig</code> can only contain statically known
+information. Fortunately, we can <code>#include</code> other <code>xcconfig</code> files (that may
+have been generated dynamically) in our <code>BuildSettings.xcconfig</code> (as described
+by the <a href="https://nshipster.com/xcconfig/"><code>xcconfig</code> write-up</a>).
+We add the include directive in the <code>BuildSettings.xcconfig</code> file.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&quot;DynamicBuildSettings.xcconfig&quot;</span></span></code></pre></div>
+<p>We will generate <code>DynamicBuildSettings.xcconfig</code> with a script
+<code>haskell-framework/scripts/gen-dynamic-settings.sh</code> that calls the
+above command to figure out the rts include path. We extend
+<code>HEADER_SEARCH_PATHS</code>, where XCode will search for headers when building with the
+rts includes (the literal string <code>$(inherit)</code> is <code>xcconfig</code> syntax for
+inheriting the options set before applying the configuration):</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-e</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ot">! </span><span class="bu">test</span> <span class="at">-f</span> <span class="st">&quot;haskell-framework/haskell-framework.cabal&quot;</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Run this script from the root of your XCode project!&quot;</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="st">HEADER_SEARCH_PATHS=</span><span class="dt">\$</span><span class="st">(inherit) </span><span class="va">$(</span><span class="ex">ghc-pkg</span> field rts include-dirs <span class="at">--simple-output</span> <span class="kw">|</span> <span class="fu">tr</span> <span class="st">' '</span> <span class="st">'\n'</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n1</span><span class="va">)</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span> <span class="op">&gt;</span> DynamicBuildSettings.xcconfig</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Created DynamicBuildSettings.xcconfig!&quot;</span></span></code></pre></div>
+<p>Do add <code>DynamicBuildSettings.xcconfig</code> to <code>.gitignore</code>. Note that asking for the
+<code>include-dirs</code> of <code>rts</code> outputs two directories:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>/Users/romes/.ghcup/ghc/9.8.1/lib/ghc-9.8.1/lib/../lib/aarch64-osx-ghc-9.8.1/rts-1.0.2/include</span></code></pre></div>
+<p>However, the <code>ffi</code> header is already included in a module by default in XCode
+when building an application, so we cut it out (and only keep the <code>rts</code> folder)
+so we do not get a <code>Redefinition of module 'FFI'</code> error (that’s what the <code>tr</code>
+and <code>tail -n1</code> together achieve).</p>
+<p>You should now see the function is found by XCode as its definition is now in scope.
+However, if you try building the program you’ll encounter link time errors: as
+one might reasonably expect, we also need to link the Haskell shared library – we’ve only
+told the Swift compiler where to find the definitions of the functions, but have
+not actually provided the executable with the library where they are effectively.</p>
+<p>The Haskell foreign library we’ve created in previous sections compiles to a
+shared dynamic library. To link against it when building our Swift application
+we need to pass <code>-lhaskell-foreign-framework</code> to the compilation toolchain. This
+can be done in two (compatible as in both can co-exist) ways:
+- Add a <code>link "haskell-foreign-framework"</code> declaration to the module map (explained <a href="https://clang.llvm.org/docs/Modules.html#link-declaration">here</a>)
+- There is a note about this feature not yet being widely supported in the
+reference page, however, it is sufficient to link the library on my
+XCode 15 distribution.
+- Add the <code>-lhaskell-foreign-framework</code> flag to the <code>OTHER_LDFLAGS</code> build setting in <code>BuildSettings.xcconfig</code>
+- You can add this even if you’ve already specified the link directive
+After adding the <code>link</code> directive, your <code>module.modulemap</code> should contain:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">HaskellFramework</span> {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    umbrella <span class="st">&quot;haskell-framework/haskell-framework-include&quot;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    explicit <span class="kw">module</span> <span class="op">*</span> {</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        export <span class="op">*</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    link <span class="st">&quot;haskell-foreign-framework&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Finally, …</p>
+<blockquote>
+<p>A run-path dependent library is a dependent library whose complete install
+name is not known when the library is created (see How Dynamic Libraries Are
+Used). Instead, the library specifies that the dynamic loader must resolve the
+library’s install name when it loads the executable that depends on the
+library.</p>
+</blockquote>
+<h2 data-number="0.3" id="references"><span class="header-section-number">0.3</span> References</h2>
+<ul>
+<li><a href="https://clang.llvm.org/docs/Modules.html">Clang module</a></li>
+<li><a href="https://github.com/nanotech/swift-haskell-tutorial/tree/master">swift-haskell-tutorial by nanotech</a></li>
+<li><a href="https://www.hobson.space/posts/haskell-foreign-library/">Haskell foreign library and options: standalone</a></li>
+<li><a href="https://nshipster.com/xcconfig/">xcconfig by NSHipster</a></li>
+<li><a href="https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc">Using the FFI with GHC</a></li>
+</ul>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2023
+        </small>
+    </footer>
+  </body>
+</html>
