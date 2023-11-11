@@ -2,9 +2,9 @@
 
 title: Creating a macOS app with Haskell and Swift
 
-description: This is an in-depth guide into developing a native macOS application using
-             Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling
-             challenges such as converting complex data types
+description: First part of an in-depth guide into developing a native macOS application using
+             Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell
+             functions from a Swift in an XCode project using SwiftUI.
 
 
 tags: haskell, swift, interop, macos
@@ -22,12 +22,12 @@ I'm using XCode 15 and GHC 9.8
 TODO: Instead of describing where to place content relative to what exists
 already, simply use diff files (though we need the syntax highlighting to work)
 
-## Overview of Architecture
+# Overview of Architecture
 
 Make diagram
 
 
-## Hello, Swift, its Haskell!
+# Hello, Swift, its Haskell!
 
 This is the `Hello, World!` section:
 
@@ -50,7 +50,7 @@ SwiftHaskell (the XCode project)
 | haskell-framework (which contains haskell-framework.cabal)
 ```
 
-### Setting up the SwiftUI app
+## Setting up the SwiftUI app
 
 Let's set-up a simple XCode project using SwiftUI for the main interface.  Fire
 up XCode and create a macOS Application, named `SwiftHaskell`, using SwiftUI,
@@ -83,7 +83,7 @@ default if you created the module within XCode). You can read more, or see
 exactly how to set an `.xcconfig` file as the configuration, in this [write-up
 on `xcconfig` by NSHipster](https://nshipster.com/xcconfig/)
 
-### Setting up a Haskell foreign library
+## Setting up a Haskell foreign library
 
 Create a folder `haskell-framework` within the XCode project, `cd` into it, and
 follow from there.
@@ -218,7 +218,7 @@ rm -f conftest*
 ```
 You should get `Foreign library successfully called!`!
 
-### Linking the Haskell library with the SwiftUI executable
+## Linking the Haskell library with the executable
 
 Here's the recipe for invoking a foreign exported Haskell function in Swift:
 1. Create a Swift module exporting Haskell functions through a module map
@@ -242,7 +242,7 @@ which can then be imported into Swift code with `import HaskellFramework`, as
 long as it is available as `module.modulemap` in the module search path.
 Importing this module brings into scope all names exported from the listed header.
 
-For our use case, we will use the [**inferred submodules**](https://clang.llvm.org/docs/Modules.html#submodule-declaration)
+For our use case, we will use the [inferred submodules](https://clang.llvm.org/docs/Modules.html#submodule-declaration)
 feature of modules.
 With inferred submodules, we can simply define an **umbrella** list of headers,
 and we get a submodule for each header in the directory (arbitrarily nested,
@@ -418,7 +418,7 @@ maybe show things with `otool -L`, etc...
 At this point, you should be able to link the application successfully, and run
 it.
 
-### The RTS must be initialized
+## The RTS must be initialized
 
 Surprise! Running the application will fail at runtime, when `hs_factorial` is
 called. To call haskell functions from an executable written in other language,
@@ -505,7 +505,7 @@ This is the end of part 1!
 Next up is communicating more interesting data types, and making things more
 ergonomic to use, while developing a simple app.
 
-## References
+# References
 
 - [Clang module](https://clang.llvm.org/docs/Modules.html)
 - [swift-haskell-tutorial by nanotech](https://github.com/nanotech/swift-haskell-tutorial/tree/master)

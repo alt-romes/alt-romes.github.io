@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Creating a macOS app with Haskell and Swift</title>
     
-    <meta name="description" content="This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types">
+    <meta name="description" content="First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from a Swift in an XCode project using SwiftUI.">
     
     <link rel="stylesheet" href="../css/default.css" />
     <link rel="stylesheet" href="../css/clay.css" />
@@ -14,7 +14,7 @@
     <!-- open graph -->
     <meta property="og:title" content="Creating a macOS app with Haskell and Swift" />
     
-    <meta property="og:description" content="This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types" />
+    <meta property="og:description" content="First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from a Swift in an XCode project using SwiftUI." />
     
 
     
@@ -51,7 +51,7 @@
     </p>
   </div>
   
-  <p class="description">This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types</p>
+  <p class="description">First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from a Swift in an XCode project using SwiftUI.</p>
   
   
   <ul class="tags">
@@ -64,9 +64,15 @@
 <article>
   <div class="toc"><div class="header">Contents</div>
 <ul>
-<li><a href="#overview-of-architecture" id="toc-overview-of-architecture"><span class="toc-section-number">0.1</span> Overview of Architecture</a></li>
-<li><a href="#hello-swift-its-haskell" id="toc-hello-swift-its-haskell"><span class="toc-section-number">0.2</span> Hello, Swift, its Haskell!</a></li>
-<li><a href="#references" id="toc-references"><span class="toc-section-number">0.3</span> References</a></li>
+<li><a href="#overview-of-architecture" id="toc-overview-of-architecture"><span class="toc-section-number">1</span> Overview of Architecture</a></li>
+<li><a href="#hello-swift-its-haskell" id="toc-hello-swift-its-haskell"><span class="toc-section-number">2</span> Hello, Swift, its Haskell!</a>
+<ul>
+<li><a href="#setting-up-the-swiftui-app" id="toc-setting-up-the-swiftui-app"><span class="toc-section-number">2.1</span> Setting up the SwiftUI app</a></li>
+<li><a href="#setting-up-a-haskell-foreign-library" id="toc-setting-up-a-haskell-foreign-library"><span class="toc-section-number">2.2</span> Setting up a Haskell foreign library</a></li>
+<li><a href="#linking-the-haskell-library-with-the-executable" id="toc-linking-the-haskell-library-with-the-executable"><span class="toc-section-number">2.3</span> Linking the Haskell library with the executable</a></li>
+<li><a href="#the-rts-must-be-initialized" id="toc-the-rts-must-be-initialized"><span class="toc-section-number">2.4</span> The RTS must be initialized</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">3</span> References</a></li>
 </ul>
 </div>
 <p>This is an in-depth guide into developing a native macOS application using
@@ -76,9 +82,9 @@ challenges such as converting complex data types</p>
 <p>I’m using XCode 15 and GHC 9.8</p>
 <p>TODO: Instead of describing where to place content relative to what exists
 already, simply use diff files (though we need the syntax highlighting to work)</p>
-<h2 data-number="0.1" id="overview-of-architecture"><span class="header-section-number">0.1</span> Overview of Architecture</h2>
+<h1 data-number="1" id="overview-of-architecture"><span class="header-section-number">1</span> Overview of Architecture</h1>
 <p>Make diagram</p>
-<h2 data-number="0.2" id="hello-swift-its-haskell"><span class="header-section-number">0.2</span> Hello, Swift, its Haskell!</h2>
+<h1 data-number="2" id="hello-swift-its-haskell"><span class="header-section-number">2</span> Hello, Swift, its Haskell!</h1>
 <p>This is the <code>Hello, World!</code> section:</p>
 <ol type="1">
 <li>We’ll setup a Haskell (foreign) library exporting a function <code>hs_factorial</code> that
@@ -95,7 +101,7 @@ scope – to then run the macOS app!</li>
 <p>The directory structure should be something like</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>SwiftHaskell (the XCode project)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> haskell-framework (which contains haskell-framework.cabal)</span></code></pre></div>
-<h3 data-number="0.2.1" id="setting-up-the-swiftui-app"><span class="header-section-number">0.2.1</span> Setting up the SwiftUI app</h3>
+<h2 data-number="2.1" id="setting-up-the-swiftui-app"><span class="header-section-number">2.1</span> Setting up the SwiftUI app</h2>
 <p>Let’s set-up a simple XCode project using SwiftUI for the main interface. Fire
 up XCode and create a macOS Application, named <code>SwiftHaskell</code>, using SwiftUI,
 excluding tests. Choose a Personal Team rather than None - you might have to
@@ -121,7 +127,7 @@ up in XCode, the <code>.xcconfig</code> must be in the tree navigator (which hap
 default if you created the module within XCode). You can read more, or see
 exactly how to set an <code>.xcconfig</code> file as the configuration, in this <a href="https://nshipster.com/xcconfig/">write-up
 on <code>xcconfig</code> by NSHipster</a></p>
-<h3 data-number="0.2.2" id="setting-up-a-haskell-foreign-library"><span class="header-section-number">0.2.2</span> Setting up a Haskell foreign library</h3>
+<h2 data-number="2.2" id="setting-up-a-haskell-foreign-library"><span class="header-section-number">2.2</span> Setting up a Haskell foreign library</h2>
 <p>Create a folder <code>haskell-framework</code> within the XCode project, <code>cd</code> into it, and
 follow from there.</p>
 <p>We’re jumping straight into a full-fledged Haskell projected managed with cabal,
@@ -237,7 +243,7 @@ installation.</p>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> conftest<span class="pp">*</span></span></code></pre></div>
 <p>You should get <code>Foreign library successfully called!</code>!</p>
-<h3 data-number="0.2.3" id="linking-the-haskell-library-with-the-swiftui-executable"><span class="header-section-number">0.2.3</span> Linking the Haskell library with the SwiftUI executable</h3>
+<h2 data-number="2.3" id="linking-the-haskell-library-with-the-executable"><span class="header-section-number">2.3</span> Linking the Haskell library with the executable</h2>
 <p>Here’s the recipe for invoking a foreign exported Haskell function in Swift:
 1. Create a Swift module exporting Haskell functions through a module map
 pointing to the headers exporting the Haskell functions
@@ -256,7 +262,7 @@ maps. A <a href="https://clang.llvm.org/docs/Modules.html">clang module</a> look
 <p>which can then be imported into Swift code with <code>import HaskellFramework</code>, as
 long as it is available as <code>module.modulemap</code> in the module search path.
 Importing this module brings into scope all names exported from the listed header.</p>
-<p>For our use case, we will use the <a href="https://clang.llvm.org/docs/Modules.html#submodule-declaration"><strong>inferred submodules</strong></a>
+<p>For our use case, we will use the <a href="https://clang.llvm.org/docs/Modules.html#submodule-declaration">inferred submodules</a>
 feature of modules.
 With inferred submodules, we can simply define an <strong>umbrella</strong> list of headers,
 and we get a submodule for each header in the directory (arbitrarily nested,
@@ -392,7 +398,7 @@ library.</p>
 maybe show things with <code>otool -L</code>, etc…</p>
 <p>At this point, you should be able to link the application successfully, and run
 it.</p>
-<h3 data-number="0.2.4" id="the-rts-must-be-initialized"><span class="header-section-number">0.2.4</span> The RTS must be initialized</h3>
+<h2 data-number="2.4" id="the-rts-must-be-initialized"><span class="header-section-number">2.4</span> The RTS must be initialized</h2>
 <p>Surprise! Running the application will fail at runtime, when <code>hs_factorial</code> is
 called. To call haskell functions from an executable written in other language,
 one must first initialize the Haskell runtime system, and terminate it when
@@ -463,7 +469,7 @@ to bring the lib functions into scope:</p>
 This is the end of part 1!
 Next up is communicating more interesting data types, and making things more
 ergonomic to use, while developing a simple app.</p>
-<h2 data-number="0.3" id="references"><span class="header-section-number">0.3</span> References</h2>
+<h1 data-number="3" id="references"><span class="header-section-number">3</span> References</h1>
 <ul>
 <li><a href="https://clang.llvm.org/docs/Modules.html">Clang module</a></li>
 <li><a href="https://github.com/nanotech/swift-haskell-tutorial/tree/master">swift-haskell-tutorial by nanotech</a></li>
