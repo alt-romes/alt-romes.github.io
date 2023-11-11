@@ -210,11 +210,11 @@ main function in C which calls `hs_factorial`. A few notes:
 - We need to pass the path to the built shared library (`$HS_FLIB_PATH`)
     to the compiler.
 - We need to pass the path to the headers (`$HS_HEADERS_PATH`).
-- We hardcode the `@rpath` linker variable to point to the relative shared
-    library path (just for testing purposes).
-    When building the macOS app with XCode the shared library will live in a
-    Apple-blessed location (`@executable_path/../Frameworks`) included in the
-    *run-path* so we won't need any hacks.
+- We hardcode into the executable the path to the shared library as an `rpath`
+    search path (just for testing purposes).
+    When building the macOS app, XCode will add `@executable_path/../Frameworks`
+    to the `rpath` search path, so we can simply copy the shared library the
+    Apple-blessed location (`Frameworks`).
 - We need to call `hs_init` and `hs_exit` to init the runtime system
     (see the [relevant GHC user guide section](https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc)).
 - We need to compile the C library using `ghc`, as it will automatically
@@ -429,17 +429,31 @@ module HaskellFramework {
 }
 ```
 
-Secondly, we need to add the shared library path to the *library search path* and
-copy it to the `Frameworks` folder that is bundled with the application. By
-copying the library to this folder we ensure it can be found at runtime since
-the run-path dependencies are searched for in the Frameworks folder
-(`@executable_path/../Frameworks`).
+Secondly, we need to add the shared library path to the *library search path*
+and make it available at runtime by copying it to the `Frameworks` folder that
+is bundled with the application.
+By copying the library to this folder we ensure it can be found when dynamically
+loaded at runtime: the library install name is relative to `@rpath`, i.e. it is
+a [*run-path dependent library*](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html),
+and the run-path dependencies of XCode built executables are searched for in the
+Frameworks folder, relatively to the executable path (`@executable_path/../Frameworks`).
 
-In practice, we extend the `LIBRARY_SEARCH_PATHS` setting dynamically and add a "Copy"
-Build Phase which copies the shared library to the listed Frameworks folder. At
-this time, I do not know how to do this Copy outside of XCode -- do shoot me a
-text if you know how. It is also unfortunate that we have to hardcode the path
-to the dynamic library there, instead of computing it at build time.
+> A run-path dependent library is a dependent library whose complete install
+> name is not known when the library is created (see How Dynamic Libraries Are
+> Used). Instead, the library specifies that the dynamic loader must resolve the
+> library’s install name when it loads the executable that depends on the
+> library.
+>
+> To use run-path dependent libraries, an executable provides a list of run-path
+> search paths, which the dynamic loader traverses at load time to find the
+> libraries.
+
+In practice, we achieve this by extending the `LIBRARY_SEARCH_PATHS` setting
+dynamically and add a "Copy" Build Phase which copies the shared library to the
+listed Frameworks folder. At this time, I do not know how to do this Copy
+outside of XCode -- do shoot me a text if you know how. It is also unfortunate
+that we have to hardcode the path to the dynamic library there, instead of
+computing it at build time.
 
 Find the path to the foreign library by running, in the `haskell-framework` directory:
 ```txt
@@ -464,21 +478,8 @@ and to what is written to `DynamicBuildSettings.xcconfig` add the following line
 LIBRARY_SEARCH_PATHS=\$(inherit) $(dirname $FLIB_PATH)
 ```
 
-In theory, the reason why copying the shared library to Frameworks is sufficient
-to find it at runtime is less trivial. I am not an expert, but my understanding
-is that the Frameworks folder (`@executable_path/../Frameworks`) is searched for
-[*run-path dependent libraries*](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html):
-
-> A run-path dependent library is a dependent library whose complete install
-> name is not known when the library is created (see How Dynamic Libraries Are
-> Used). Instead, the library specifies that the dynamic loader must resolve the
-> library’s install name when it loads the executable that depends on the
-> library.
-
-Therefore, it all works out. I'll leave a discussion of `@rpath` linker "macro"
-out of the scope of this article and move on ahead.
-
-At this point, you should be able to link the application successfully, and run it.
+At this point, after regenerating the dynamic build settings, you should be able
+to link the application successfully, and run it.
 
 ## The RTS must be initialized
 
