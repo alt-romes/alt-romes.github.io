@@ -464,8 +464,10 @@ and to what is written to `DynamicBuildSettings.xcconfig` add the following line
 LIBRARY_SEARCH_PATHS=\$(inherit) $(dirname $FLIB_PATH)
 ```
 
-In theory, copying the shared library to Frameworks works out mentioned reasons
-(in the runtime run path search path), but I'll try to explain why it works:
+In theory, the reason why copying the shared library to Frameworks is sufficient
+to find it at runtime is less trivial. I am not an expert, but my understanding
+is that the Frameworks folder (`@executable_path/../Frameworks`) is searched for
+[*run-path dependent libraries*](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html):
 
 > A run-path dependent library is a dependent library whose complete install
 > name is not known when the library is created (see How Dynamic Libraries Are
@@ -473,11 +475,10 @@ In theory, copying the shared library to Frameworks works out mentioned reasons
 > library’s install name when it loads the executable that depends on the
 > library.
 
-In this section I have to explain the rpath, or link to the good resources, and
-maybe show things with `otool -L`, etc...
+Therefore, it all works out. I'll leave a discussion of `@rpath` linker "macro"
+out of the scope of this article and move on ahead.
 
-At this point, you should be able to link the application successfully, and run
-it.
+At this point, you should be able to link the application successfully, and run it.
 
 ## The RTS must be initialized
 

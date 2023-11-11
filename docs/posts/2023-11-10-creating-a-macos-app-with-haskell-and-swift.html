@@ -454,8 +454,10 @@ lines before echoing to the file</p>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">popd</span> <span class="op">&gt;</span> /dev/null</span></code></pre></div>
 <p>and to what is written to <code>DynamicBuildSettings.xcconfig</code> add the following line</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="va">LIBRARY_SEARCH_PATHS</span><span class="op">=</span><span class="dt">\$</span><span class="kw">(</span><span class="ex">inherit</span><span class="kw">)</span> <span class="va">$(</span><span class="fu">dirname</span> <span class="va">$FLIB_PATH)</span></span></code></pre></div>
-<p>In theory, copying the shared library to Frameworks works out mentioned reasons
-(in the runtime run path search path), but I’ll try to explain why it works:</p>
+<p>In theory, the reason why copying the shared library to Frameworks is sufficient
+to find it at runtime is less trivial. I am not an expert, but my understanding
+is that the Frameworks folder (<code>@executable_path/../Frameworks</code>) is searched for
+<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html"><em>run-path dependent libraries</em></a>:</p>
 <blockquote>
 <p>A run-path dependent library is a dependent library whose complete install
 name is not known when the library is created (see How Dynamic Libraries Are
@@ -463,10 +465,9 @@ Used). Instead, the library specifies that the dynamic loader must resolve the
 library’s install name when it loads the executable that depends on the
 library.</p>
 </blockquote>
-<p>In this section I have to explain the rpath, or link to the good resources, and
-maybe show things with <code>otool -L</code>, etc…</p>
-<p>At this point, you should be able to link the application successfully, and run
-it.</p>
+<p>Therefore, it all works out. I’ll leave a discussion of <code>@rpath</code> linker “macro”
+out of the scope of this article and move on ahead.</p>
+<p>At this point, you should be able to link the application successfully, and run it.</p>
 <h2 data-number="1.4" id="the-rts-must-be-initialized"><span class="header-section-number">1.4</span> The RTS must be initialized</h2>
 <p>Surprise! Running the application will fail at runtime, when <code>hs_factorial</code> is
 called. To call haskell functions from an executable written in other language,
