@@ -17,7 +17,7 @@
     <id>http://alt-romes.github.io/posts/2023-11-10-creating-a-macos-app-with-haskell-and-swift.html</id>
     <published>2023-11-10T00:00:00Z</published>
     <updated>2023-11-10T00:00:00Z</updated>
-    <summary type="html"><![CDATA[First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from a Swift in an XCode project using SwiftUI.]]></summary>
+    <summary type="html"><![CDATA[First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from Swift in an XCode project using SwiftUI.]]></summary>
 </entry>
 <entry>
     <title>Writing prettier Haskell with Unicode Syntax and Vim</title>

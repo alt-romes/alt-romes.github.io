@@ -4,44 +4,50 @@ title: Creating a macOS app with Haskell and Swift
 
 description: First part of an in-depth guide into developing a native macOS application using
              Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell
-             functions from a Swift in an XCode project using SwiftUI.
+             functions from Swift in an XCode project using SwiftUI.
 
 
 tags: haskell, swift, interop, macos
 
 ---
 
-This is an in-depth guide into developing a native macOS application using
-Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling
-challenges such as converting complex data types
+This is the first part of an in-depth guide into developing a native
+applications for Apple platforms (macOS, iOS, ...) using Haskell with Swift and
+SwiftUI. This is the first part of the series of blogposts, covering the set-up
+required to call Haskell functions from Swift in an XCode project using SwiftUI.
+In future installements of the series, I intend to at least discuss calling
+functions with idiomatic Haskell types with Swift ones (both with and without
+marshaling), SwiftUI observation, and iOS development which requires GHC to
+produce code for the iOS compilation target:
 
-(Part 2 discusses iOS applications)
+At the time of writing I'm using XCode 15, Cabal 3.10, and GHC 9.8, although I
+suspect earlier versions of these tools should work as well -- the now 7 year
+old [swift-haskell-tutorial] is still similarly relevant, and greatly informed
+my approach, despite the end result being considerably different.
 
-I'm using XCode 15 and GHC 9.8
+The end goal is to create a multi-(apple)-platform application whose UI is
+programmed in Swift using SwiftUI while the data and logic of the application is
+implemented in Haskell which is called from Swift.
 
-TODO: Instead of describing where to place content relative to what exists
-already, simply use diff files (though we need the syntax highlighting to work)
-
-# Overview of Architecture
-
-Make diagram
-
+The series of blog posts is further accompanied by a github repository where
+each commit matches a step of this tutorial. If in doubt regarding any step,
+simply checking the matching commit for absolute confidence you are
+understanding the practical step correctly. [Visit the haskell-x-swift-project-steps repository](https://github.com/alt-romes/haskell-x-swift-project-steps).
 
 # Hello, Swift, its Haskell!
 
-This is the `Hello, World!` section:
+In this part we are only concerned with getting our `Hello, World!` going.
 
 1. We'll setup a Haskell (foreign) library exporting a function `hs_factorial` that
     doubles an integer, using the C FFI
 2. Setup a SwiftUI app that calls `hs_factorial`
-3. Package the Haskell code into a shared library
+3. Compile the Haskell code into a shared library
 4. Create a Swift module `HaskellFramework` to export the Haskell functions
    (imported from the stub C header files), and setup linking against the
-   Haskell shared library
-5. Import `HaskellFramework` into the SwiftUI app, to bring `hs_factorial` into
-   scope -- to then run the macOS app!
-
-You can follow along and view each step as a series of individual commits from ... (link to repo)
+   Haskell shared library.
+5. Import `HaskellFramework` into the SwiftUI app to be able to successfully
+   call `hs_factorial` and display the result on the screen of the running
+   application.
 
 The directory structure should be something like
 
@@ -49,6 +55,8 @@ The directory structure should be something like
 SwiftHaskell (the XCode project)
 | haskell-framework (which contains haskell-framework.cabal)
 ```
+
+TODO: Diagram
 
 ## Setting up the SwiftUI app
 
@@ -475,12 +483,9 @@ void flib_end();
 
 Back to the Swift side, we need to augment our module map with a module mapping
 to the RTS initialisation header. We add a second submodule declaration:
-```diff
-+    explicit module RTSManage {
-+        header "haskell-framework/cbits/MyForeignLibRts.h"
-+    }
-
-    link "haskell-foreign-framework"
+```haskell
+explicit module RTSManage {
+   header "haskell-framework/cbits/MyForeignLibRts.h"
 }
 ```
 The symbols will be included in the foreign library.
