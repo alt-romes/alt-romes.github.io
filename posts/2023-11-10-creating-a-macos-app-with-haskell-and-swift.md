@@ -498,9 +498,9 @@ include-dirs: cbits
 c-sources: cbits/MyForeignLibRts.c
 install-includes: MyForeignLibRts.h
 ```
-You can see what these options do in [this cabal documentation section](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-includes).
-We create the `cbits/MyForeignLibRts.c` wrapping the calls to `hs_init` and
-`hs_end` as described by the document linked above:
+You can see what these options do in [this cabal user guide section](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-includes).
+We create `cbits/MyForeignLibRts.c` wrapping the calls to `hs_init` and
+`hs_end` as described in the FFI chapter linked above:
 ```c
 #include <stdlib.h>
 #include <stdio.h>
@@ -537,39 +537,52 @@ void flib_end();
 ```
 
 Back to the Swift side, we need to augment our module map with a module mapping
-to the RTS initialisation header. We add a second submodule declaration:
+to the RTS initialisation wrapper header. We add a second submodule declaration:
 ```haskell
 explicit module RTSManage {
    header "haskell-framework/cbits/MyForeignLibRts.h"
 }
 ```
-The symbols will be included in the foreign library.
+The `cbits/MyForeignLibRts.c` symbols will be included in the shared dynamic
+library.
 
 Finally, in `SwiftHaskellApp.swift`, we extend the `@main` `App` by overriding
-the `init()` function and calling `flib_init()`, and setting up an observer to
-call `flib_end()` when the application terminates. We also need to import `HaskellFramework.RTSManage`
-to bring the lib functions into scope:
+the `init()` function: calling `flib_init()` to initialise the runtime system
+and setting up an observer to call `flib_end()` to end the runtime system when
+the application terminates. We need only import `HaskellFramework.RTSManage` to
+bring these functions into scope:
 ```swift
-init() {
-    flib_init()
+@main
+struct SwiftHaskellApp: App {
 
-    NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { _ in
-        // terminating
-        flib_end()
+    init() {
+        flib_init()
+
+        NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            // terminating
+            flib_end()
+        }
     }
+
+    ...
 }
 ```
-
 Running your application should work and proudly print `120` on the screen.
-This is the end of part 1!
-Next up is communicating more interesting data types, and making things more
-ergonomic to use, while developing a simple app.
 
-# Further reading
+# Remarks
 
-- [Clang module](https://clang.llvm.org/docs/Modules.html)
+We've come to the end of the first installment in this blogpost series.
+Next up is communicating more interesting data types (both with and without
+marshalling), making things more ergonomic to use, SwiftUI observation, iOS
+compilation, and perhaps developing a simple model app.
+
+## Further Reading
+
 - [swift-haskell-tutorial by nanotech](https://github.com/nanotech/swift-haskell-tutorial/tree/master)
 - [Haskell foreign library and options: standalone](https://www.hobson.space/posts/haskell-foreign-library/)
-- [xcconfig by NSHipster](https://nshipster.com/xcconfig/)
 - [Using the FFI with GHC](https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc)
+- [xcconfig by NSHipster](https://nshipster.com/xcconfig/)
+- [Clang module](https://clang.llvm.org/docs/Modules.html)
+- [Run-path dependent libraries](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html)
+- [Cabal user guide](https://cabal.readthedocs.io/en/stable/)
 

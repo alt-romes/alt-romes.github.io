@@ -71,7 +71,10 @@
 <li><a href="#linking-the-haskell-library-with-the-executable" id="toc-linking-the-haskell-library-with-the-executable"><span class="toc-section-number">1.3</span> Linking the Haskell library with the executable</a></li>
 <li><a href="#the-rts-must-be-initialized" id="toc-the-rts-must-be-initialized"><span class="toc-section-number">1.4</span> The RTS must be initialized</a></li>
 </ul></li>
-<li><a href="#further-reading" id="toc-further-reading"><span class="toc-section-number">2</span> Further reading</a></li>
+<li><a href="#remarks" id="toc-remarks"><span class="toc-section-number">2</span> Remarks</a>
+<ul>
+<li><a href="#further-reading" id="toc-further-reading"><span class="toc-section-number">2.1</span> Further Reading</a></li>
+</ul></li>
 </ul>
 </div>
 <p>This is the first part of an in-depth guide into developing a native
@@ -483,9 +486,9 @@ file:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>include<span class="op">-</span>dirs<span class="op">:</span> cbits</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>c<span class="op">-</span>sources<span class="op">:</span> cbits<span class="op">/</span>MyForeignLibRts.c</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>install<span class="op">-</span>includes<span class="op">:</span> MyForeignLibRts.h</span></code></pre></div>
-<p>You can see what these options do in <a href="https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-includes">this cabal documentation section</a>.
-We create the <code>cbits/MyForeignLibRts.c</code> wrapping the calls to <code>hs_init</code> and
-<code>hs_end</code> as described by the document linked above:</p>
+<p>You can see what these options do in <a href="https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-includes">this cabal user guide section</a>.
+We create <code>cbits/MyForeignLibRts.c</code> wrapping the calls to <code>hs_init</code> and
+<code>hs_end</code> as described in the FFI chapter linked above:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;HsFFI.h&gt;</span></span>
@@ -517,34 +520,46 @@ Swift project. The file <code>cbits/MyForeignLibRts.h</code> contains:</p>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>HsBool flib_init<span class="op">();</span></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> flib_end<span class="op">();</span></span></code></pre></div>
 <p>Back to the Swift side, we need to augment our module map with a module mapping
-to the RTS initialisation header. We add a second submodule declaration:</p>
+to the RTS initialisation wrapper header. We add a second submodule declaration:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>explicit <span class="kw">module</span> <span class="dt">RTSManage</span> {</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>   header <span class="st">&quot;haskell-framework/cbits/MyForeignLibRts.h&quot;</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>The symbols will be included in the foreign library.</p>
+<p>The <code>cbits/MyForeignLibRts.c</code> symbols will be included in the shared dynamic
+library.</p>
 <p>Finally, in <code>SwiftHaskellApp.swift</code>, we extend the <code>@main</code> <code>App</code> by overriding
-the <code>init()</code> function and calling <code>flib_init()</code>, and setting up an observer to
-call <code>flib_end()</code> when the application terminates. We also need to import <code>HaskellFramework.RTSManage</code>
-to bring the lib functions into scope:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">init</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    flib_init<span class="op">()</span></span>
+the <code>init()</code> function: calling <code>flib_init()</code> to initialise the runtime system
+and setting up an observer to call <code>flib_end()</code> to end the runtime system when
+the application terminates. We need only import <code>HaskellFramework.RTSManage</code> to
+bring these functions into scope:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="at">@main</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SwiftHaskellApp<span class="op">:</span> <span class="dt">App</span> <span class="op">{</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    NotificationCenter<span class="op">.</span><span class="kw">default</span><span class="op">.</span>addObserver<span class="op">(</span>forName<span class="op">:</span> NSApplication<span class="op">.</span>willTerminateNotification<span class="op">,</span> object<span class="op">:</span> <span class="kw">nil</span><span class="op">,</span> queue<span class="op">:</span> <span class="op">.</span>main<span class="op">)</span> <span class="op">{</span> _ <span class="cf">in</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// terminating</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        flib_end<span class="op">()</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
-<p>Running your application should work and proudly print <code>120</code> on the screen.
-This is the end of part 1!
-Next up is communicating more interesting data types, and making things more
-ergonomic to use, while developing a simple app.</p>
-<h1 data-number="2" id="further-reading"><span class="header-section-number">2</span> Further reading</h1>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">init</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        flib_init<span class="op">()</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        NotificationCenter<span class="op">.</span><span class="kw">default</span><span class="op">.</span>addObserver<span class="op">(</span>forName<span class="op">:</span> NSApplication<span class="op">.</span>willTerminateNotification<span class="op">,</span> object<span class="op">:</span> <span class="kw">nil</span><span class="op">,</span> queue<span class="op">:</span> <span class="op">.</span>main<span class="op">)</span> <span class="op">{</span> _ <span class="cf">in</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>            <span class="co">// terminating</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>            flib_end<span class="op">()</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Running your application should work and proudly print <code>120</code> on the screen.</p>
+<h1 data-number="2" id="remarks"><span class="header-section-number">2</span> Remarks</h1>
+<p>We’ve come to the end of the first installment in this blogpost series.
+Next up is communicating more interesting data types (both with and without
+marshalling), making things more ergonomic to use, SwiftUI observation, iOS
+compilation, and perhaps developing a simple model app.</p>
+<h2 data-number="2.1" id="further-reading"><span class="header-section-number">2.1</span> Further Reading</h2>
 <ul>
-<li><a href="https://clang.llvm.org/docs/Modules.html">Clang module</a></li>
 <li><a href="https://github.com/nanotech/swift-haskell-tutorial/tree/master">swift-haskell-tutorial by nanotech</a></li>
 <li><a href="https://www.hobson.space/posts/haskell-foreign-library/">Haskell foreign library and options: standalone</a></li>
-<li><a href="https://nshipster.com/xcconfig/">xcconfig by NSHipster</a></li>
 <li><a href="https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc">Using the FFI with GHC</a></li>
+<li><a href="https://nshipster.com/xcconfig/">xcconfig by NSHipster</a></li>
+<li><a href="https://clang.llvm.org/docs/Modules.html">Clang module</a></li>
+<li><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html">Run-path dependent libraries</a></li>
+<li><a href="https://cabal.readthedocs.io/en/stable/">Cabal user guide</a></li>
 </ul>
 
 </article>
