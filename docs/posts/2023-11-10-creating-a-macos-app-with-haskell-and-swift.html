@@ -55,7 +55,7 @@
   
   
   <ul class="tags">
-    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-swift">#<a href="../tags/swift.html">swift</a></li><li class="tag-interop">#<a href="../tags/interop.html">interop</a></li><li class="tag-macos">#<a href="../tags/macos.html">macos</a></li>
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-swift">#<a href="../tags/swift.html">swift</a></li><li class="tag-macos">#<a href="../tags/macos.html">macos</a></li>
   </ul>
   
 </header>
@@ -75,7 +75,7 @@
 </ul>
 </div>
 <p>This is the first part of an in-depth guide into developing a native
-applications for Apple platforms (macOS, iOS, …) using Haskell with Swift and
+applications for Apple platforms (macOS, iOS, etc.) using Haskell with Swift and
 SwiftUI. This is the first part of the series of blogposts, covering the set-up
 required to call Haskell functions from Swift in an XCode project using SwiftUI.
 In future installements of the series, I intend to at least discuss calling
@@ -92,12 +92,13 @@ implemented in Haskell which is called from Swift.</p>
 <p>The series of blog posts is further accompanied by a github repository where
 each commit matches a step of this tutorial. If in doubt regarding any step,
 simply checking the matching commit for absolute confidence you are
-understanding the practical step correctly. <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">Visit the haskell-x-swift-project-steps repository</a>.</p>
+understanding the practical step correctly. <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">Visit this link to the haskell-x-swift-project-steps repository!</a>
+I also intend to record a video explanation, if time permits.</p>
 <h1 data-number="1" id="hello-swift-its-haskell"><span class="header-section-number">1</span> Hello, Swift, its Haskell!</h1>
 <p>In this part we are only concerned with getting our <code>Hello, World!</code> going.</p>
 <ol type="1">
 <li>We’ll setup a Haskell (foreign) library exporting a function <code>hs_factorial</code> that
-doubles an integer, using the C FFI</li>
+returns the factorial of integer, using the C FFI</li>
 <li>Setup a SwiftUI app that calls <code>hs_factorial</code></li>
 <li>Compile the Haskell code into a shared library</li>
 <li>Create a Swift module <code>HaskellFramework</code> to export the Haskell functions
@@ -107,10 +108,48 @@ Haskell shared library.</li>
 call <code>hs_factorial</code> and display the result on the screen of the running
 application.</li>
 </ol>
-<p>The directory structure should be something like</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode md"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>SwiftHaskell (the XCode project)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> haskell-framework (which contains haskell-framework.cabal)</span></code></pre></div>
-<p>TODO: Diagram</p>
+<p>The following diagram describes how the Swift executable and Haskell libraries
+are going to be connected from a not-too-far-away perspective. It might be
+useful to consult this diagram once in a while throughout the post!
+<!-- Source code of graph @ https://arthursonzogni.com/Diagon/#GraphDAG
+
+Haskell library -> Haskell foreign library
+cbits -> Haskell foreign library
+cbits -> Headers (cbits)
+Haskell foreign library -> Headers (stubs)
+Haskell foreign library -> Shared dynamic library
+Headers (stubs) -> Clang modules
+Headers (cbits) -> Clang modules
+
+gen-dynamic-settings.sh -> DynamicBuildSettings.xcconfig
+RTS headers -> DynamicBuildSettings.xcconfig
+Shared dynamic library -> DynamicBuildSettings.xcconfig
+DynamicBuildSettings.xcconfig -> BuildSettings.xcconfig
+
+Clang modules -> SwiftUI App
+Shared dynamic library -> SwiftUI App
+BuildSettings.xcconfig -> SwiftUI App
+--></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>┌───────────────┐┌───────────┐┌───────────────────────┐┌───────────┐</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>│Haskell library││cbits      ││gen-dynamic-settings.sh││RTS headers│</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>└┬──────────────┘└┬─────────┬┘└─────────────┬─────────┘└┬──────────┘</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>┌▽────────────────▽───────┐┌▽──────────────┐│           │</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>│Haskell foreign library  ││Headers (cbits)││           │</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>└┬───────────────────────┬┘└─────────────┬─┘│           │</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>┌▽─────────────────────┐┌▽──────────────┐│  │           │</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>│Shared dynamic library││Headers (stubs)││  │           │</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>└┬────────────────────┬┘└┬──────────────┘│  │           │</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a> │            ┌───────│──│───────────────┘  │           │</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a> │            │┌──────│──┘                  │ ┌─────────┘</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a> │┌───────────▽▽┐┌────▽─────────────────────▽─▽┐</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a> ││Clang modules││DynamicBuildSettings.xcconfig│</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a> │└┬────────────┘└┬────────────────────────────┘</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> │ │┌─────────────▽────────┐</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a> │ ││BuildSettings.xcconfig│</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a> │ │└┬─────────────────────┘</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>┌▽─▽─▽──────┐</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>│SwiftUI App│</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>└───────────┘</span></code></pre></div>
 <h2 data-number="1.1" id="setting-up-the-swiftui-app"><span class="header-section-number">1.1</span> Setting up the SwiftUI app</h2>
 <p>Let’s set-up a simple XCode project using SwiftUI for the main interface. Fire
 up XCode and create a macOS Application, named <code>SwiftHaskell</code>, using SwiftUI,

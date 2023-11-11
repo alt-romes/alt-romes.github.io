@@ -7,12 +7,12 @@ description: First part of an in-depth guide into developing a native macOS appl
              functions from Swift in an XCode project using SwiftUI.
 
 
-tags: haskell, swift, interop, macos
+tags: haskell, swift, macos
 
 ---
 
 This is the first part of an in-depth guide into developing a native
-applications for Apple platforms (macOS, iOS, ...) using Haskell with Swift and
+applications for Apple platforms (macOS, iOS, etc.) using Haskell with Swift and
 SwiftUI. This is the first part of the series of blogposts, covering the set-up
 required to call Haskell functions from Swift in an XCode project using SwiftUI.
 In future installements of the series, I intend to at least discuss calling
@@ -32,14 +32,15 @@ implemented in Haskell which is called from Swift.
 The series of blog posts is further accompanied by a github repository where
 each commit matches a step of this tutorial. If in doubt regarding any step,
 simply checking the matching commit for absolute confidence you are
-understanding the practical step correctly. [Visit the haskell-x-swift-project-steps repository](https://github.com/alt-romes/haskell-x-swift-project-steps).
+understanding the practical step correctly. [Visit this link to the haskell-x-swift-project-steps repository!](https://github.com/alt-romes/haskell-x-swift-project-steps)
+I also intend to record a video explanation, if time permits.
 
 # Hello, Swift, its Haskell!
 
 In this part we are only concerned with getting our `Hello, World!` going.
 
 1. We'll setup a Haskell (foreign) library exporting a function `hs_factorial` that
-    doubles an integer, using the C FFI
+    returns the factorial of integer, using the C FFI
 2. Setup a SwiftUI app that calls `hs_factorial`
 3. Compile the Haskell code into a shared library
 4. Create a Swift module `HaskellFramework` to export the Haskell functions
@@ -49,14 +50,51 @@ In this part we are only concerned with getting our `Hello, World!` going.
    call `hs_factorial` and display the result on the screen of the running
    application.
 
-The directory structure should be something like
+The following diagram describes how the Swift executable and Haskell libraries
+are going to be connected from a not-too-far-away perspective.  It might be
+useful to consult this diagram once in a while throughout the post!
+<!-- Source code of graph @ https://arthursonzogni.com/Diagon/#GraphDAG
 
-```md
-SwiftHaskell (the XCode project)
-| haskell-framework (which contains haskell-framework.cabal)
+Haskell library -> Haskell foreign library
+cbits -> Haskell foreign library
+cbits -> Headers (cbits)
+Haskell foreign library -> Headers (stubs)
+Haskell foreign library -> Shared dynamic library
+Headers (stubs) -> Clang modules
+Headers (cbits) -> Clang modules
+
+gen-dynamic-settings.sh -> DynamicBuildSettings.xcconfig
+RTS headers -> DynamicBuildSettings.xcconfig
+Shared dynamic library -> DynamicBuildSettings.xcconfig
+DynamicBuildSettings.xcconfig -> BuildSettings.xcconfig
+
+Clang modules -> SwiftUI App
+Shared dynamic library -> SwiftUI App
+BuildSettings.xcconfig -> SwiftUI App
+-->
+```txt
+┌───────────────┐┌───────────┐┌───────────────────────┐┌───────────┐
+│Haskell library││cbits      ││gen-dynamic-settings.sh││RTS headers│
+└┬──────────────┘└┬─────────┬┘└─────────────┬─────────┘└┬──────────┘
+┌▽────────────────▽───────┐┌▽──────────────┐│           │
+│Haskell foreign library  ││Headers (cbits)││           │
+└┬───────────────────────┬┘└─────────────┬─┘│           │
+┌▽─────────────────────┐┌▽──────────────┐│  │           │
+│Shared dynamic library││Headers (stubs)││  │           │
+└┬────────────────────┬┘└┬──────────────┘│  │           │
+ │            ┌───────│──│───────────────┘  │           │
+ │            │┌──────│──┘                  │ ┌─────────┘
+ │┌───────────▽▽┐┌────▽─────────────────────▽─▽┐
+ ││Clang modules││DynamicBuildSettings.xcconfig│
+ │└┬────────────┘└┬────────────────────────────┘
+ │ │┌─────────────▽────────┐
+ │ ││BuildSettings.xcconfig│
+ │ │└┬─────────────────────┘
+┌▽─▽─▽──────┐
+│SwiftUI App│
+└───────────┘
 ```
 
-TODO: Diagram
 
 ## Setting up the SwiftUI app
 

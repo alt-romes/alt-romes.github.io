@@ -35,8 +35,8 @@ stylesheet = do
   tag "frp"         "#FF9E3B"
   tag "graphics"    "#E82424"
   tag "game-engine" "#16161D"
-  tag "swift"       "#E6BC52"
-  tag "macos"       "#7A93BD"
+  tag "swift"       "#F05138"
+  tag "macos"       "#1771E4"
   tag "interop"     "#8BC789"
 
 
