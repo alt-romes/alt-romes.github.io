@@ -19,6 +19,9 @@ challenges such as converting complex data types
 
 I'm using XCode 15 and GHC 9.8
 
+TODO: Instead of describing where to place content relative to what exists
+already, simply use diff files (though we need the syntax highlighting to work)
+
 ## Overview of Architecture
 
 Make diagram
@@ -366,17 +369,17 @@ module HaskellFramework {
 }
 ```
 
-Lastly, we need to add the shared library to the Frameworks folder that is
-bundled with the application. By copying the library to this folder we ensure it
-can be both found to be linked against and that it also can be found at runtime
-since the run-path dependencies are searched for in the Frameworks folder
+Lastly, we need to add the shared library path to the library search path and
+copy it to the Frameworks folder that is bundled with the application. By
+copying the library to this folder we ensure it can be found at runtime since
+the run-path dependencies are searched for in the Frameworks folder
 (`@executable_path/../Frameworks`).
 
-In practice, we just need to add a "Copy" Build Phase which copies the shared
-library to the listed Frameworks folder. At this time, I do not know how to do
-this outside of XCode -- do shoot me a text if you know how. It is also
-unfortunate that we have to hardcode the path to the dynamic library, instead of
-computing it at build time.
+In practice, we need extend the `LIBRARY_SEARCH_PATHS` setting dynamically and
+to add a "Copy" Build Phase which copies the shared library to the listed
+Frameworks folder. At this time, I do not know how to do this Copy outside of
+XCode -- do shoot me a text if you know how. It is also unfortunate that we have
+to hardcode the path to the dynamic library there, instead of computing it at build time.
 
 Find the path to the foreign library by running haskell-foreign-framework` in the `haskell-framework` directory:
 ```txt
@@ -387,9 +390,21 @@ sign) a `New Copy Files Phase` and, clicking in the plus sign of the new listing
 of files to copy, add the path to the haskell-foreign-framework `.dylib` (the
 shared library) by clicking on "Add Other".
 
-In theory, copying the shared library to Frameworks works out because of the two
-mentioned reasons (becomes in the library search path, and in the runtime run
-path search path), but I'll try to explain why it works:
+To the `haskell-framework/scripts/gen-dynamic-settings.sh`, add the following
+lines before echoing to the file
+```bash
+pushd . > /dev/null
+cd haskell-framework
+FLIB_PATH=$(cabal list-bin haskell-foreign-framework)
+popd > /dev/null
+```
+and to what is written to `DynamicBuildSettings.xcconfig` add the following line
+```bash
+LIBRARY_SEARCH_PATHS=\$(inherit) $(dirname $FLIB_PATH)
+```
+
+In theory, copying the shared library to Frameworks works out mentioned reasons
+(in the runtime run path search path), but I'll try to explain why it works:
 
 > A run-path dependent library is a dependent library whose complete install
 > name is not known when the library is created (see How Dynamic Libraries Are
@@ -402,6 +417,93 @@ maybe show things with `otool -L`, etc...
 
 At this point, you should be able to link the application successfully, and run
 it.
+
+### The RTS must be initialized
+
+Surprise! Running the application will fail at runtime, when `hs_factorial` is
+called. To call haskell functions from an executable written in other language,
+one must first initialize the Haskell runtime system, and terminate it when
+appropriate. We need to call the functions `hs_init` and `hs_end`, exposed in
+`HsFFI.h`. We will write two wrapper functions in our foreign library to invoke
+instead, as suggested in the [FFI chapter of the GHC user guide](https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc).
+
+We create a `cbits` folder in the `haskell-framework` Haskell project to put our
+C files and headers, and add them to the `foreign-library` stanza of the cabal
+file:
+```haskell
+include-dirs: cbits
+c-sources: cbits/MyForeignLibRts.c
+install-includes: MyForeignLibRts.h
+```
+You can see what these options do in [this cabal documentation section](https://cabal.readthedocs.io/en/stable/cabal-package.html#pkg-field-includes).
+We create the `cbits/MyForeignLibRts.c` wrapping the calls to `hs_init` and
+`hs_end` as described by the document linked above:
+```c
+#include <stdlib.h>
+#include <stdio.h>
+#include <HsFFI.h>
+
+HsBool flib_init() {
+
+    printf("Initialising flib\n");
+
+    // Initialise Haskell runtime
+    hs_init(NULL, NULL);
+
+    // Do other library initialisations here
+
+    return HS_BOOL_TRUE;
+}
+
+void flib_end() {
+    printf("Terminating flib\n");
+    hs_exit();
+}
+```
+It might seem that you could `foreign import` these functions into the Haskell
+library and re-export them with `foreign export`, however, if they are exported
+from Haskell, they themselves require the RTS to be initialised, effectively
+defeating the purpose of being functions that initialise the RTS. Therefore, we
+write a header file that we ship with the library for it to be included by the
+Swift project. The file `cbits/MyForeignLibRts.h` contains:
+```c
+#include <HsFFI.h>
+
+HsBool flib_init();
+void flib_end();
+```
+
+Back to the Swift side, we need to augment our module map with a module mapping
+to the RTS initialisation header. We add a second submodule declaration:
+```diff
++    explicit module RTSManage {
++        header "haskell-framework/cbits/MyForeignLibRts.h"
++    }
+
+    link "haskell-foreign-framework"
+}
+```
+The symbols will be included in the foreign library.
+
+Finally, in `SwiftHaskellApp.swift`, we extend the `@main` `App` by overriding
+the `init()` function and calling `flib_init()`, and setting up an observer to
+call `flib_end()` when the application terminates. We also need to import `HaskellFramework.RTSManage`
+to bring the lib functions into scope:
+```swift
+init() {
+    flib_init()
+
+    NotificationCenter.default.addObserver(forName: NSApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+        // terminating
+        flib_end()
+    }
+}
+```
+
+Running your application should work and proudly print `120` on the screen.
+This is the end of part 1!
+Next up is communicating more interesting data types, and making things more
+ergonomic to use, while developing a simple app.
 
 ## References
 
