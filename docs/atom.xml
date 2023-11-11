@@ -10,8 +10,16 @@
         <email>rodrigo.m.mesquita@gmail.com</email>
         
     </author>
-    <updated>2023-06-21T00:00:00Z</updated>
+    <updated>2023-11-10T00:00:00Z</updated>
     <entry>
+    <title>Creating a macOS app with Haskell and Swift</title>
+    <link href="http://alt-romes.github.io/posts/2023-11-10-creating-a-macos-app-with-haskell-and-swift.html" />
+    <id>http://alt-romes.github.io/posts/2023-11-10-creating-a-macos-app-with-haskell-and-swift.html</id>
+    <published>2023-11-10T00:00:00Z</published>
+    <updated>2023-11-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[This is an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI, covering the set-up required to ... and tackling challenges such as converting complex data types]]></summary>
+</entry>
+<entry>
     <title>Writing prettier Haskell with Unicode Syntax and Vim</title>
     <link href="http://alt-romes.github.io/posts/2023-06-21-haskell-unicode-syntax-vim.html" />
     <id>http://alt-romes.github.io/posts/2023-06-21-haskell-unicode-syntax-vim.html</id>

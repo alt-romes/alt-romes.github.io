@@ -219,15 +219,15 @@ library that provides a monadic interface for building a DOM-based UI with
 functional reactive programming abstractions from <em>reflex</em>.</p>
 <p>A DOM user interface is defined with element tags. A webpage can have many
 elements such as <em>divisions</em> and text <em>paragraphs</em>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is a paragraph.<span class="kw">&lt;/p&gt;</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;button&gt;</span>Button below the paragraph<span class="kw">&lt;/button&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>This is a paragraph.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">button</span><span class="dt">&gt;</span>Button below the paragraph<span class="dt">&lt;/</span><span class="kw">button</span><span class="dt">&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;div&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;p&gt;</span>This is the second division.<span class="kw">&lt;/p&gt;</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&lt;input&gt;&lt;/input&gt;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;/div&gt;</span></span></code></pre></div>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>This is the second division.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&lt;</span><span class="kw">input</span><span class="dt">&gt;&lt;/</span><span class="kw">input</span><span class="dt">&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span></code></pre></div>
 <p>Would define a webpage with two divisions (<code>&lt;div&gt;</code>). The first division has a
 paragraph (<code>&lt;p&gt;</code>) and a button (<code>&lt;button&gt;</code>), the second, a paragraph and and a
 text-box for input (<code>&lt;input&gt;</code>).</p>
