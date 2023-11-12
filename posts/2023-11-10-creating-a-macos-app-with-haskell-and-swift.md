@@ -13,7 +13,7 @@ tags: haskell, swift, macos
 
 This is the first part of an in-depth guide into developing a native
 applications for Apple platforms (macOS, iOS, etc.) using Haskell with Swift and
-SwiftUI. This is the first part of the series of blogposts, covering the set-up
+SwiftUI. This is the first in a series of blog posts -- covering the set-up
 required to call Haskell functions from Swift in an XCode project using SwiftUI.
 In future installements of the series, I intend to at least discuss calling
 functions with idiomatic Haskell types with Swift ones (both with and without
@@ -22,7 +22,7 @@ produce code for the iOS compilation target:
 
 At the time of writing I'm using XCode 15, Cabal 3.10, and GHC 9.8, although I
 suspect earlier versions of these tools should work as well -- the now 7 year
-old [swift-haskell-tutorial] is still similarly relevant, and greatly informed
+old [swift-haskell-tutorial](https://github.com/nanotech/swift-haskell-tutorial/tree/master) is still similarly relevant, and greatly informed
 my approach, despite the end result being considerably different.
 
 The end goal is to create a multi-(apple)-platform application whose UI is
@@ -32,10 +32,12 @@ implemented in Haskell which is called from Swift.
 The series of blog posts is further accompanied by a github repository where
 each commit matches a step of this tutorial. If in doubt regarding any step,
 simply checking the matching commit for absolute confidence you are
-understanding the practical step correctly. [Visit this link to the haskell-x-swift-project-steps repository!](https://github.com/alt-romes/haskell-x-swift-project-steps)
+understanding the practical step correctly. [Visit this link to the haskell-x-swift-project-steps repository](https://github.com/alt-romes/haskell-x-swift-project-steps)!
 I also intend to record a video explanation, if time permits.
 
-# Hello, Swift, its Haskell!
+This blogpost has been cross-posted to [Well-Typed's Blog](https://well-typed.com/blog/).
+
+# Hello, Swift, it's Haskell!
 
 In this part we are only concerned with getting our `Hello, World!` going.
 
@@ -546,6 +548,30 @@ explicit module RTSManage {
 The `cbits/MyForeignLibRts.c` symbols will be included in the shared dynamic
 library.
 
+You can re-buid the haskell library and re-generate the dynamic settings with a
+script `./build-haskell` in the root of the XCode project:
+```sh
+#!/usr/bin/env bash
+
+set -e
+
+if ! test -d "SwiftHaskell.xcodeproj"; then
+    echo "Run this from the SwiftHaskell XCode project root!"
+    exit 1
+fi
+
+pushd . >/dev/null
+cd haskell-framework/
+cabal build all --allow-newer
+./scripts/test-haskell-foreign-lib.sh
+popd >/dev/null
+./haskell-framework/scripts/gen-dynamic-settings.sh
+
+echo "Done."
+
+
+```
+
 Finally, in `SwiftHaskellApp.swift`, we extend the `@main` `App` by overriding
 the `init()` function: calling `flib_init()` to initialise the runtime system
 and setting up an observer to call `flib_end()` to end the runtime system when
@@ -575,6 +601,19 @@ We've come to the end of the first installment in this blogpost series.
 Next up is communicating more interesting data types (both with and without
 marshalling), making things more ergonomic to use, SwiftUI observation, iOS
 compilation, and perhaps developing a simple model app.
+
+The
+[haskell-x-swift-project-steps](https://github.com/alt-romes/haskell-x-swift-project-steps)
+git repository has a commit matching each of the steps of this guide, so if
+anything is unclear you can just let the code speak by itself in checking the
+commits.
+
+This project, blog post, and research regarding Swift interoperability with
+Haskell is being partially sponsored by [Well-Typed](https://well-typed.com/),
+and is otherwise carried out in my own free time. If you'd also like to sponsor my
+work on Swift x Haskell interoperability with the goal of developing native
+macOS/iOS/etc applications, visit [my GitHub sponsors
+page](https://github.com/sponsors/alt-romes).
 
 ## Further Reading
 

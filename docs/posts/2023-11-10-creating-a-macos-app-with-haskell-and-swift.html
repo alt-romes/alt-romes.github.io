@@ -64,7 +64,7 @@
 <article>
   <div class="toc"><div class="header">Contents</div>
 <ul>
-<li><a href="#hello-swift-its-haskell" id="toc-hello-swift-its-haskell"><span class="toc-section-number">1</span> Hello, Swift, its Haskell!</a>
+<li><a href="#hello-swift-its-haskell" id="toc-hello-swift-its-haskell"><span class="toc-section-number">1</span> Hello, Swift, it’s Haskell!</a>
 <ul>
 <li><a href="#setting-up-the-swiftui-app" id="toc-setting-up-the-swiftui-app"><span class="toc-section-number">1.1</span> Setting up the SwiftUI app</a></li>
 <li><a href="#setting-up-a-haskell-foreign-library" id="toc-setting-up-a-haskell-foreign-library"><span class="toc-section-number">1.2</span> Setting up a Haskell foreign library</a></li>
@@ -79,7 +79,7 @@
 </div>
 <p>This is the first part of an in-depth guide into developing a native
 applications for Apple platforms (macOS, iOS, etc.) using Haskell with Swift and
-SwiftUI. This is the first part of the series of blogposts, covering the set-up
+SwiftUI. This is the first in a series of blog posts – covering the set-up
 required to call Haskell functions from Swift in an XCode project using SwiftUI.
 In future installements of the series, I intend to at least discuss calling
 functions with idiomatic Haskell types with Swift ones (both with and without
@@ -87,7 +87,7 @@ marshaling), SwiftUI observation, and iOS development which requires GHC to
 produce code for the iOS compilation target:</p>
 <p>At the time of writing I’m using XCode 15, Cabal 3.10, and GHC 9.8, although I
 suspect earlier versions of these tools should work as well – the now 7 year
-old [swift-haskell-tutorial] is still similarly relevant, and greatly informed
+old <a href="https://github.com/nanotech/swift-haskell-tutorial/tree/master">swift-haskell-tutorial</a> is still similarly relevant, and greatly informed
 my approach, despite the end result being considerably different.</p>
 <p>The end goal is to create a multi-(apple)-platform application whose UI is
 programmed in Swift using SwiftUI while the data and logic of the application is
@@ -95,9 +95,10 @@ implemented in Haskell which is called from Swift.</p>
 <p>The series of blog posts is further accompanied by a github repository where
 each commit matches a step of this tutorial. If in doubt regarding any step,
 simply checking the matching commit for absolute confidence you are
-understanding the practical step correctly. <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">Visit this link to the haskell-x-swift-project-steps repository!</a>
+understanding the practical step correctly. <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">Visit this link to the haskell-x-swift-project-steps repository</a>!
 I also intend to record a video explanation, if time permits.</p>
-<h1 data-number="1" id="hello-swift-its-haskell"><span class="header-section-number">1</span> Hello, Swift, its Haskell!</h1>
+<p>This blogpost has been cross-posted to <a href="https://well-typed.com/blog/">Well-Typed’s Blog</a>.</p>
+<h1 data-number="1" id="hello-swift-its-haskell"><span class="header-section-number">1</span> Hello, Swift, it’s Haskell!</h1>
 <p>In this part we are only concerned with getting our <code>Hello, World!</code> going.</p>
 <ol type="1">
 <li>We’ll setup a Haskell (foreign) library exporting a function <code>hs_factorial</code> that
@@ -526,31 +527,62 @@ to the RTS initialisation wrapper header. We add a second submodule declaration:
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>The <code>cbits/MyForeignLibRts.c</code> symbols will be included in the shared dynamic
 library.</p>
+<p>You can re-buid the haskell library and re-generate the dynamic settings with a
+script <code>./build-haskell</code> in the root of the XCode project:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-e</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ot">! </span><span class="bu">test</span> <span class="at">-d</span> <span class="st">&quot;SwiftHaskell.xcodeproj&quot;</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Run this from the SwiftHaskell XCode project root!&quot;</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="bu">pushd</span> . <span class="op">&gt;</span>/dev/null</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> haskell-framework/</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="ex">cabal</span> build all <span class="at">--allow-newer</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/test-haskell-foreign-lib.sh</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="bu">popd</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="ex">./haskell-framework/scripts/gen-dynamic-settings.sh</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Done.&quot;</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a></span></code></pre></div>
 <p>Finally, in <code>SwiftHaskellApp.swift</code>, we extend the <code>@main</code> <code>App</code> by overriding
 the <code>init()</code> function: calling <code>flib_init()</code> to initialise the runtime system
 and setting up an observer to call <code>flib_end()</code> to end the runtime system when
 the application terminates. We need only import <code>HaskellFramework.RTSManage</code> to
 bring these functions into scope:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="at">@main</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SwiftHaskellApp<span class="op">:</span> <span class="dt">App</span> <span class="op">{</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">init</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        flib_init<span class="op">()</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        NotificationCenter<span class="op">.</span><span class="kw">default</span><span class="op">.</span>addObserver<span class="op">(</span>forName<span class="op">:</span> NSApplication<span class="op">.</span>willTerminateNotification<span class="op">,</span> object<span class="op">:</span> <span class="kw">nil</span><span class="op">,</span> queue<span class="op">:</span> <span class="op">.</span>main<span class="op">)</span> <span class="op">{</span> _ <span class="cf">in</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>            <span class="co">// terminating</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>            flib_end<span class="op">()</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="at">@main</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SwiftHaskellApp<span class="op">:</span> <span class="dt">App</span> <span class="op">{</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">init</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        flib_init<span class="op">()</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        NotificationCenter<span class="op">.</span><span class="kw">default</span><span class="op">.</span>addObserver<span class="op">(</span>forName<span class="op">:</span> NSApplication<span class="op">.</span>willTerminateNotification<span class="op">,</span> object<span class="op">:</span> <span class="kw">nil</span><span class="op">,</span> queue<span class="op">:</span> <span class="op">.</span>main<span class="op">)</span> <span class="op">{</span> _ <span class="cf">in</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>            <span class="co">// terminating</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>            flib_end<span class="op">()</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>Running your application should work and proudly print <code>120</code> on the screen.</p>
 <h1 data-number="2" id="remarks"><span class="header-section-number">2</span> Remarks</h1>
 <p>We’ve come to the end of the first installment in this blogpost series.
 Next up is communicating more interesting data types (both with and without
 marshalling), making things more ergonomic to use, SwiftUI observation, iOS
 compilation, and perhaps developing a simple model app.</p>
+<p>The
+<a href="https://github.com/alt-romes/haskell-x-swift-project-steps">haskell-x-swift-project-steps</a>
+git repository has a commit matching each of the steps of this guide, so if
+anything is unclear you can just let the code speak by itself in checking the
+commits.</p>
+<p>This project, blog post, and research regarding Swift interoperability with
+Haskell is being partially sponsored by <a href="https://well-typed.com/">Well-Typed</a>,
+and is otherwise carried out in my own free time. If you’d also like to sponsor my
+work on Swift x Haskell interoperability with the goal of developing native
+macOS/iOS/etc applications, visit <a href="https://github.com/sponsors/alt-romes">my GitHub sponsors
+page</a>.</p>
 <h2 data-number="2.1" id="further-reading"><span class="header-section-number">2.1</span> Further Reading</h2>
 <ul>
 <li><a href="https://github.com/nanotech/swift-haskell-tutorial/tree/master">swift-haskell-tutorial by nanotech</a></li>
