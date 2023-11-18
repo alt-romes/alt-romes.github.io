@@ -20,9 +20,11 @@ functions with idiomatic Haskell types with Swift ones (both with and without
 marshaling), SwiftUI observation, and iOS development which requires GHC to
 produce code for the iOS compilation target:
 
-At the time of writing I'm using XCode 15, Cabal 3.10, and GHC 9.8, although I
-suspect earlier versions of these tools should work as well -- the now 7 year
-old [swift-haskell-tutorial](https://github.com/nanotech/swift-haskell-tutorial/tree/master) is still similarly relevant, and greatly informed
+At the time of writing I'm using XCode 15, Cabal 3.10, and GHC 9.8. There will
+be some features I use that are only available in these recent versions,
+however, the general idea of interoperability between Haskell and Swift stands
+on its own regardless -- the now 7 year
+old [swift-haskell-tutorial](https://github.com/nanotech/swift-haskell-tutorial/tree/master) is still similarly relevant and greatly informed
 my approach, despite the end result being considerably different.
 
 The end goal is to create a multi-(apple)-platform application whose UI is
@@ -35,7 +37,7 @@ simply checking the matching commit for absolute confidence you are
 understanding the practical step correctly. [Visit this link to the haskell-x-swift-project-steps repository](https://github.com/alt-romes/haskell-x-swift-project-steps)!
 I also intend to record a video explanation, if time permits.
 
-This blogpost has been cross-posted to [Well-Typed's Blog](https://well-typed.com/blog/).
+This write-up has been cross-posted to [Well-Typed's Blog](https://well-typed.com/blog/).
 
 # Hello, Swift, it's Haskell!
 
@@ -97,7 +99,6 @@ BuildSettings.xcconfig -> SwiftUI App
 └───────────┘
 ```
 
-
 ## Setting up the SwiftUI app
 
 Let's set-up a simple XCode project using SwiftUI for the main interface.  Fire
@@ -133,6 +134,12 @@ navigator (which happens by default if you created the module within XCode).
 You can read more, or see exactly how to set an `.xcconfig` file as the
 configuration, in this [write-up on `xcconfig`](https://nshipster.com/xcconfig/)
 by NSHipster.
+
+Even though we are setting the `.xcconfig` file manually (and also e.g.
+initializing the XCode project), it is possible to resort to an exclusively
+programatic approach using so-called XCode project generators such as
+[XCodeGen](https://github.com/yonaskolb/XcodeGen)
+and [Tuist](https://tuist.io/).
 
 ## Setting up a Haskell foreign library
 
