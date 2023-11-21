@@ -18,7 +18,7 @@ required to call Haskell functions from Swift in an XCode project using SwiftUI.
 In future installements of the series, I intend to at least discuss calling
 functions with idiomatic Haskell types with Swift ones (both with and without
 marshaling), SwiftUI observation, and iOS development which requires GHC to
-produce code for the iOS compilation target:
+produce code for the iOS compilation target.
 
 At the time of writing I'm using XCode 15, Cabal 3.10, and GHC 9.8. There will
 be some features I use that are only available in these recent versions,
@@ -493,8 +493,8 @@ to link the application successfully, and run it.
 ## The RTS must be initialized
 
 Surprise! Running the application will fail at runtime, when `hs_factorial` is
-called. To call haskell functions from an executable written in other language,
-one must first initialize the Haskell runtime system, and terminate it when
+called. To call Haskell functions from an executable written in another language,
+one must first initialize the GHC runtime system, and terminate it when
 appropriate. We need to call the functions `hs_init` and `hs_end`, exposed in
 `HsFFI.h`. We will write two wrapper functions in our foreign library to invoke
 instead, as suggested in the [FFI chapter of the GHC user guide](https://downloads.haskell.org/ghc/latest/docs/users_guide/exts/ffi.html#using-the-ffi-with-ghc).
