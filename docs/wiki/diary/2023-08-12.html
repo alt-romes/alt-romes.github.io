@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2023-08-12</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height; auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<section id="section" class="level1">
+<h1>2023-08-12</h1>
+<ul>
+<li><p>Discussão productiva sobre a estrutura da tese e sobre ter duas
+introduções com algum overlap, assumindo e sem assumindo conhecimento do
+background na tese, com o <a href="../People/Pisco">Pisco</a> - ver <a
+href="../People/Pisco/Call%20Notes/12-08-2023.html">CN
+12-08-2023</a>.</p></li>
+<li><p>More insight gained from reading <a
+href="https://www.sciencedirect.com/science/article/pii/S1571066104000222.html">Call-by-name,
+call-by-value, call-by-need and the linear lambda calculus</a>:</p></li>
+</ul>
+<blockquote>
+<p>The call-by-name calculus is not entirely suitable for reasoning
+about functional programs in lazy languages, because the beta rule may
+copy the argument of a function any number of times. The call-by-need
+calculus uses a diferent notion of reduction, observationally equivalent
+to the call-by-name calculus. But call-by-need, like call-by-value,
+guarantees that the argument to a function is not copied before it is
+reduced to a value.</p>
+</blockquote>
+<p>This is quite relevant to the reverse-binder-swap transformation we
+discuss in the thesis, because if we allow the call-by-name reduction
+<em>and</em> reverse binder swap, we can effectively duplicate linear
+resources. If we disallow call-by-name reduction for linear applications
+(which seems quite useful), we could have the reverse-binder-swap with
+the added <code>CaseVar</code> rule. This paper agrees on how
+call-by-name (unsuitably to linear types) copies arguments.</p>
+<p>That paper still looks really really relevant, the way they discuss
+duplication of resources in call-by-need vs call-by-name vs
+call-by-value.</p>
+<blockquote>
+<p>As an application of these results, we have devised a type system
+that can infer information about which variables are used linearly in a
+call-by-need or call-by- value lambda calculus. Such types are useful
+for program transformation: the reduc- tion (( x: M )N ) → M [x := N ]
+does not in general hold for a call-by-value or call- by-need calculus,
+but it does hold if x is used linearly. It may also be useful for 178 J.
+Maraist et al. / Theoretical Computer Science 228 (1999) 175–210
+implementing call-by-need: normally a closure needs to be overwritten on
+evalua- tion, but this step may be saved if the closure is bound to a
+variable that is used linearly. These applications are developed in a
+companion paper by Turner et al. [38].</p>
+</blockquote>
+<p><a href="https://dl.acm.org/doi/10.1145/224164.html">Once upon a
+Type</a>, the paper referred above, presents a variable usage inference
+algorithm that can help determine which variables are used once, to do *
+Safe and always efficient inlining * Avoiding closure update * Enabling
+data structure update</p>
+<p>Since our system can see more linearity, we’d be able to inline
+expressions more often; effectively resulting in a smarter inliner.</p>
+<p>The way GHC determines whether to inline arguments of function
+applications from usages seems to be based on “Once upon a Type”, as
+they claim a sound inlining reduction in a call-by-need setting through
+counting usages in the types. If indeed this is the strategy used for
+reduction, then reverse binder swap is safe; where-as if our system is
+used, reverse-binder-swap isn’t possible (since we either accept the
+transformation and duplicate resources (bad!), or reject the
+transformation).</p>
+<p>An interesting quote from the paper’s conclusions: &gt; The
+information computed by our analysis seems at first glance to be similar
+&gt; to that which is required for strictness CLna@is. However, for the
+purposes of &gt; strictness analysis one needs to know when an
+expression is used cd least &gt; once. We conjecture that a
+generalisation of our type system might be able to &gt; provide simple
+strictness information at the same time as inferring &gt; information
+for use in program transforma- tion and update analysis.</p>
+</section>
+</body>
+</html>
