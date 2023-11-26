@@ -149,8 +149,9 @@ follow from there.
 We're jumping straight into a full-fledged Haskell projected managed with cabal,
 where we define a shared library using the `foreign-library` stanza.
 
-Start with a normal cabal file with a `library` stanza that exposes `MyLib`, and
-add the function `hs_factorial` to `MyLib` that operates on `CInt`s:
+Start with a normal cabal file with a `library` stanza that exposes `MyLib` (by
+running `cabal init` within `haskell-framework`), and add the function `hs_factorial` to `MyLib` that
+operates on `CInt`s:
 ```haskell
 module MyLib where
 import Foreign.C
@@ -198,6 +199,7 @@ directory to `.gitignore`.
 Create the file `flib/MyForeignLib.hs` that declares a `foreign export` of
 `hs_factorial` imported from `MyLib` and `foreign export`s it:
 ```haskell
+{-# LANGUAGE ForeignFunctionInterface #-}
 module MyForeignLib where
 import Foreign.C
 import MyLib (hs_factorial)

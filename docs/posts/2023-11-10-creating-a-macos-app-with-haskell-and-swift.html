@@ -195,8 +195,9 @@ and <a href="https://tuist.io/">Tuist</a>.</p>
 follow from there.</p>
 <p>We’re jumping straight into a full-fledged Haskell projected managed with cabal,
 where we define a shared library using the <code>foreign-library</code> stanza.</p>
-<p>Start with a normal cabal file with a <code>library</code> stanza that exposes <code>MyLib</code>, and
-add the function <code>hs_factorial</code> to <code>MyLib</code> that operates on <code>CInt</code>s:</p>
+<p>Start with a normal cabal file with a <code>library</code> stanza that exposes <code>MyLib</code> (by
+running <code>cabal init</code> within <code>haskell-framework</code>), and add the function <code>hs_factorial</code> to <code>MyLib</code> that
+operates on <code>CInt</code>s:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyLib</span> <span class="kw">where</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.C</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -237,10 +238,11 @@ directory <code>haskell-framework-include</code>. Do add this automatically gene
 directory to <code>.gitignore</code>.</p>
 <p>Create the file <code>flib/MyForeignLib.hs</code> that declares a <code>foreign export</code> of
 <code>hs_factorial</code> imported from <code>MyLib</code> and <code>foreign export</code>s it:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyForeignLib</span> <span class="kw">where</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.C</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">MyLib</span> (hs_factorial)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> hs_factorial ::</span> <span class="dt">CInt</span> <span class="ot">-&gt;</span> <span class="dt">CInt</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE ForeignFunctionInterface #-}</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyForeignLib</span> <span class="kw">where</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.C</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">MyLib</span> (hs_factorial)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> hs_factorial ::</span> <span class="dt">CInt</span> <span class="ot">-&gt;</span> <span class="dt">CInt</span></span></code></pre></div>
 <p>It doesn’t seem that re-exporting the function from <code>MyLib</code> when it is foreign
 exported from there is enough for it to be included in the shared library (might
 be a bug), we do need the <code>foreign export</code> here rather than in <code>MyLib</code>.</p>
