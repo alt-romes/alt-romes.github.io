@@ -35,7 +35,8 @@ The series of blog posts is further accompanied by a github repository where
 each commit matches a step of this tutorial. If in doubt regarding any step,
 simply checking the matching commit for absolute confidence you are
 understanding the practical step correctly. [Visit this link to the haskell-x-swift-project-steps repository](https://github.com/alt-romes/haskell-x-swift-project-steps)!
-I also intend to record a video explanation, if time permits.
+Furthermore, I'm writing a build tool that will facilitate setting up and
+building a project like this without having to go through all the manual steps: [haskell-swift](https://github.com/alt-romes/haskell-swift).
 
 This write-up has been cross-posted to [Well-Typed's Blog](https://well-typed.com/blog/).
 
