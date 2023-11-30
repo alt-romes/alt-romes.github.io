@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Computed Properties for Haskell Records</title>
+    
+    <meta name="description" content="Adding computed properties to Haskell record types -- probably a new Haskell anti-pattern!">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="Computed Properties for Haskell Records" />
+    
+    <meta property="og:description" content="Adding computed properties to Haskell record types -- probably a new Haskell anti-pattern!" />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://plausible.io/js/script.js"></script>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li>publications</li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Computed Properties for Haskell Records</h1>
+    <p>
+      
+      Nov 30, 2023
+      
+    </p>
+  </div>
+  
+  <p class="description">Adding computed properties to Haskell record types -- probably a new Haskell anti-pattern!</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-records">#<a href="../tags/records.html">records</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#records-in-haskell" id="toc-records-in-haskell"><span class="toc-section-number">1</span> Records in Haskell</a>
+<ul>
+<li><a href="#overloaded-record-dot" id="toc-overloaded-record-dot"><span class="toc-section-number">1.1</span> Overloaded Record Dot</a></li>
+<li><a href="#named-field-puns" id="toc-named-field-puns"><span class="toc-section-number">1.2</span> Named Field Puns</a></li>
+</ul></li>
+<li><a href="#computed-properties" id="toc-computed-properties"><span class="toc-section-number">2</span> Computed Properties</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">3</span> Conclusion</a></li>
+</ul>
+</div>
+<h1 data-number="1" id="records-in-haskell"><span class="header-section-number">1</span> Records in Haskell</h1>
+<p>Haskell has so-called record types, which are also commonly known as structs,
+for instance, in C, Swift, and Rust. To define a square, one would write:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Point</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Point</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> x ::</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> y ::</span> <span class="dt">Int</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Square</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Square</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    {<span class="ot"> topLeft     ::</span> <span class="dt">Point</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ,<span class="ot"> bottomRight ::</span> <span class="dt">Point</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>mySquare <span class="ot">=</span> <span class="dt">Square</span>{ topLeft <span class="ot">=</span> <span class="dt">Point</span>{x <span class="ot">=</span> <span class="dv">0</span>, y <span class="ot">=</span> <span class="dv">0</span>}</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                 , bottomRight <span class="ot">=</span> <span class="dt">Point</span>{x <span class="ot">=</span> <span class="dv">2</span>, y <span class="ot">=</span> <span class="dv">2</span>} }</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>mySquareWidth <span class="ot">=</span> x (bottomRight mySquare) <span class="op">-</span> x (topLeft mySquare)</span></code></pre></div>
+<p>In Haskell record types are just syntactic sugar for ordinary product types
+paired with functions that get and set these fields.
+In essence, the above is not fundamentally different from having the following
+standard product types and functions:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Point</span> <span class="ot">=</span> <span class="dt">Point</span> <span class="dt">Int</span> <span class="dt">Int</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Square</span> <span class="ot">=</span> <span class="dt">Square</span> <span class="dt">Point</span> <span class="dt">Point</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x,<span class="ot"> y ::</span> <span class="dt">Point</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>x (<span class="dt">Point</span> px _) <span class="ot">=</span> px</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>y (<span class="dt">Point</span> _ py) <span class="ot">=</span> py</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>topLeft,<span class="ot"> bottomRight ::</span> <span class="dt">Square</span> <span class="ot">-&gt;</span> <span class="dt">Point</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>topLeft (<span class="dt">Square</span> tl _) <span class="ot">=</span> tl</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>bottomRight (<span class="dt">Square</span> _ br) <span class="ot">=</span> br</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">-- And setters...</span></span></code></pre></div>
+<h2 data-number="1.1" id="overloaded-record-dot"><span class="header-section-number">1.1</span> Overloaded Record Dot</h2>
+<p>However, by turning on the <code>OverloadedRecordDot</code> syntax extension, you can
+use more syntactic sugar to project the fields of a record instead of using the
+field name as a standard function:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE OverloadedRecordDot #-}</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mySquareWidth <span class="ot">=</span> mySquare<span class="op">.</span>bottomRight<span class="op">.</span>x <span class="op">-</span> mySquare<span class="op">.</span>topLeft<span class="op">.</span>x</span></code></pre></div>
+<p>which is neat!
+I like <code>OverloadedRecordDot</code>. It looks clean and feels more like using proper
+property of the record data type. It is also less ambiguous for an LSP to
+suggest the record properties of a data type by typing after the <code>.</code>, than it is
+to suggest functions to apply to the record type argument.</p>
+<h2 data-number="1.2" id="named-field-puns"><span class="header-section-number">1.2</span> Named Field Puns</h2>
+<p>Since I’m already writing about records, I’ll mention another extension I quite
+enjoy: <code>NamedFieldPuns</code>.</p>
+<p>Traditionally, when matching on a record, you can list the field names and bind
+variables to the value associated with that field. Continuing the above example:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">area ::</span> <span class="dt">Square</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>area <span class="dt">Square</span>{topLeft <span class="ot">=</span> tl, bottomRight <span class="ot">=</span> br}</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> (br<span class="op">.</span>x <span class="op">-</span> tl<span class="op">.</span>x) <span class="op">*</span> (br<span class="op">.</span>y <span class="op">-</span> tl<span class="op">.</span>y)</span></code></pre></div>
+<p>We know, however, that naming things is hard and best avoided. With
+<code>NamedFieldPuns</code>, instead of declaring the variable to be bound to the right of
+the field name, we have the field name be the variable bound to its value:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">area ::</span> <span class="dt">Square</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>area <span class="dt">Square</span>{topLeft, bottomRight}</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="ot">=</span> (bottomRight<span class="op">.</span>x <span class="op">-</span> topLeft<span class="op">.</span>x) <span class="op">*</span> (bottomRight<span class="op">.</span>y <span class="op">-</span> topLeft<span class="op">.</span>y)</span></code></pre></div>
+<p>There are more record-related extensions, such as <code>RecordWildCards</code> or
+<code>OverloadedRecordUpdate</code>, which I will not get into, but that can also make life
+smoother when working with records.</p>
+<h1 data-number="2" id="computed-properties"><span class="header-section-number">2</span> Computed Properties</h1>
+<p>Computed properties are a (not-particularly-exclusive-to) Swift concept I’ve
+recently come accross while working on my <a href="2023-11-10-creating-a-macos-app-with-haskell-and-swift.html">interoperability between Haskell and
+Swift project</a>.</p>
+<p>Here is a definition from the <a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/">Swift book section on (computed)
+properties</a>:</p>
+<blockquote>
+<p><em>Properties</em> associate values with a particular class, structure, or
+enumeration. Stored properties store constant and variable values as part of
+an instance, whereas computed properties calculate (rather than store) a
+value. Computed properties are provided by classes, structures, and
+enumerations. Stored properties are provided only by classes and structures.</p>
+</blockquote>
+<p>And a Swift example, where the <code>volume</code> is a property computed from the <code>width</code>,
+the <code>height</code> and the <code>depth</code> of a <code>Cuboid</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Cuboid <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">width</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> height <span class="op">=</span> <span class="fl">0.0</span><span class="op">,</span> depth <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">volume</span><span class="op">:</span> Double <span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> width <span class="op">*</span> height <span class="op">*</span> depth</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>C# also has a notion of <a href="https://learn.microsoft.com/en-us/dotnet/csharp/properties#computed-properties">computed properties</a>.
+In Java, simple class methods computing a result from class properties can also
+be seen as some sort of computed property, or, really, class methods in any
+object oriented language.</p>
+<p>In Haskell, as basically everything else, you can think of computed properties
+as… just functions. But there is one key element to computed properties that
+makes them different from just functions – them being called using dot syntax
+at a value of a record type just like any other property, and the evoking the
+idea of describing a <em>property</em> of the record type.</p>
+<p>Can we have that kind of computed properties in Haskell? Well, of course!</p>
+<p>Following the examples in previous sections, consider the <code>area</code> function to be
+conceptually a <em>computed property</em> of a rectangle, as it uses the two <code>Square</code>
+properties (<code>topLeft</code> and <code>bottomRight</code>) to compute a new one. Ultimately, we
+want to be able to type:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> mySquare<span class="op">.</span>area</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span></span></code></pre></div>
+<p>To achieve this, we need to emulate the behaviour of field accessors. The key
+insight is to use the <code>HasField</code> class just like default field accessors do.
+<code>HasField</code> enables so-called <a href="https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/hasfield.html">record field selector
+polymorphism</a>
+and allows us to not only define functions to operate on any record type with eg a
+field named <code>name</code>, it allows us to define field accessors for non-record types,
+and, ultimately, allows us to create computed properties. The ability to
+define our own instances of <code>HasField</code> is also documented in the user guide
+under <a href="https://ghc.gitlab.haskell.org/ghc/doc/users_guide/exts/hasfield.html#virtual-record-fields">virtual record fields</a>.</p>
+<p>To make the <code>area</code> function a field accessor, thereby making it a
+record-dot-enabled-computed-property, we instance <code>HasField</code> using the field
+name <code>area</code> (which is a defined as a type-level string in the first argument to
+<code>HasField</code>):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GHC2021, OverloadedRecordDot, DataKinds #-}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">GHC.Records</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">HasField</span> <span class="st">&quot;area&quot;</span> <span class="dt">Square</span> <span class="dt">Int</span> <span class="kw">where</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    getField <span class="ot">=</span> area</span></code></pre></div>
+<p>You can now write <code>some_square.area</code> to compute the area of the square based on
+its record properties.</p>
+<p>Here’s an example of a full program defining another computed property and printing it:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE GHC2021, OverloadedRecordDot, DataKinds #-}</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">GHC.Records</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">User</span> <span class="ot">=</span> <span class="dt">User</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  {<span class="ot"> birthYear ::</span> <span class="dt">Int</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  ,<span class="ot"> name ::</span> <span class="dt">String</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">HasField</span> <span class="st">&quot;age&quot;</span> <span class="dt">User</span> <span class="dt">Int</span> <span class="kw">where</span> getField <span class="ot">=</span> age</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="ot">age ::</span> <span class="dt">User</span> <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>age u <span class="ot">=</span> <span class="dv">2023</span> <span class="op">-</span> u<span class="op">.</span>birthYear</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="ot">user ::</span> <span class="dt">User</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>user <span class="ot">=</span> <span class="dt">User</span>{birthYear<span class="ot">=</span><span class="dv">1995</span>, name<span class="ot">=</span><span class="st">&quot;Robert&quot;</span>}</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>main <span class="ot">=</span> <span class="fu">print</span> user<span class="op">.</span>age</span></code></pre></div>
+<h1 data-number="3" id="conclusion"><span class="header-section-number">3</span> Conclusion</h1>
+<p>This has been a whirlwhind thought kind of post. I am not currently using this
+in any project. I thought “I suppose we can also have this neat properties
+sugar” and tried it, this is only my exposition of the idea.</p>
+<p>In my opinion, this could be handy as some functions can really be better thought of as
+properties of a datatype, and doing so doesn’t preclude you from also using it
+as a function in cases where it reads more naturally (and of course, pass it on
+to higher order functions). LSP based autocompletion of (computed) properties after the dot might be another positive factor.
+It is probably also a Haskell anti-pattern for some!</p>
+<p>I’m left wondering:
+is anyone out there doing this?</p>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2023
+        </small>
+    </footer>
+  </body>
+</html>
