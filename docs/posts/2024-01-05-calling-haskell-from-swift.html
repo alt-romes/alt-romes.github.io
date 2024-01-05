@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calling Haskell from Swift</title>
+    
+    <meta name="description" content="TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="Calling Haskell from Swift" />
+    
+    <meta property="og:description" content="TODO Second part of an in-depth guide into developing native applications using Haskell with Swift." />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://plausible.io/js/script.js"></script>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <!-- <li><a href="/papers.html">publications</a></li> -->
+        <li>publications</li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Calling Haskell from Swift</h1>
+    <p>
+      
+      Jan  5, 2024
+      
+    </p>
+  </div>
+  
+  <p class="description">TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-swift">#<a href="../tags/swift.html">swift</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#marshaling-inputs-and-outputs" id="toc-marshaling-inputs-and-outputs"><span class="toc-section-number">2</span> Marshaling Inputs and Outputs</a></li>
+</ul>
+</div>
+<p>This is the second installment of the in-depth series of blog-posts on
+developing native macOS and iOS applications using both Haskell and
+Swift/SwiftUI. This post covers how to call (non-trivial) Haskell functions from
+Swift by using a foreign function calling-convention strategy similar to that
+described by <a href="https://well-typed.com/blog/2023/03/purgatory/">Calling Purgatory from Heaven: Binding to Rust in
+Haskell</a> that requires argument
+and result marshaling. Despite marshaling being required for robustly traversing
+the foreign language boundary, I additionally explore calling Haskell from Swift
+without any kind of marshaling by instead coercing the memory representation of
+a Haskell value into a Swift one – this is mostly a (very unsafe) curiosity,
+but gives me an excuse to write a bit about low-level details in Haskell!</p>
+<p>You may find the other blog posts in this series interesting:</p>
+<ol type="1">
+<li><a href="2023-11-10-creating-a-macos-app-with-haskell-and-swift.html">Creating a macOS app with Haskell and Swift</a></li>
+</ol>
+<p>The series of blog posts is further accompanied by a <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">github
+repository</a> where
+each commit matches a step of this tutorial. If in doubt regarding any step,
+check the matching commit to make it clearer.
+Additionally, I’m writing a build tool and libraries to facilitate the
+interoperability between Haskell and Swift at <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+<p>This write-up has been cross-posted to <a href="https://well-typed.com/blog/">Well-Typed’s Blog</a>.</p>
+<h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
+<p>We’ll pick up from where the last post ended – we have set up an XCode project
+that includes our headers generated from Haskell modules with <code>foreign export</code>s
+and links against the foreign library declared in the cabal file. We have
+already been able to call a very simple Haskell function on integers from Swift
+via Haskell’s C foreign export feature and Swift’s C interoperability.</p>
+<p>This part concerns itself with calling idiomatic Haskell functions, which
+typically involve user-defined datatypes as inputs and outputs, from Swift.
+Moreover, these functions should be made available to Swift transparently, such
+that Swift calls them as it does other idiomatic functions, with user defined
+structs and classes.</p>
+<p>For example, a Haskell function</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">User</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">User</span> {<span class="ot"> name ::</span> <span class="dt">String</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>         ,<span class="ot"> age  ::</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">birthday ::</span> <span class="dt">User</span> <span class="ot">-&gt;</span> <span class="dt">User</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>birthday user <span class="ot">=</span> user{age <span class="ot">=</span> user<span class="op">.</span>age <span class="op">+</span> <span class="dv">1</span>}</span></code></pre></div>
+<p>should be called from Swift as</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> User <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">name</span><span class="op">:</span> String</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">age</span><span class="op">:</span> Int</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// birthday(user: User(name: &quot;Anton&quot;, age: 33)) = User(name: &quot;Anton&quot;, age: 34)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">birthday</span><span class="op">(</span><span class="va">user</span><span class="op">:</span> <span class="dt">User</span><span class="op">)</span> -&gt; <span class="fu">User</span> <span class="op">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Calls Haskell function...</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>To support this workflow, we need a way to <strong>convert the User datatype from
+Haskell to Swift</strong>, and vice versa. There’s certainly more than one way to do
+it, but we are going to <strong>serialize (most) inputs and outputs</strong> of a function.</p>
+<p>In the end, I promise to also dive a bit into coercing in-memory representations
+of a datatype in between Haskell and Swift!</p>
+<p>As a first step, we write the <code>User</code> data type and <code>birthday</code> function to
+<code>haskell-framework/src/MyLib.hs</code>, and the Swift equivalents to
+<code>SwiftHaskell/ContentView.swift</code> from <a href="https://github.com/alt-romes/haskell-x-swift-project-steps"><code>haskell-x-swift-project-steps</code></a>.</p>
+<h1 data-number="2" id="marshaling-inputs-and-outputs"><span class="header-section-number">2</span> Marshaling Inputs and Outputs</h1>
+<p>Marshaling the inputs and outputs of a function, from the Swift perspective,
+means to serialize the input values into strings, and receive the output value as
+a string which is then decoded into a Swift value. The Haskell perspective is
+dual.</p>
+<p>Marshaling/serializing is a very robust solution to foreign language interoperability.
+Despite the small overhead of encoding and decoding at a function call, it
+almost automatically extends to, and enables, all sorts of data to be
+transported across the language boundary, without it being vulnerable to
+compiler implementation details and memory representation incompatabilities.</p>
+<p>We will use the same marshaling strategy that <a href="https://well-typed.com/blog/2023/03/purgatory">Calling Purgatory from Heaven: Binding to Rust in Haskell</a> does.
+In short, the idiomatic Haskell function is wrapped by a low-level one which
+deserializes the Haskell values from the argument buffers, and serializes the
+function result to a buffer that the caller provides. More specifically,</p>
+<ul>
+<li><p>For each argument of the original function, we have a pair <code>(Ptr CChar, Int)</code> – a string of characters and the size of that string</p></li>
+<li><p>For the result of the original function, we have an additional argument <code>(Ptr CChar, Ptr Int)</code> –
+an empty buffer in memory and a pointer to the size of that buffer, allocated by the caller.</p></li>
+<li><p>For each argument, we read the C string into a Haskell argument to the original function.</p></li>
+<li><p>We call the original function</p></li>
+<li><p>We overwrite the memory location containing the original size of the buffer with the <em>required</em> size of the buffer to fit the result (which may be smaller or larger than the actual size).
+If the buffer is large enough we write the result to it.</p></li>
+<li><p>From the Swift side, we read the amount of bytes specified in the memory
+location that now contains the <em>required</em> size. If it turns out that the
+<em>required size</em> is larger than the buffer’s size, we need to retry the
+function call with a larger buffer.</p>
+<ul>
+<li>This means we might end up doing the work twice, if the original buffer size
+is not big enough. Some engineering work might allow us to re-use the
+result, but we’ll stick with retrying from scratch for simplicity.</li>
+</ul></li>
+</ul>
+<p>We will use <code>JSON</code> as the serialization format: both Haskell and Swift have good
+support for automatically deriving JSON instances and it is easier to guarantee
+JSON instances match than binary order-and-alignment-dependent serialization
+instances.</p>
+<p>Extending the <code>User</code> example requires <code>User</code> to be decodable, which can be done automatically by adding to the <code>User</code> declaration:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> stock <span class="dt">Generic</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> anyclass (<span class="dt">ToJSON</span>, <span class="dt">FromJSON</span>)</span></code></pre></div>
+<p>With the appropriate extensions and importing the necessary modules in <code>MyLib</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE DerivingStrategies, DeriveAnyClass #-}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">-- ...</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">GHC.Generics</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson</span></span></code></pre></div>
+<p>The <code>MyForeignLib</code> module additionally must import</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.Ptr</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.Storable</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Foreign.Marshal</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.Aeson</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Unsafe</span></span></code></pre></div>
+<p>Now, let’s (foreign) export a function <code>c_birthday</code> that wraps
+<code>birthday</code> above in <code>haskell-framework/flib/MyForeignLib.hs</code>, using the
+described method:</p>
+<p>First, the type definition of the function receives the buffer with the <code>User</code> argument, and a
+buffer to write the <code>User</code> result to. We cannot use tuples because they are not
+supported in foreign export declarations, but the intuition is that the first
+two arguments represent the original <code>User</code> input, and the two latter arguments
+represent the returned <code>User</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ot">c_birthday ::</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span></code></pre></div>
+<p>Then, the implementation – decode the argument, encode the result, write
+result size to the given memory location and the result itself to the buffer, if
+it fits.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>c_birthday cstr clen result size_ptr <span class="ot">=</span> <span class="kw">do</span></span></code></pre></div>
+<p>We transform the <code>(Ptr CChar, Int)</code> pair into a <code>ByteString</code> using
+<code>unsafePackCStringLen</code>, and decode a <code>User</code> from the <code>ByteString</code> using
+<code>decodeStrict</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (1) Decode C string</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Just</span> user <span class="ot">&lt;-</span> decodeStrict <span class="op">&lt;$&gt;</span> unsafePackCStringLen (cstr, clen)</span></code></pre></div>
+<p>We apply the original <code>birthday</code> function to the decoded <code>user</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (2) Apply `birthday`</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> user_new <span class="ot">=</span> birthday user</span></code></pre></div>
+<p>We encode the <code>new_user :: User</code> as a <code>ByteString</code>, and use
+<code>unsafeUseAsCStringLen</code> to get a pointer to the bytestring data and its length.
+Finally, we get the size of the result buffer, write the actual size of the
+result to the given memory location, and, if the actual size fits the buffer,
+copy the bytes from the bytestring to the given buffer.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (3) Encode result</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  unsafeUseAsCStringLen (toStrict <span class="op">$</span> encode user_new) <span class="op">$</span> \(ptr,len) <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (3.2) What is the size of the result buffer?</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    size_avail <span class="ot">&lt;-</span> peek size_ptr</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (3.3) Write actual size to the int ptr.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    poke size_ptr len</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- (3.4) If sufficient, we copy the result bytes to the given result buffer</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">if</span> size_avail <span class="op">&lt;</span> len</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>       <span class="kw">then</span> <span class="kw">do</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- We need @len@ bytes available</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>         <span class="co">-- The caller has to retry</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>         <span class="fu">return</span> ()</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>       <span class="kw">else</span> <span class="kw">do</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>         moveBytes result ptr len</span></code></pre></div>
+<p>If the written <em>required</em> size is larger than the given buffer, the caller will
+retry.</p>
+<p>Of course, we must export this as a C function.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> c_birthday ::</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span></code></pre></div>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2023
+        </small>
+    </footer>
+  </body>
+</html>
