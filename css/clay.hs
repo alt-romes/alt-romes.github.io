@@ -39,6 +39,8 @@ stylesheet = do
   tag "macos"       "#1771E4"
   tag "interop"     "#8BC789"
   tag "records"     "#6CBB82"
+  tag "egraphs"     "#D9903A"
+  tag "algorithms"  "#7E3445"
 
 
 -- Output the compact version
