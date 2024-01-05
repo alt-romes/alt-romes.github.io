@@ -41,6 +41,14 @@
     <dc:creator>Rodrigo Mesquita</dc:creator>
 </item>
 <item>
+    <title>Equality Saturation in Haskell, a tutorial</title>
+    <link>http://alt-romes.github.io/posts/2022-08-23-a-first-hegg-tutorial.html</link>
+    <description><![CDATA[A first tutorial for equality saturation with hegg, a library of e-graphs and fast equality saturation written in Haskell. This tutorial implements a symbolic manipulation library using hegg.]]></description>
+    <pubDate>Tue, 23 Aug 2022 00:00:00 UT</pubDate>
+    <guid>http://alt-romes.github.io/posts/2022-08-23-a-first-hegg-tutorial.html</guid>
+    <dc:creator>Rodrigo Mesquita</dc:creator>
+</item>
+<item>
     <title>Graphical Applications in Haskell with FRP and Reflex</title>
     <link>http://alt-romes.github.io/posts/lectures/2022-07-10-frp.html</link>
     <description><![CDATA[This is the second of two parts on creating interactive graphical applications with functional programming, in Haskell; this second part, using <strong>Functional Reactive Programming</strong> through <code>reflex</code>, and how it can be used to build a DOM-based interactive UI.]]></description>

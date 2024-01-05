@@ -44,6 +44,14 @@
     <summary type="html"><![CDATA[I've been working the past month or two in a shader-centric, type-heavy 3d-renderer/game engine, written in Haskell. In this post I present some of the current implementation details and pictures of the multiple achievements and progress done so far.]]></summary>
 </entry>
 <entry>
+    <title>Equality Saturation in Haskell, a tutorial</title>
+    <link href="http://alt-romes.github.io/posts/2022-08-23-a-first-hegg-tutorial.html" />
+    <id>http://alt-romes.github.io/posts/2022-08-23-a-first-hegg-tutorial.html</id>
+    <published>2022-08-23T00:00:00Z</published>
+    <updated>2022-08-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[A first tutorial for equality saturation with hegg, a library of e-graphs and fast equality saturation written in Haskell. This tutorial implements a symbolic manipulation library using hegg.]]></summary>
+</entry>
+<entry>
     <title>Graphical Applications in Haskell with FRP and Reflex</title>
     <link href="http://alt-romes.github.io/posts/lectures/2022-07-10-frp.html" />
     <id>http://alt-romes.github.io/posts/lectures/2022-07-10-frp.html</id>
