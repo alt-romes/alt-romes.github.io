@@ -1,14 +1,25 @@
 --------------------------------------------------------------------------------
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 
+import GHC.Generics
+import Control.Monad.Except
+import Control.Monad.IO.Class
+import Data.Either
+import Data.Time
+import Data.Yaml as Y
 import Data.String
 import Data.List (intersperse)
 import Data.Map (Map, singleton)
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Set as Set
 
 import Text.Blaze.Html5.Attributes (href, class_, style)
@@ -29,7 +40,6 @@ import Data.Maybe (mapMaybe, isJust, catMaybes)
 import System.FilePath.Posix
 
 -- import Media
-
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -154,6 +164,32 @@ main = hakyllWith config $ do
                 >>= loadAndApplyTemplate "templates/all-posts.html" postsCtx
                 >>= loadAndApplyTemplate "templates/default.html" postsCtx
                 >>= relativizeUrls
+
+    -- Music page
+    match "data/albums.yaml" $ do
+      route $ constRoute "music.html"
+      compile $ do
+        albums <- itemBody <$> getResourceLBS
+          >>= either (throwError . pure . show) pure .
+              Y.decodeEither' @[Album] . LBS.toStrict
+          >>= traverse makeItem
+        let albumsCtx =
+                listField "albums" albumCtx (pure albums) <>
+                constField "title" "Romes' Top Albums Library" <>
+                constField "description" "Curated list of my top albums. Includes 8s and 9s too, not only perfect 10s." <>
+                defaultContext
+            albumCtx
+              = field "title" (pure . title . itemBody)
+              <> field "year" (pure . show . year . itemBody)
+              <> field "artist" (pure . artist . itemBody)
+              -- if conditionals check if key exists
+              <> boolField "mark" (mark . itemBody)
+              -- <> field "date" ...
+
+        makeItem ""
+            >>= loadAndApplyTemplate "templates/music.html" albumsCtx
+            >>= loadAndApplyTemplate "templates/default.html" albumsCtx
+            >>= relativizeUrls
 
     -- Main page
     match "index.html" $ do
@@ -304,4 +340,11 @@ headField :: String -> [String] -> Context a
 headField _ [] = mempty
 headField s (x:_) = constField s x
 
-
+data Album = Album {
+    title    :: String,
+    year     :: Integer,
+    artist   :: String,
+    mark     :: Bool,
+    date     :: Day
+} deriving (Show, Eq, Generic)
+  deriving anyclass FromJSON
