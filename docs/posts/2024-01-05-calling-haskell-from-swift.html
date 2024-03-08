@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Calling Haskell from Swift</title>
     
-    <meta name="description" content="TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.">
+    <meta name="description" content="Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift.">
     
     <link rel="stylesheet" href="../css/default.css" />
     <link rel="stylesheet" href="../css/clay.css" />
@@ -14,7 +14,7 @@
     <!-- open graph -->
     <meta property="og:title" content="Calling Haskell from Swift" />
     
-    <meta property="og:description" content="TODO Second part of an in-depth guide into developing native applications using Haskell with Swift." />
+    <meta property="og:description" content="Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift." />
     
 
     
@@ -52,7 +52,7 @@
     </p>
   </div>
   
-  <p class="description">TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.</p>
+  <p class="description">Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift.</p>
   
   
   <ul class="tags">
@@ -66,7 +66,17 @@
   <div class="toc"><div class="header">Contents</div>
 <ul>
 <li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
-<li><a href="#marshaling-inputs-and-outputs" id="toc-marshaling-inputs-and-outputs"><span class="toc-section-number">2</span> Marshaling Inputs and Outputs</a></li>
+<li><a href="#marshaling-inputs-and-outputs" id="toc-marshaling-inputs-and-outputs"><span class="toc-section-number">2</span> Marshaling Inputs and Outputs</a>
+<ul>
+<li><a href="#haskells-perspective" id="toc-haskells-perspective"><span class="toc-section-number">2.1</span> Haskell’s Perspective</a></li>
+<li><a href="#swifts-perspective" id="toc-swifts-perspective"><span class="toc-section-number">2.2</span> Swift’s Perspective</a></li>
+</ul></li>
+<li><a href="#generating-code-at-the-boundaries" id="toc-generating-code-at-the-boundaries"><span class="toc-section-number">3</span> Generating Code at the Boundaries</a>
+<ul>
+<li><a href="#haskells-perspective-1" id="toc-haskells-perspective-1"><span class="toc-section-number">3.1</span> Haskell’s perspective</a></li>
+<li><a href="#swifts-perspective-1" id="toc-swifts-perspective-1"><span class="toc-section-number">3.2</span> Swift’s perspective</a></li>
+</ul></li>
+<li><a href="#coercing-haskell-memory-objects-to-swift" id="toc-coercing-haskell-memory-objects-to-swift"><span class="toc-section-number">4</span> Coercing Haskell memory objects to Swift</a></li>
 </ul>
 </div>
 <p>This is the second installment of the in-depth series of blog-posts on
@@ -102,7 +112,9 @@ typically involve user-defined datatypes as inputs and outputs, from Swift.
 Moreover, these functions should be made available to Swift transparently, such
 that Swift calls them as it does other idiomatic functions, with user defined
 structs and classes.</p>
-<p>For example, a Haskell function</p>
+<p>For the running example, the following not-very-interesting function will
+suffice to showcase the method we will use to expose this function from Haskell
+to Swift, which easily scales to other complex data types and functions.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">User</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">User</span> {<span class="ot"> name ::</span> <span class="dt">String</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>         ,<span class="ot"> age  ::</span> <span class="dt">Int</span></span>
@@ -121,11 +133,14 @@ structs and classes.</p>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Calls Haskell function...</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>To support this workflow, we need a way to <strong>convert the User datatype from
-Haskell to Swift</strong>, and vice versa. There’s certainly more than one way to do
-it, but we are going to <strong>serialize (most) inputs and outputs</strong> of a function.</p>
-<p>In the end, I promise to also dive a bit into coercing in-memory representations
-of a datatype in between Haskell and Swift!</p>
-<p>As a first step, we write the <code>User</code> data type and <code>birthday</code> function to
+Haskell to Swift</strong>, and vice versa. There’s more than one way to do it, but we
+are going to <strong>serialize (most) inputs and outputs</strong> of a function – though, in
+the end, I promise to also dive a bit into coercing in-memory representations of
+a datatype in between Haskell and Swift.</p>
+<p>Note that, even though the serialization method here described seems complex, it
+can be automated with Template Haskell and Swift Macros and packed into a neat
+interface – which I’ve done at <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+<p>As a preliminary step, we write the <code>User</code> data type and <code>birthday</code> function to
 <code>haskell-framework/src/MyLib.hs</code>, and the Swift equivalents to
 <code>SwiftHaskell/ContentView.swift</code> from <a href="https://github.com/alt-romes/haskell-x-swift-project-steps"><code>haskell-x-swift-project-steps</code></a>.</p>
 <h1 data-number="2" id="marshaling-inputs-and-outputs"><span class="header-section-number">2</span> Marshaling Inputs and Outputs</h1>
@@ -137,16 +152,16 @@ dual.</p>
 Despite the small overhead of encoding and decoding at a function call, it
 almost automatically extends to, and enables, all sorts of data to be
 transported across the language boundary, without it being vulnerable to
-compiler implementation details and memory representation incompatabilities.</p>
+compiler implementation details and memory representation incompatibilities.</p>
 <p>We will use the same marshaling strategy that <a href="https://well-typed.com/blog/2023/03/purgatory">Calling Purgatory from Heaven: Binding to Rust in Haskell</a> does.
 In short, the idiomatic Haskell function is wrapped by a low-level one which
 deserializes the Haskell values from the argument buffers, and serializes the
 function result to a buffer that the caller provides. More specifically,</p>
 <ul>
-<li><p>For each argument of the original function, we have a pair <code>(Ptr CChar, Int)</code> – a string of characters and the size of that string</p></li>
-<li><p>For the result of the original function, we have an additional argument <code>(Ptr CChar, Ptr Int)</code> –
-an empty buffer in memory and a pointer to the size of that buffer, allocated by the caller.</p></li>
-<li><p>For each argument, we read the C string into a Haskell argument to the original function.</p></li>
+<li><p>For each argument of the original function, we have a <code>Ptr CChar</code> and <code>Int</code> – a string of characters and the size of that string (a.k.a <code>CStringLen</code>)</p></li>
+<li><p>For the result of the original function, we have two additional arguments, <code>Ptr CChar</code> and <code>Ptr Int</code> –
+an empty buffer in memory, and a pointer to the size of that buffer, both allocated by the caller.</p></li>
+<li><p>For each argument, we parse the C string into a Haskell value that serves as an argument to the original function.</p></li>
 <li><p>We call the original function</p></li>
 <li><p>We overwrite the memory location containing the original size of the buffer with the <em>required</em> size of the buffer to fit the result (which may be smaller or larger than the actual size).
 If the buffer is large enough we write the result to it.</p></li>
@@ -164,6 +179,7 @@ result, but we’ll stick with retrying from scratch for simplicity.</li>
 support for automatically deriving JSON instances and it is easier to guarantee
 JSON instances match than binary order-and-alignment-dependent serialization
 instances.</p>
+<h2 data-number="2.1" id="haskells-perspective"><span class="header-section-number">2.1</span> Haskell’s Perspective</h2>
 <p>Extending the <code>User</code> example requires <code>User</code> to be decodable, which can be done automatically by adding to the <code>User</code> declaration:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> stock <span class="dt">Generic</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> anyclass (<span class="dt">ToJSON</span>, <span class="dt">FromJSON</span>)</span></code></pre></div>
@@ -199,7 +215,9 @@ it fits.</p>
 <code>decodeStrict</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (1) Decode C string</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Just</span> user <span class="ot">&lt;-</span> decodeStrict <span class="op">&lt;$&gt;</span> unsafePackCStringLen (cstr, clen)</span></code></pre></div>
-<p>We apply the original <code>birthday</code> function to the decoded <code>user</code>.</p>
+<p>We apply the original <code>birthday</code> function to the decoded <code>user</code>. In our example,
+this is a very boring function, but in reality this is likely a complex
+idiomatic Haskell function that we want to expose to.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">-- (2) Apply `birthday`</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> user_new <span class="ot">=</span> birthday user</span></code></pre></div>
 <p>We encode the <code>new_user :: User</code> as a <code>ByteString</code>, and use
@@ -228,6 +246,235 @@ copy the bytes from the bytestring to the given buffer.</p>
 retry.</p>
 <p>Of course, we must export this as a C function.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> c_birthday ::</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">CChar</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span></code></pre></div>
+<p>This makes the <code>c_birthday</code> function wrapper available to Swift in the generated
+header and at link time in the dynamic library.</p>
+<h2 data-number="2.2" id="swifts-perspective"><span class="header-section-number">2.2</span> Swift’s Perspective</h2>
+<p>In Swift, we want to be able to call the functions exposed from Haskell via
+their wrappers, from a wrapper that feels native to Swift itself. In our
+example, that means wrapping a call to <code>c_birthday</code> in a new Swift <code>birthday</code>
+function.</p>
+<p>In <code>ContentView.swift</code>, we make <code>User</code> JSON-encodable/decodable by conforming to
+the <code>Codable</code> protocol:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> User<span class="op">:</span> <span class="dt">Codable</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// ...</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Then, we implement the Swift side of <code>birthday</code> which <em>simply</em> calls
+<code>c_birthday</code> – the whole logic of <code>birthday</code> is handled by the Haskell side
+function (recall that <code>birthday</code> could be incredibly complex, and other
+functions exposed by Haskell will indeed be).</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">birthday</span><span class="op">(</span><span class="va">user</span><span class="op">:</span> <span class="dt">User</span><span class="op">)</span> -&gt; <span class="fu">User</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// ...</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Note: in the implementation, a couple of blocks have to be wrapped with a <code>do { ... } catch X { ... }</code> but I omit them in this text. You can see the commit
+relevant to the Swift function wrapper implementation in the repo with all of
+these details included.</p>
+<p>First, we encode the Swift argument into a binary representation (<code>Data</code>) (plus its length) that will serve
+as arguments to the foreign C function.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">enc</span> <span class="op">=</span> JSONEncoder<span class="op">()</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">dec</span> <span class="op">=</span> JSONDecoder<span class="op">()</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> <span class="va">data</span><span class="op">:</span> Data <span class="op">=</span> <span class="cf">try</span> enc<span class="op">.</span>encode<span class="op">(</span>user<span class="op">)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">data_len</span> <span class="op">=</span> Int64<span class="op">(</span>data<span class="op">.</span>count<span class="op">)</span></span></code></pre></div>
+<p>However, a Swift <code>Data</code> value, which represents binary data, cannot be passed
+directly to C as a pointer. For that, we must use <code>withUnsafeMutableBytes</code> to
+get an <code>UnsafeMutableRawBufferPointer</code> out of the <code>Data</code> – that we can pass to
+the C foreign function. <code>withUnsafeMutableBytes</code> receives a closure that uses an
+<code>UnsafeMutableRawBufferPointer</code> in its scope and returns the value returned by
+the closure. Therefore we can return the result of calling it on the user <code>Data</code>
+we encoded right away:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> data<span class="op">.</span>withUnsafeMutableBytes <span class="op">{</span> <span class="op">(</span>rawPtr<span class="op">:</span> UnsafeMutableRawBufferPointer<span class="op">)</span> <span class="cf">in</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// here goes the closure that can use the raw pointer,</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// the code for which we describe below</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We allocate a buffer for the C foreign function to insert the result of
+calling the Haskell function, and also allocate memory to store the size of the
+buffer. We use <code>withUnsafeTemporaryAllocation</code> to allocate a buffer that can be
+used in the C foreign function call. As for <code>withUnsafeMutableBytes</code>, this
+function also takes a closure and returns the value returned by the closure:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// The data buffer size</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">buf_size</span> <span class="op">=</span> <span class="dv">1024000</span> <span class="co">// 1024KB</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">// A size=1 buffer to store the length of the result buffer</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> withUnsafeTemporaryAllocation<span class="op">(</span>of<span class="op">:</span> Int<span class="op">.</span><span class="kw">self</span><span class="op">:</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> size_ptr <span class="cf">in</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Store the buffer size in this memory location</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">=</span> buf_size</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Allocate the buffer for the result (we need to wrap this in a do { ...} catch for reasons explained below)</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> withUnsafeTemporaryAllocation<span class="op">(</span>byteCount<span class="op">:</span> buf_size<span class="op">,</span> alignment<span class="op">:</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> res_ptr <span class="cf">in</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Continues from here ...</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">catch</span> <span class="co">// We continue here in due time ...</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We are now nested deep within 3 closures: one binds the pointer to the
+argument’s data, the other the pointer to the buffer size, and the other the
+result buffer pointer. This means we can now call the C foreign function
+wrapping the Haskell function:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>c_birthday<span class="op">(</span>rawPtr<span class="op">.</span>baseAddress<span class="op">,</span> data_len<span class="op">,</span> res_ptr<span class="op">.</span>baseAddress<span class="op">,</span> size_ptr<span class="op">.</span>baseAddress<span class="op">)</span></span></code></pre></div>
+<p>Recalling that the Haskell side will update the size pointed to by <code>size_ptr</code> to
+the size required to serialize the encoded result, we need to check if
+this required size exceeds the buffer we allocated, or read the data otherwise:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">let</span> <span class="va">required_size</span> <span class="op">=</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> required_size <span class="op">&gt;</span> buf_size <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Need to try again</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">throw</span> HsFFIError<span class="op">.</span>requiredSizeIs<span class="op">(</span>required_size<span class="op">)</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span></code></pre></div>
+<p>where <code>HsFFIError</code> is a custom error defined as</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> HsFFIError<span class="op">:</span> <span class="dt">Error</span> <span class="op">{</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> requiredSizeIs<span class="op">(</span>Int<span class="op">)</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We must now fill in the <code>catch</code> block to retry the foreign function call with a
+buffer of the right size:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">catch</span> HsFFIError<span class="op">.</span>requiredSizeIs<span class="op">(</span><span class="kw">let</span> <span class="va">required_size</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> withUnsafeTemporaryAllocation<span class="op">(</span>byteCount<span class="op">:</span> required_size<span class="op">,</span> alignment<span class="op">:</span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span> res_ptr <span class="cf">in</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">=</span> required_size</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        c_birthday<span class="op">(</span>rawPtr<span class="op">.</span>baseAddress<span class="op">,</span> data_len<span class="op">,</span> res_ptr<span class="op">.</span>baseAddress<span class="op">,</span> size_ptr<span class="op">.</span>baseAddress<span class="op">)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>That seems like a lot of work to call a function from Haskell! However, despite
+this being a lot of code, not a whole lot is happening: we simply serialize the
+argument, allocate a buffer for the result, and deserialize the result into it.
+In the worst case, if the serialized result does not fit (the serialized data
+has over 100 <em>thousand</em>! characters), then we naively compute the function a
+second time (it would not be terribly complicated to avoid this work by caching
+the result and somehow resuming the serialization with the new buffer).
+Furthermore, there is a lot of bureocracy in getting the raw pointers to send
+off to Haskell land – the good news is that all of this can be automated away
+behind automatic code generation with Template Haskell and Swift Macros.</p>
+<details>
+<summary>
+Expand for the complete function
+</summary>
+<div class="sourceCode" id="cb21"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">birthday</span> <span class="op">(</span><span class="va">user</span> <span class="op">:</span> <span class="dt">User</span><span class="op">)</span> -&gt; <span class="fu">User</span> <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">enc</span> <span class="op">=</span> JSONEncoder<span class="op">()</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">dec</span> <span class="op">=</span> JSONDecoder<span class="op">()</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">var</span> <span class="va">data</span> <span class="op">:</span> Data <span class="op">=</span> <span class="cf">try</span> enc<span class="op">.</span>encode<span class="op">(</span>user<span class="op">)</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> <span class="va">data_len</span> <span class="op">=</span> Int64<span class="op">(</span>data<span class="op">.</span>count<span class="op">)</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> <span class="cf">try</span> data<span class="op">.</span>withUnsafeMutableBytes <span class="op">{</span> <span class="op">(</span>rawPtr<span class="op">:</span>UnsafeMutableRawBufferPointer<span class="op">)</span> <span class="cf">in</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Allocate buffer for result</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">buf_size</span> <span class="op">=</span> <span class="dv">1024000</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">return</span> <span class="cf">try</span> withUnsafeTemporaryAllocation<span class="op">(</span>of<span class="op">:</span> Int<span class="op">.</span><span class="kw">self</span><span class="op">,</span> capacity<span class="op">:</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> size_ptr <span class="cf">in</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>                size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">=</span> buf_size</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>                <span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">return</span> <span class="cf">try</span> withUnsafeTemporaryAllocation<span class="op">(</span>byteCount<span class="op">:</span> buf_size<span class="op">,</span> alignment<span class="op">:</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a> res_ptr <span class="cf">in</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>                        c_birthday<span class="op">(</span>rawPtr<span class="op">.</span>baseAddress<span class="op">,</span> data_len<span class="op">,</span> res_ptr<span class="op">.</span>baseAddress<span class="op">,</span> size_ptr<span class="op">.</span>baseAddress<span class="op">)</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> <span class="kw">let</span> <span class="va">required_size</span> <span class="op">=</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">{</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                            <span class="cf">if</span> required_size <span class="op">&gt;</span> buf_size <span class="op">{</span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>                                <span class="kw">throw</span> HsFFIError<span class="op">.</span>requiredSizeIs<span class="op">(</span>required_size<span class="op">)</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>                            <span class="op">}</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>                        <span class="op">}</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">return</span> <span class="cf">try</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span> <span class="cf">catch</span> HsFFIError<span class="op">.</span>requiredSizeIs<span class="op">(</span><span class="kw">let</span> <span class="va">required_size</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>                    print<span class="op">(</span><span class="st">&quot;Retrying with required size: </span><span class="er">\(</span><span class="st">required_size)&quot;</span><span class="op">)</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">return</span> <span class="cf">try</span> withUnsafeTemporaryAllocation<span class="op">(</span>byteCount<span class="op">:</span> required_size<span class="op">,</span> alignment<span class="op">:</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> res_ptr <span class="cf">in</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>                        size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">=</span> required_size</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>                        c_birthday<span class="op">(</span>rawPtr<span class="op">.</span>baseAddress<span class="op">,</span> data_len<span class="op">,</span> res_ptr<span class="op">.</span>baseAddress<span class="op">,</span> size_ptr<span class="op">.</span>baseAddress<span class="op">)</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>                        <span class="kw">return</span> <span class="cf">try</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>                    <span class="op">}</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">catch</span> <span class="op">{</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>        print<span class="op">(</span><span class="st">&quot;Error decoding JSON probably: </span><span class="er">\(</span><span class="st">error)&quot;</span><span class="op">)</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> User<span class="op">(</span>name<span class="op">:</span> <span class="st">&quot;&quot;</span><span class="op">,</span> age<span class="op">:</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+</details>
+<p>We can test that this is working by replacing <code>ContentView</code> with:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> ContentView<span class="op">:</span> <span class="dt">View</span> <span class="op">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">var</span> <span class="va">body</span><span class="op">:</span> some View <span class="op">{</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        VStack <span class="op">{</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>            <span class="kw">let</span> <span class="va">user</span> <span class="op">=</span> birthday<span class="op">(</span>user<span class="op">:</span> User<span class="op">(</span>name<span class="op">:</span> <span class="st">&quot;Ellie&quot;</span><span class="op">,</span> age<span class="op">:</span> <span class="dv">24</span><span class="op">))</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>            Text<span class="op">(</span><span class="st">&quot;Post-birthday, </span><span class="er">\(</span><span class="st">user.name) is: </span><span class="er">\(</span><span class="st">user.age)!&quot;</span><span class="op">)</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>padding<span class="op">()</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>And you should see:</p>
+<figure>
+<img src="../images/calling-haskell-from-swift/ss1.jpeg" alt="Fig 1. Swift app displays result of calling idiomatic Haskell function via idiomatic Swift wrapper" />
+<figcaption aria-hidden="true">Fig 1. Swift app displays result of calling idiomatic Haskell function via idiomatic Swift wrapper</figcaption>
+</figure>
+<h1 data-number="3" id="generating-code-at-the-boundaries"><span class="header-section-number">3</span> Generating Code at the Boundaries</h1>
+<p>I want to give a quick preview of what is made possible by using compile-time
+code generation features (Template Haskell in Haskell, Swift Macros in Swift).
+This is foreign function code generation API is exposed by the
+<a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a> project, namely the
+<code>swift-ffi</code> Haskell library and <code>haskell-ffi</code> Swift package. (Since it is out of
+the scope of this tutorial, I will not cover how exactly the compile-time
+code-generation code works, and instead use the API provided in these libraries)</p>
+<p>These top-level foreign interaction facilities, coupled with the build tool also
+provided by <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>, one can
+easily bootstrap and develop programs mixing Haskell and Swift! (Look forward to
+a tutorial on bootstrapping and developing such a mixed project in the near future).</p>
+<p>Let us consider the same example where we define an idiomatic <code>birthday :: User -&gt; User</code> function in Haskell and want to be able to call it from Swift as
+<code>birthday(user: User) -&gt; User</code></p>
+<h2 data-number="3.1" id="haskells-perspective-1"><span class="header-section-number">3.1</span> Haskell’s perspective</h2>
+<p>To expose the <code>birthday</code> function to Swift, we simply use the <code>foreignExportSwift</code>
+Template Haskell function. The whole module could look like this:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ot">{-# LANGUAGE TemplateHaskell #-}</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span> <span class="dt">MyLib</span> <span class="kw">where</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- ...</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Swift.FFI</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">User</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a> <span class="ot">=</span> <span class="dt">User</span> {<span class="ot"> name ::</span> <span class="dt">String</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>        ,<span class="ot"> age  ::</span> <span class="dt">Int</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">deriving</span> stock    <span class="dt">Generic</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">deriving</span> anyclass <span class="dt">FromJSON</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">deriving</span> anyclass <span class="dt">ToJSON</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="ot">birthday ::</span> <span class="dt">User</span> <span class="ot">-&gt;</span> <span class="dt">User</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>birthday <span class="dt">User</span>{age<span class="ot">=</span>x, name<span class="ot">=</span>y} <span class="ot">=</span> <span class="dt">User</span>{age<span class="ot">=</span>x<span class="op">+</span><span class="dv">1</span>, name<span class="ot">=</span>y}</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="op">$</span>(foreignExportSwift 'birthday)</span></code></pre></div>
+<p>The key bit is the last <code>foreignExportSwift</code> call which will expose a C function
+with the marshalling-based calling convention we outlined above.</p>
+<h2 data-number="3.2" id="swifts-perspective-1"><span class="header-section-number">3.2</span> Swift’s perspective</h2>
+<p>On the Swift side, we want to use the dual <code>@ForeignImportSwift</code> macro which
+generates a Swift function wrapper which in turn invokes the C function exposed
+by Haskell with the above marshalling strategy. The Swift file could
+look like:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">HaskellFFI</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> User<span class="op">:</span> <span class="dt">Codable</span> <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">name</span><span class="op">:</span> String</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">age</span><span class="op">:</span> Int</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="at">@ForeignImportHaskell</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">birthday</span><span class="op">(</span><span class="va">cconv</span><span class="op">:</span> <span class="dt">HsCallJSON</span><span class="op">,</span> <span class="va">user</span><span class="op">:</span> <span class="dt">User</span><span class="op">)</span> -&gt; <span class="fu">User</span> <span class="op">{</span> stub<span class="op">()</span> <span class="op">}</span></span></code></pre></div>
+<p>where <code>birthday</code> could be called e.g. as:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>birthday<span class="op">(</span>user<span class="op">:</span> User<span class="op">(</span>name<span class="op">:</span> <span class="st">&quot;Pierre&quot;</span><span class="op">,</span> age<span class="op">:</span> <span class="dv">55</span><span class="op">))</span></span></code></pre></div>
+<h1 data-number="4" id="coercing-haskell-memory-objects-to-swift"><span class="header-section-number">4</span> Coercing Haskell memory objects to Swift</h1>
+<p>Welcome to the dark corner (section?) of this blog post: the part where we
+unsafely coerce an object in the Haskell heap into Swift. This section
+will serve to walk the reader through some of the lower level details of
+Haskell, and explore what it could mean to not marshal data between the language
+boundary.</p>
+<p>In practice, we’ve seen that, despite fun, this approach is not very robust nor
+does it scale easily, so it cannot be considered for the large applications mixing
+Haskell and Swift which are our goal.</p>
 
 </article>
 

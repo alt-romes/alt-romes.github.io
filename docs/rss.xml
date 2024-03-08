@@ -11,7 +11,7 @@
         <item>
     <title>Calling Haskell from Swift</title>
     <link>http://alt-romes.github.io/posts/2024-01-05-calling-haskell-from-swift.html</link>
-    <description><![CDATA[TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.]]></description>
+    <description><![CDATA[Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift.]]></description>
     <pubDate>Fri, 05 Jan 2024 00:00:00 UT</pubDate>
     <guid>http://alt-romes.github.io/posts/2024-01-05-calling-haskell-from-swift.html</guid>
     <dc:creator>Rodrigo Mesquita</dc:creator>
