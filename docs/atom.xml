@@ -17,7 +17,7 @@
     <id>http://alt-romes.github.io/posts/2024-01-05-calling-haskell-from-swift.html</id>
     <published>2024-01-05T00:00:00Z</published>
     <updated>2024-01-05T00:00:00Z</updated>
-    <summary type="html"><![CDATA[TODO Second part of an in-depth guide into developing native applications using Haskell with Swift.]]></summary>
+    <summary type="html"><![CDATA[Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift.]]></summary>
 </entry>
 <entry>
     <title>Computed Properties for Haskell Records</title>

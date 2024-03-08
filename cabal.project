@@ -1,3 +1,6 @@
 packages: .
 allow-newer:
     clay:*
+
+package hakyll
+    flags: +previewServer +watchServer

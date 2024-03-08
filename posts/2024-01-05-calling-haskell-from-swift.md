@@ -2,8 +2,8 @@
 
 title: Calling Haskell from Swift
 
-description: TODO
-             Second part of an in-depth guide into developing native
+description: Crossing the language boundary between Haskell and Swift.
+             This is the second part of an in-depth guide into developing native
              applications using Haskell with Swift.
 
 tags: haskell, swift
@@ -50,7 +50,9 @@ Moreover, these functions should be made available to Swift transparently, such
 that Swift calls them as it does other idiomatic functions, with user defined
 structs and classes.
 
-For example, a Haskell function
+For the running example, the following not-very-interesting function will
+suffice to showcase the method we will use to expose this function from Haskell
+to Swift, which easily scales to other complex data types and functions.
 ```haskell
 data User
   = User { name :: String
@@ -74,13 +76,16 @@ func birthday(user: User) -> User {
 ```
 
 To support this workflow, we need a way to **convert the User datatype from
-Haskell to Swift**, and vice versa. There's certainly more than one way to do
-it, but we are going to **serialize (most) inputs and outputs** of a function.
+Haskell to Swift**, and vice versa. There's more than one way to do it, but we
+are going to **serialize (most) inputs and outputs** of a function -- though, in
+the end, I promise to also dive a bit into coercing in-memory representations of
+a datatype in between Haskell and Swift.
 
-In the end, I promise to also dive a bit into coercing in-memory representations
-of a datatype in between Haskell and Swift!
+Note that, even though the serialization method here described seems complex, it
+can be automated with Template Haskell and Swift Macros and packed into a neat
+interface -- which I've done at [haskell-swift](https://github.com/alt-romes/haskell-swift).
 
-As a first step, we write the `User` data type and `birthday` function to
+As a preliminary step, we write the `User` data type and `birthday` function to
 `haskell-framework/src/MyLib.hs`, and the Swift equivalents to
 `SwiftHaskell/ContentView.swift` from [`haskell-x-swift-project-steps`](https://github.com/alt-romes/haskell-x-swift-project-steps).
 
@@ -95,17 +100,17 @@ Marshaling/serializing is a very robust solution to foreign language interoperab
 Despite the small overhead of encoding and decoding at a function call, it
 almost automatically extends to, and enables, all sorts of data to be
 transported across the language boundary, without it being vulnerable to
-compiler implementation details and memory representation incompatabilities.
+compiler implementation details and memory representation incompatibilities.
 
 We will use the same marshaling strategy that [Calling Purgatory from Heaven: Binding to Rust in Haskell](https://well-typed.com/blog/2023/03/purgatory) does.
 In short, the idiomatic Haskell function is wrapped by a low-level one which
 deserializes the Haskell values from the argument buffers, and serializes the
 function result to a buffer that the caller provides. More specifically,
 
-* For each argument of the original function, we have a pair `(Ptr CChar, Int)` -- a string of characters and the size of that string
-* For the result of the original function, we have an additional argument `(Ptr CChar, Ptr Int)` --
-    an empty buffer in memory and a pointer to the size of that buffer, allocated by the caller.
-* For each argument, we read the C string into a Haskell argument to the original function.
+* For each argument of the original function, we have a `Ptr CChar` and `Int` -- a string of characters and the size of that string (a.k.a `CStringLen`)
+* For the result of the original function, we have two additional arguments, `Ptr CChar` and `Ptr Int` --
+    an empty buffer in memory, and a pointer to the size of that buffer, both allocated by the caller.
+* For each argument, we parse the C string into a Haskell value that serves as an argument to the original function.
 * We call the original function
 * We overwrite the memory location containing the original size of the buffer with the *required* size of the buffer to fit the result (which may be smaller or larger than the actual size).
     If the buffer is large enough we write the result to it.
@@ -122,6 +127,8 @@ We will use `JSON` as the serialization format: both Haskell and Swift have good
 support for automatically deriving JSON instances and it is easier to guarantee
 JSON instances match than binary order-and-alignment-dependent serialization
 instances.
+
+## Haskell's Perspective
 
 Extending the `User` example requires `User` to be decodable, which can be done automatically by adding to the `User` declaration:
 
@@ -182,7 +189,9 @@ We transform the `(Ptr CChar, Int)` pair into a `ByteString` using
   Just user <- decodeStrict <$> unsafePackCStringLen (cstr, clen)
 ```
 
-We apply the original `birthday` function to the decoded `user`.
+We apply the original `birthday` function to the decoded `user`. In our example,
+this is a very boring function, but in reality this is likely a complex
+idiomatic Haskell function that we want to expose to.
 ```haskell
   -- (2) Apply `birthday`
   let user_new = birthday user
@@ -219,3 +228,297 @@ Of course, we must export this as a C function.
 ```haskell
 foreign export ccall c_birthday :: Ptr CChar -> Int -> Ptr CChar -> Ptr Int -> IO ()
 ```
+This makes the `c_birthday` function wrapper available to Swift in the generated
+header and at link time in the dynamic library.
+
+## Swift's Perspective
+
+In Swift, we want to be able to call the functions exposed from Haskell via
+their wrappers, from a wrapper that feels native to Swift itself. In our
+example, that means wrapping a call to `c_birthday` in a new Swift `birthday`
+function.
+
+In `ContentView.swift`, we make `User` JSON-encodable/decodable by conforming to
+the `Codable` protocol:
+```swift
+struct User: Codable {
+    // ...
+}
+```
+
+Then, we implement the Swift side of `birthday` which *simply* calls
+`c_birthday` -- the whole logic of `birthday` is handled by the Haskell side
+function (recall that `birthday` could be incredibly complex, and other
+functions exposed by Haskell will indeed be).
+```swift
+func birthday(user: User) -> User {
+    // ...
+}
+```
+
+Note: in the implementation, a couple of blocks have to be wrapped with a `do {
+... } catch X { ... }` but I omit them in this text. You can see the commit
+relevant to the Swift function wrapper implementation in the repo with all of
+these details included.
+
+First, we encode the Swift argument into a binary representation (`Data`) (plus its length) that will serve
+as arguments to the foreign C function.
+```swift
+let enc = JSONEncoder()
+let dec = JSONDecoder()
+
+var data: Data = try enc.encode(user)
+let data_len = Int64(data.count)
+```
+
+However, a Swift `Data` value, which represents binary data, cannot be passed
+directly to C as a pointer. For that, we must use `withUnsafeMutableBytes` to
+get an `UnsafeMutableRawBufferPointer` out of the `Data` -- that we can pass to
+the C foreign function. `withUnsafeMutableBytes` receives a closure that uses an
+`UnsafeMutableRawBufferPointer` in its scope and returns the value returned by
+the closure. Therefore we can return the result of calling it on the user `Data`
+we encoded right away:
+
+```swift
+return data.withUnsafeMutableBytes { (rawPtr: UnsafeMutableRawBufferPointer) in
+    // here goes the closure that can use the raw pointer,
+    // the code for which we describe below
+}
+```
+
+We allocate a buffer for the C foreign function to insert the result of
+calling the Haskell function, and also allocate memory to store the size of the
+buffer. We use `withUnsafeTemporaryAllocation` to allocate a buffer that can be
+used in the C foreign function call. As for `withUnsafeMutableBytes`, this
+function also takes a closure and returns the value returned by the closure:
+```swift
+// The data buffer size
+let buf_size = 1024000 // 1024KB
+
+// A size=1 buffer to store the length of the result buffer
+return withUnsafeTemporaryAllocation(of: Int.self: 1) { size_ptr in
+    // Store the buffer size in this memory location
+    size_ptr.baseAddress?.pointee = buf_size
+
+    // Allocate the buffer for the result (we need to wrap this in a do { ...} catch for reasons explained below)
+    do {
+        return withUnsafeTemporaryAllocation(byteCount: buf_size, alignment:1) { res_ptr in
+
+            // Continues from here ...
+        }
+    } catch // We continue here in due time ...
+}
+```
+
+We are now nested deep within 3 closures: one binds the pointer to the
+argument's data, the other the pointer to the buffer size, and the other the
+result buffer pointer. This means we can now call the C foreign function
+wrapping the Haskell function:
+```swift
+c_birthday(rawPtr.baseAddress, data_len, res_ptr.baseAddress, size_ptr.baseAddress)
+```
+
+Recalling that the Haskell side will update the size pointed to by `size_ptr` to
+the size required to serialize the encoded result, we need to check if
+this required size exceeds the buffer we allocated, or read the data otherwise:
+
+```swift
+if let required_size = size_ptr.baseAddress?.pointee {
+    if required_size > buf_size {
+        // Need to try again
+        throw HsFFIError.requiredSizeIs(required_size)
+    }
+}
+
+return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+```
+
+where `HsFFIError` is a custom error defined as
+```swift
+enum HsFFIError: Error {
+    case requiredSizeIs(Int)
+}
+```
+We must now fill in the `catch` block to retry the foreign function call with a
+buffer of the right size:
+```swift
+} catch HsFFIError.requiredSizeIs(let required_size) {
+    return withUnsafeTemporaryAllocation(byteCount: required_size, alignment:1)
+    { res_ptr in
+        size_ptr.baseAddress?.pointee = required_size
+        c_birthday(rawPtr.baseAddress, data_len, res_ptr.baseAddress, size_ptr.baseAddress)
+
+        return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+    }
+}
+```
+
+That seems like a lot of work to call a function from Haskell! However, despite
+this being a lot of code, not a whole lot is happening: we simply serialize the
+argument, allocate a buffer for the result, and deserialize the result into it.
+In the worst case, if the serialized result does not fit (the serialized data
+has over 100 *thousand*! characters), then we naively compute the function a
+second time (it would not be terribly complicated to avoid this work by caching
+the result and somehow resuming the serialization with the new buffer).
+Furthermore, there is a lot of bureocracy in getting the raw pointers to send
+off to Haskell land -- the good news is that all of this can be automated away
+behind automatic code generation with Template Haskell and Swift Macros.
+
+<details>
+<summary>Expand for the complete function</summary>
+
+```swift
+func birthday (user : User) -> User {
+    let enc = JSONEncoder()
+    let dec = JSONDecoder()
+    do {
+        var data : Data = try enc.encode(user)
+        let data_len = Int64(data.count)
+        return try data.withUnsafeMutableBytes { (rawPtr:UnsafeMutableRawBufferPointer) in
+
+            // Allocate buffer for result
+            let buf_size = 1024000
+
+            return try withUnsafeTemporaryAllocation(of: Int.self, capacity: 1) { size_ptr in
+                size_ptr.baseAddress?.pointee = buf_size
+
+                do {
+                    return try withUnsafeTemporaryAllocation(byteCount: buf_size, alignment: 1) {
+ res_ptr in
+
+                        c_birthday(rawPtr.baseAddress, data_len, res_ptr.baseAddress, size_ptr.baseAddress)
+
+                        if let required_size = size_ptr.baseAddress?.pointee {
+                            if required_size > buf_size {
+                                throw HsFFIError.requiredSizeIs(required_size)
+                            }
+                        }
+                        return try dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+                    }
+                } catch HsFFIError.requiredSizeIs(let required_size) {
+                    print("Retrying with required size: \(required_size)")
+                    return try withUnsafeTemporaryAllocation(byteCount: required_size, alignment:
+ 1) { res_ptr in
+                        size_ptr.baseAddress?.pointee = required_size
+
+                        c_birthday(rawPtr.baseAddress, data_len, res_ptr.baseAddress, size_ptr.baseAddress)
+
+                        return try dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+                    }
+                }
+            }
+        }
+    } catch {
+        print("Error decoding JSON probably: \(error)")
+        return User(name: "", age: 0)
+    }
+}
+```
+
+</details>
+
+We can test that this is working by replacing `ContentView` with:
+
+```swift
+struct ContentView: View {
+    var body: some View {
+        VStack {
+            let user = birthday(user: User(name: "Ellie", age: 24))
+            Text("Post-birthday, \(user.name) is: \(user.age)!")
+        }
+        .padding()
+    }
+}
+```
+
+And you should see:
+
+![Fig 1. Swift app displays result of calling idiomatic Haskell function via idiomatic Swift wrapper](/images/calling-haskell-from-swift/ss1.jpeg)
+
+
+# Generating Code at the Boundaries
+
+I want to give a quick preview of what is made possible by using compile-time
+code generation features (Template Haskell in Haskell, Swift Macros in Swift).
+This is foreign function code generation API is exposed by the
+[haskell-swift](https://github.com/alt-romes/haskell-swift) project, namely the
+`swift-ffi` Haskell library and `haskell-ffi` Swift package. (Since it is out of
+the scope of this tutorial, I will not cover how exactly the compile-time
+code-generation code works, and instead use the API provided in these libraries)
+
+These top-level foreign interaction facilities, coupled with the build tool also
+provided by [haskell-swift](https://github.com/alt-romes/haskell-swift), one can
+easily bootstrap and develop programs mixing Haskell and Swift! (Look forward to
+a tutorial on bootstrapping and developing such a mixed project in the near future).
+
+Let us consider the same example where we define an idiomatic `birthday :: User
+-> User` function in Haskell and want to be able to call it from Swift as
+`birthday(user: User) -> User`
+
+## Haskell's perspective
+
+To expose the `birthday` function to Swift, we simply use the `foreignExportSwift`
+Template Haskell function. The whole module could look like this:
+
+```haskell
+{-# LANGUAGE TemplateHaskell #-}
+module MyLib where
+
+-- ...
+import Swift.FFI
+
+data User
+ = User { name :: String
+        , age  :: Int
+        }
+        deriving stock    Generic
+        deriving anyclass FromJSON
+        deriving anyclass ToJSON
+
+birthday :: User -> User
+birthday User{age=x, name=y} = User{age=x+1, name=y}
+
+$(foreignExportSwift 'birthday)
+```
+The key bit is the last `foreignExportSwift` call which will expose a C function
+with the marshalling-based calling convention we outlined above.
+
+## Swift's perspective
+
+On the Swift side, we want to use the dual `@ForeignImportSwift` macro which
+generates a Swift function wrapper which in turn invokes the C function exposed
+by Haskell with the above marshalling strategy. The Swift file could
+look like:
+
+```swift
+import HaskellFFI
+
+struct User: Codable {
+    let name: String
+    let age: Int
+}
+
+@ForeignImportHaskell
+func birthday(cconv: HsCallJSON, user: User) -> User { stub() }
+```
+
+where `birthday` could be called e.g. as:
+```swift
+birthday(user: User(name: "Pierre", age: 55))
+```
+
+
+# Coercing Haskell memory objects to Swift
+
+Welcome to the dark corner (section?) of this blog post: the part where we
+unsafely coerce an object in the Haskell heap into Swift. This section
+will serve to walk the reader through some of the lower level details of
+Haskell, and explore what it could mean to not marshal data between the language
+boundary.
+
+
+
+In practice, we've seen that, despite fun, this approach is not very robust nor
+does it scale easily, so it cannot be considered for the large applications mixing
+Haskell and Swift which are our goal.
+
