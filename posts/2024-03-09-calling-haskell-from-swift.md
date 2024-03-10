@@ -17,10 +17,11 @@ Swift by using a foreign function calling-convention strategy similar to that
 described by [Calling Purgatory from Heaven: Binding to Rust in
 Haskell](https://well-typed.com/blog/2023/03/purgatory/) that requires argument
 and result marshaling. Despite marshaling being required for robustly traversing
-the foreign language boundary, I additionally explore calling Haskell from Swift
-without any kind of marshaling by instead coercing the memory representation of
-a Haskell value into a Swift one -- this is mostly a (very unsafe) curiosity,
-but gives me an excuse to write a bit about low-level details in Haskell!
+the foreign language boundary, I will also explore, in a subsequent post,
+calling Haskell from Swift without any kind of marshaling by instead coercing
+the memory representation of a Haskell value into a Swift one -- this is mostly
+a (very unsafe) and not robust at all curiosity, but gives me an excuse to write
+a bit about low-level details in Haskell!
 
 You may find the other blog posts in this series interesting:
 
@@ -76,10 +77,11 @@ func birthday(user: User) -> User {
 ```
 
 To support this workflow, we need a way to **convert the User datatype from
-Haskell to Swift**, and vice versa. There's more than one way to do it, but we
-are going to **serialize (most) inputs and outputs** of a function -- though, in
-the end, I promise to also dive a bit into coercing in-memory representations of
-a datatype in between Haskell and Swift.
+Haskell to Swift**, and vice versa. We are going to **serialize (most) inputs
+and outputs** of a function -- though, in a follow up post, I will also dive a
+bit into coercing in-memory representations of a datatype in between Haskell and
+Swift -- which, unlike serializing the datatypes, is very fragile, but
+educational.
 
 Note that, even though the serialization method here described seems complex, it
 can be automated with Template Haskell and Swift Macros and packed into a neat
@@ -87,7 +89,7 @@ interface -- which I've done at [haskell-swift](https://github.com/alt-romes/has
 
 As a preliminary step, we write the `User` data type and `birthday` function to
 `haskell-framework/src/MyLib.hs`, and the Swift equivalents to
-`SwiftHaskell/ContentView.swift` from [`haskell-x-swift-project-steps`](https://github.com/alt-romes/haskell-x-swift-project-steps).
+`SwiftHaskell/ContentView.swift` from the [`haskell-x-swift-project-steps`](https://github.com/alt-romes/haskell-x-swift-project-steps) example project.
 
 # Marshaling Inputs and Outputs
 
@@ -97,7 +99,7 @@ a string which is then decoded into a Swift value. The Haskell perspective is
 dual.
 
 Marshaling/serializing is a very robust solution to foreign language interoperability.
-Despite the small overhead of encoding and decoding at a function call, it
+In spite of the small overhead of encoding and decoding at a function call, it
 almost automatically extends to, and enables, all sorts of data to be
 transported across the language boundary, without it being vulnerable to
 compiler implementation details and memory representation incompatibilities.
