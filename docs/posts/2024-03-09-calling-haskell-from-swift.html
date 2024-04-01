@@ -85,12 +85,7 @@ Swift/SwiftUI. This post covers how to call (non-trivial) Haskell functions from
 Swift by using a foreign function calling-convention strategy similar to that
 described by <a href="https://well-typed.com/blog/2023/03/purgatory/">Calling Purgatory from Heaven: Binding to Rust in
 Haskell</a> that requires argument
-and result marshaling. Despite marshaling being required for robustly traversing
-the foreign language boundary, I will also explore, in a subsequent post,
-calling Haskell from Swift without any kind of marshaling by instead coercing
-the memory representation of a Haskell value into a Swift one – this is mostly
-a (very unsafe) and not robust at all curiosity, but gives me an excuse to write
-a bit about low-level details in Haskell!</p>
+and result marshaling.</p>
 <p>You may find the other blog posts in this series interesting:</p>
 <ol type="1">
 <li><a href="2023-11-10-creating-a-macos-app-with-haskell-and-swift.html">Creating a macOS app with Haskell and Swift</a></li>
@@ -98,9 +93,7 @@ a bit about low-level details in Haskell!</p>
 <p>The series of blog posts is further accompanied by a <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">github
 repository</a> where
 each commit matches a step of this tutorial. If in doubt regarding any step,
-check the matching commit to make it clearer.
-Additionally, I’m writing a build tool and libraries to facilitate the
-interoperability between Haskell and Swift at <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+check the matching commit to make it clearer.</p>
 <p>This write-up has been cross-posted to <a href="https://well-typed.com/blog/">Well-Typed’s Blog</a>.</p>
 <h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
 <p>We’ll pick up from where the last post ended – we have set up an XCode project
@@ -123,7 +116,7 @@ to Swift, which easily scales to other complex data types and functions.</p>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ot">birthday ::</span> <span class="dt">User</span> <span class="ot">-&gt;</span> <span class="dt">User</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>birthday user <span class="ot">=</span> user{age <span class="ot">=</span> user<span class="op">.</span>age <span class="op">+</span> <span class="dv">1</span>}</span></code></pre></div>
-<p>should be called from Swift as</p>
+<p>The Swift side should wrap Haskell’s <code>birthday</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> User <span class="op">{</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">name</span><span class="op">:</span> String</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">age</span><span class="op">:</span> Int</span>
@@ -135,13 +128,14 @@ to Swift, which easily scales to other complex data types and functions.</p>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>To support this workflow, we need a way to <strong>convert the User datatype from
 Haskell to Swift</strong>, and vice versa. We are going to <strong>serialize (most) inputs
-and outputs</strong> of a function – though, in a follow up post, I will also dive a
-bit into coercing in-memory representations of a datatype in between Haskell and
-Swift – which, unlike serializing the datatypes, is very fragile, but
-educational.</p>
-<p>Note that, even though the serialization method here described seems complex, it
-can be automated with Template Haskell and Swift Macros and packed into a neat
-interface – which I’ve done at <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+and outputs</strong> of a function. Even though the serialization as it will be
+described may seem complex, it can be automated with Template Haskell and Swift
+Macros and packed into a neat interface – which I’ve done at
+<a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+<!-- -- though, in a follow up post, I will also dive a -->
+<!-- bit into coercing in-memory representations of a datatype in between Haskell and -->
+<!-- Swift -- which, unlike serializing the datatypes, is very fragile, but -->
+<!-- educational. -->
 <p>As a preliminary step, we write the <code>User</code> data type and <code>birthday</code> function to
 <code>haskell-framework/src/MyLib.hs</code>, and the Swift equivalents to
 <code>SwiftHaskell/ContentView.swift</code> from the <a href="https://github.com/alt-romes/haskell-x-swift-project-steps"><code>haskell-x-swift-project-steps</code></a> example project.</p>
@@ -252,9 +246,8 @@ retry.</p>
 header and at link time in the dynamic library.</p>
 <h2 data-number="2.2" id="swifts-perspective"><span class="header-section-number">2.2</span> Swift’s Perspective</h2>
 <p>In Swift, we want to be able to call the functions exposed from Haskell via
-their wrappers, from a wrapper that feels native to Swift itself. In our
-example, that means wrapping a call to <code>c_birthday</code> in a new Swift <code>birthday</code>
-function.</p>
+their C wrappers from a wrapper that feels idiomatic in Swift. In our example,
+that means wrapping a call to <code>c_birthday</code> in a new Swift <code>birthday</code> function.</p>
 <p>In <code>ContentView.swift</code>, we make <code>User</code> JSON-encodable/decodable by conforming to
 the <code>Codable</code> protocol:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> User<span class="op">:</span> <span class="dt">Codable</span> <span class="op">{</span></span>
@@ -345,7 +338,7 @@ this being a lot of code, not a whole lot is happening: we simply serialize the
 argument, allocate a buffer for the result, and deserialize the result into it.
 In the worst case, if the serialized result does not fit (the serialized data
 has over 100 thousand characters), then we <em>naively</em> compute the function a
-second time (it would not be terribly complicated to avoid this work by caching
+second time (it should not be terribly complicated to avoid this work by caching
 the result and somehow resuming the serialization with the new buffer).
 Furthermore, there is a lot of bureocracy in getting the raw pointers to send
 off to Haskell land – the good news is that all of this can be automated away
@@ -420,13 +413,13 @@ Expand for the complete function
 code generation features (Template Haskell in Haskell, Swift Macros in Swift).
 This foreign function code generation API is exposed by the
 <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a> project, namely the
-<code>swift-ffi</code> Haskell library and <code>haskell-ffi</code> Swift package. (Since it is out of
+<code>swift-ffi</code> Haskell library and <code>haskell-ffi</code> Swift package (since it is out of
 the scope of this tutorial, I will not cover how exactly the compile-time
-code-generation code works, but instead use the API provided by these libraries)</p>
+code-generation code works, but instead use the API provided by these
+libraries).</p>
 <p>These top-level foreign interaction facilities, coupled with the build tool also
 provided by <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>, one can
-easily bootstrap and develop programs mixing Haskell and Swift! (Look forward to
-a tutorial on bootstrapping and developing such a mixed project in the near future).</p>
+easily bootstrap and develop programs mixing Haskell and Swift.</p>
 <p>Let us consider the same example where we define an idiomatic <code>birthday :: User -&gt; User</code> function in Haskell and want to be able to call it from Swift as
 <code>birthday(user: User) -&gt; User</code></p>
 <h2 data-number="3.1" id="haskells-perspective-1"><span class="header-section-number">3.1</span> Haskell’s perspective</h2>
@@ -472,11 +465,14 @@ look like:</p>
 <p>The strategy of marshaling for foreign language boundary crossing is very robust
 and still performant, and is a great fit for the kind of mixed-language
 application we want to develop robustely.</p>
-<p>In the follow up posts I want to first discuss a bit of low-level Haskell and
-Swift details hidden behind an extremely impractical but educational
-interoperability strategy, and in another one I want to introduce the <code>hxs</code> tool
-for bootstrapping Haskell x Swift projects and the libraries that make it so
-much easier to export Haskell functions and import them from Swift.</p>
+<p>Even though marshaling is required for robustly traversing the foreign language
+boundary, I will also explore, in a subsequent post, calling Haskell from Swift
+by instead coercing the memory representation of a Haskell value into a Swift
+one – this will mostly be a (very unsafe) and not robust at all curiosity, but
+gives me an excuse to write a bit about low-level details in Haskell!</p>
+<p>In yet another post, I also intend to introduce the <code>hxs</code> tool for bootstrapping
+Haskell x Swift projects and the libraries that make it so much easier to export
+Haskell functions and import them from Swift.</p>
 <p>The <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">haskell-x-swift-project-steps</a>
 git repository has a commit matching the steps of this guide, so if anything is
 unclear you can just let the code speak by itself in checking the commits.</p>
