@@ -34,7 +34,7 @@ This write-up has been cross-posted to [Well-Typed's Blog](https://well-typed.co
 
 We'll pick up from where the last post ended -- we have set up an XCode project
 that includes our headers generated from Haskell modules with `foreign export`s
-and links against the foreign library declared in the cabal file. We have
+and linking against the foreign library declared in the cabal file. We have
 already been able to call a very simple Haskell function on integers from Swift
 via Haskell's C foreign export feature and Swift's C interoperability.
 
@@ -73,7 +73,7 @@ To support this workflow, we need a way to **convert the User datatype from
 Haskell to Swift**, and vice versa. We are going to **serialize (most) inputs
 and outputs** of a function. Even though the serialization as it will be
 described may seem complex, it can be automated with Template Haskell and Swift
-Macros and packed into a neat interface -- which I've done at
+Macros and packed into a neat interface -- which I've done in
 [haskell-swift](https://github.com/alt-romes/haskell-swift).
 
 <!-- -- though, in a follow up post, I will also dive a -->
@@ -81,7 +81,7 @@ Macros and packed into a neat interface -- which I've done at
 <!-- Swift -- which, unlike serializing the datatypes, is very fragile, but -->
 <!-- educational. -->
 
-As a preliminary step, we write the `User` data type and `birthday` function to
+As a preliminary step, we add the `User` data type and `birthday` function to
 `haskell-framework/src/MyLib.hs`, and the Swift equivalents to
 `SwiftHaskell/ContentView.swift` from the [`haskell-x-swift-project-steps`](https://github.com/alt-romes/haskell-x-swift-project-steps) example project.
 
@@ -93,7 +93,7 @@ a string which is then decoded into a Swift value. The Haskell perspective is
 dual.
 
 Marshaling/serializing is a very robust solution to foreign language interoperability.
-In spite of the small overhead of encoding and decoding at a function call, it
+While there is a small overhead of encoding and decoding at a function call, it
 almost automatically extends to, and enables, all sorts of data to be
 transported across the language boundary, without it being vulnerable to
 compiler implementation details and memory representation incompatibilities.
@@ -119,10 +119,12 @@ function result to a buffer that the caller provides. More specifically,
     is not big enough. Some engineering work might allow us to re-use the
     result, but we'll stick with retrying from scratch for simplicity.
 
-We will use `JSON` as the serialization format: both Haskell and Swift have good
-support for automatically deriving JSON instances and it is easier to guarantee
-JSON instances match than binary order-and-alignment-dependent serialization
-instances.
+We will use `JSON` as the serialization format: this choice is motivated
+primarily by convenience because Swift can derive JSON instances for datatypes
+out of the box (without incurring in extra dependencies), and in Haskell we can
+use `aeson` to the same effect. In practice, it could be best to use a format
+such as CBOR or Borsh which are binary formats optimised for compactness and
+serialization performance.
 
 ## Haskell's Perspective
 
@@ -157,7 +159,7 @@ import Data.ByteString.Unsafe
 
 Now, let's (foreign) export a function `c_birthday` that wraps
 `birthday` above in `haskell-framework/flib/MyForeignLib.hs`, using the
-described method:
+described method.
 
 First, the type definition of the function receives the buffer with the `User` argument, and a
 buffer to write the `User` result to. We cannot use tuples because they are not
@@ -256,8 +258,8 @@ Note: in the implementation, a couple of blocks have to be wrapped with a `do {
 relevant to the Swift function wrapper implementation in the repo with all of
 these details included.
 
-First, we encode the Swift argument into a binary representation (`Data`) (plus its length) that will serve
-as arguments to the foreign C function.
+First, we encode the Swift argument into JSON using the `Data` type (plus its
+length) that will serve as arguments to the foreign C function.
 ```swift
 let enc = JSONEncoder()
 let dec = JSONDecoder()
@@ -266,13 +268,13 @@ var data: Data = try enc.encode(user)
 let data_len = Int64(data.count)
 ```
 
-However, a Swift `Data` value, which represents binary data, cannot be passed
-directly to C as a pointer. For that, we must use `withUnsafeMutableBytes` to
-get an `UnsafeMutableRawBufferPointer` out of the `Data` -- that we can pass to
-the C foreign function. `withUnsafeMutableBytes` receives a closure that uses an
-`UnsafeMutableRawBufferPointer` in its scope and returns the value returned by
-the closure. Therefore we can return the result of calling it on the user `Data`
-we encoded right away:
+However, a Swift `Data` value, which represents the JSON as binary data, cannot
+be passed directly to C as a pointer. For that, we must use
+`withUnsafeMutableBytes` to get an `UnsafeMutableRawBufferPointer` out of the
+`Data` -- that we can pass to the C foreign function. `withUnsafeMutableBytes`
+receives a closure that uses an `UnsafeMutableRawBufferPointer` in its scope and
+returns the value returned by the closure. Therefore we can return the result of
+calling it on the user `Data` we encoded right away:
 
 ```swift
 return data.withUnsafeMutableBytes { (rawPtr: UnsafeMutableRawBufferPointer) in
@@ -286,9 +288,10 @@ calling the Haskell function, and also allocate memory to store the size of the
 buffer. We use `withUnsafeTemporaryAllocation` to allocate a buffer that can be
 used in the C foreign function call. As for `withUnsafeMutableBytes`, this
 function also takes a closure and returns the value returned by the closure:
+
 ```swift
 // The data buffer size
-let buf_size = 1024000 // 1024KB
+let buf_size = 1024048 // 1024KB
 
 // A size=1 buffer to store the length of the result buffer
 return withUnsafeTemporaryAllocation(of: Int.self: 1) { size_ptr in
@@ -325,7 +328,8 @@ if let required_size = size_ptr.baseAddress?.pointee {
     }
 }
 
-return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!,
+                    count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
 ```
 
 where `HsFFIError` is a custom error defined as
@@ -343,7 +347,8 @@ buffer of the right size:
         size_ptr.baseAddress?.pointee = required_size
         c_birthday(rawPtr.baseAddress, data_len, res_ptr.baseAddress, size_ptr.baseAddress)
 
-        return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!, count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
+        return dec.decode(User.self, from: Data(bytesNoCopy: res_ptr.baseAddress!,
+                    count: size_ptr.baseAddress?.pointee ?? 0, deallocator: .none))
     }
 }
 ```
@@ -352,7 +357,7 @@ That seems like a lot of work to call a function from Haskell! However, despite
 this being a lot of code, not a whole lot is happening: we simply serialize the
 argument, allocate a buffer for the result, and deserialize the result into it.
 In the worst case, if the serialized result does not fit (the serialized data
-has over 100 thousand characters), then we *naively* compute the function a
+has over 1M characters), then we *naively* compute the function a
 second time (it should not be terribly complicated to avoid this work by caching
 the result and somehow resuming the serialization with the new buffer).
 Furthermore, there is a lot of bureocracy in getting the raw pointers to send
@@ -442,7 +447,7 @@ the scope of this tutorial, I will not cover how exactly the compile-time
 code-generation code works, but instead use the API provided by these
 libraries).
 
-These top-level foreign interaction facilities, coupled with the build tool also
+With these top-level foreign interaction facilities, coupled with the build tool also
 provided by [haskell-swift](https://github.com/alt-romes/haskell-swift), one can
 easily bootstrap and develop programs mixing Haskell and Swift.
 
@@ -506,13 +511,13 @@ birthday(user: User(name: "Pierre", age: 55))
 
 The strategy of marshaling for foreign language boundary crossing is very robust
 and still performant, and is a great fit for the kind of mixed-language
-application we want to develop robustely.
+application we want to develop robustly.
 
 Even though marshaling is required for robustly traversing the foreign language
 boundary, I will also explore, in a subsequent post, calling Haskell from Swift
 by instead coercing the memory representation of a Haskell value into a Swift
-one -- this will mostly be a (very unsafe) and not robust at all curiosity, but
-gives me an excuse to write a bit about low-level details in Haskell!
+one -- this will mostly be a (very unsafe) and not-at-all robust curiosity, but
+it will give me an excuse to write a bit about low-level details in Haskell!
 
 In yet another post, I also intend to introduce the `hxs` tool for bootstrapping
 Haskell x Swift projects and the libraries that make it so much easier to export
