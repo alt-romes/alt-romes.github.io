@@ -47,7 +47,7 @@
     <h1>Calling Haskell from Swift</h1>
     <p>
       
-      Mar  9, 2024
+      Apr  2, 2024
       
     </p>
   </div>
@@ -98,7 +98,7 @@ check the matching commit to make it clearer.</p>
 <h1 data-number="1" id="introduction"><span class="header-section-number">1</span> Introduction</h1>
 <p>We’ll pick up from where the last post ended – we have set up an XCode project
 that includes our headers generated from Haskell modules with <code>foreign export</code>s
-and links against the foreign library declared in the cabal file. We have
+and linking against the foreign library declared in the cabal file. We have
 already been able to call a very simple Haskell function on integers from Swift
 via Haskell’s C foreign export feature and Swift’s C interoperability.</p>
 <p>This part concerns itself with calling idiomatic Haskell functions, which
@@ -130,13 +130,13 @@ to Swift, which easily scales to other complex data types and functions.</p>
 Haskell to Swift</strong>, and vice versa. We are going to <strong>serialize (most) inputs
 and outputs</strong> of a function. Even though the serialization as it will be
 described may seem complex, it can be automated with Template Haskell and Swift
-Macros and packed into a neat interface – which I’ve done at
+Macros and packed into a neat interface – which I’ve done in
 <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
 <!-- -- though, in a follow up post, I will also dive a -->
 <!-- bit into coercing in-memory representations of a datatype in between Haskell and -->
 <!-- Swift -- which, unlike serializing the datatypes, is very fragile, but -->
 <!-- educational. -->
-<p>As a preliminary step, we write the <code>User</code> data type and <code>birthday</code> function to
+<p>As a preliminary step, we add the <code>User</code> data type and <code>birthday</code> function to
 <code>haskell-framework/src/MyLib.hs</code>, and the Swift equivalents to
 <code>SwiftHaskell/ContentView.swift</code> from the <a href="https://github.com/alt-romes/haskell-x-swift-project-steps"><code>haskell-x-swift-project-steps</code></a> example project.</p>
 <h1 data-number="2" id="marshaling-inputs-and-outputs"><span class="header-section-number">2</span> Marshaling Inputs and Outputs</h1>
@@ -145,7 +145,7 @@ means to serialize the input values into strings, and receive the output value a
 a string which is then decoded into a Swift value. The Haskell perspective is
 dual.</p>
 <p>Marshaling/serializing is a very robust solution to foreign language interoperability.
-In spite of the small overhead of encoding and decoding at a function call, it
+While there is a small overhead of encoding and decoding at a function call, it
 almost automatically extends to, and enables, all sorts of data to be
 transported across the language boundary, without it being vulnerable to
 compiler implementation details and memory representation incompatibilities.</p>
@@ -171,10 +171,12 @@ is not big enough. Some engineering work might allow us to re-use the
 result, but we’ll stick with retrying from scratch for simplicity.</li>
 </ul></li>
 </ul>
-<p>We will use <code>JSON</code> as the serialization format: both Haskell and Swift have good
-support for automatically deriving JSON instances and it is easier to guarantee
-JSON instances match than binary order-and-alignment-dependent serialization
-instances.</p>
+<p>We will use <code>JSON</code> as the serialization format: this choice is motivated
+primarily by convenience because Swift can derive JSON instances for datatypes
+out of the box (without incurring in extra dependencies), and in Haskell we can
+use <code>aeson</code> to the same effect. In practice, it could be best to use a format
+such as CBOR or Borsh which are binary formats optimised for compactness and
+serialization performance.</p>
 <h2 data-number="2.1" id="haskells-perspective"><span class="header-section-number">2.1</span> Haskell’s Perspective</h2>
 <p>Extending the <code>User</code> example requires <code>User</code> to be decodable, which can be done automatically by adding to the <code>User</code> declaration:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">deriving</span> stock <span class="dt">Generic</span></span>
@@ -195,7 +197,7 @@ instances.</p>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="dt">Data.ByteString.Unsafe</span></span></code></pre></div>
 <p>Now, let’s (foreign) export a function <code>c_birthday</code> that wraps
 <code>birthday</code> above in <code>haskell-framework/flib/MyForeignLib.hs</code>, using the
-described method:</p>
+described method.</p>
 <p>First, the type definition of the function receives the buffer with the <code>User</code> argument, and a
 buffer to write the <code>User</code> result to. We cannot use tuples because they are not
 supported in foreign export declarations, but the intuition is that the first
@@ -263,20 +265,20 @@ functions exposed by Haskell will indeed be).</p>
 <p>Note: in the implementation, a couple of blocks have to be wrapped with a <code>do { ... } catch X { ... }</code> but I omit them in this text. You can see the commit
 relevant to the Swift function wrapper implementation in the repo with all of
 these details included.</p>
-<p>First, we encode the Swift argument into a binary representation (<code>Data</code>) (plus its length) that will serve
-as arguments to the foreign C function.</p>
+<p>First, we encode the Swift argument into JSON using the <code>Data</code> type (plus its
+length) that will serve as arguments to the foreign C function.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">enc</span> <span class="op">=</span> JSONEncoder<span class="op">()</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">dec</span> <span class="op">=</span> JSONDecoder<span class="op">()</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> <span class="va">data</span><span class="op">:</span> Data <span class="op">=</span> <span class="cf">try</span> enc<span class="op">.</span>encode<span class="op">(</span>user<span class="op">)</span></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">data_len</span> <span class="op">=</span> Int64<span class="op">(</span>data<span class="op">.</span>count<span class="op">)</span></span></code></pre></div>
-<p>However, a Swift <code>Data</code> value, which represents binary data, cannot be passed
-directly to C as a pointer. For that, we must use <code>withUnsafeMutableBytes</code> to
-get an <code>UnsafeMutableRawBufferPointer</code> out of the <code>Data</code> – that we can pass to
-the C foreign function. <code>withUnsafeMutableBytes</code> receives a closure that uses an
-<code>UnsafeMutableRawBufferPointer</code> in its scope and returns the value returned by
-the closure. Therefore we can return the result of calling it on the user <code>Data</code>
-we encoded right away:</p>
+<p>However, a Swift <code>Data</code> value, which represents the JSON as binary data, cannot
+be passed directly to C as a pointer. For that, we must use
+<code>withUnsafeMutableBytes</code> to get an <code>UnsafeMutableRawBufferPointer</code> out of the
+<code>Data</code> – that we can pass to the C foreign function. <code>withUnsafeMutableBytes</code>
+receives a closure that uses an <code>UnsafeMutableRawBufferPointer</code> in its scope and
+returns the value returned by the closure. Therefore we can return the result of
+calling it on the user <code>Data</code> we encoded right away:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> data<span class="op">.</span>withUnsafeMutableBytes <span class="op">{</span> <span class="op">(</span>rawPtr<span class="op">:</span> UnsafeMutableRawBufferPointer<span class="op">)</span> <span class="cf">in</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// here goes the closure that can use the raw pointer,</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// the code for which we describe below</span></span>
@@ -287,7 +289,7 @@ buffer. We use <code>withUnsafeTemporaryAllocation</code> to allocate a buffer t
 used in the C foreign function call. As for <code>withUnsafeMutableBytes</code>, this
 function also takes a closure and returns the value returned by the closure:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">// The data buffer size</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">buf_size</span> <span class="op">=</span> <span class="dv">1024000</span> <span class="co">// 1024KB</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> <span class="va">buf_size</span> <span class="op">=</span> <span class="dv">1024048</span> <span class="co">// 1024KB</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">// A size=1 buffer to store the length of the result buffer</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> withUnsafeTemporaryAllocation<span class="op">(</span>of<span class="op">:</span> Int<span class="op">.</span><span class="kw">self</span><span class="op">:</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span> size_ptr <span class="cf">in</span></span>
@@ -317,7 +319,8 @@ this required size exceeds the buffer we allocated, or read the data otherwise:<
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span></code></pre></div>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                    count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span></code></pre></div>
 <p>where <code>HsFFIError</code> is a custom error defined as</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">enum</span> HsFFIError<span class="op">:</span> <span class="dt">Error</span> <span class="op">{</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> requiredSizeIs<span class="op">(</span>Int<span class="op">)</span></span>
@@ -330,14 +333,15 @@ buffer of the right size:</p>
 <span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">=</span> required_size</span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        c_birthday<span class="op">(</span>rawPtr<span class="op">.</span>baseAddress<span class="op">,</span> data_len<span class="op">,</span> res_ptr<span class="op">.</span>baseAddress<span class="op">,</span> size_ptr<span class="op">.</span>baseAddress<span class="op">)</span></span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span> count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">return</span> dec<span class="op">.</span>decode<span class="op">(</span>User<span class="op">.</span><span class="kw">self</span><span class="op">,</span> from<span class="op">:</span> Data<span class="op">(</span>bytesNoCopy<span class="op">:</span> res_ptr<span class="op">.</span>baseAddress<span class="op">!,</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                    count<span class="op">:</span> size_ptr<span class="op">.</span>baseAddress<span class="op">?.</span>pointee <span class="op">??</span> <span class="dv">0</span><span class="op">,</span> deallocator<span class="op">:</span> <span class="op">.</span>none<span class="op">))</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>That seems like a lot of work to call a function from Haskell! However, despite
 this being a lot of code, not a whole lot is happening: we simply serialize the
 argument, allocate a buffer for the result, and deserialize the result into it.
 In the worst case, if the serialized result does not fit (the serialized data
-has over 100 thousand characters), then we <em>naively</em> compute the function a
+has over 1M characters), then we <em>naively</em> compute the function a
 second time (it should not be terribly complicated to avoid this work by caching
 the result and somehow resuming the serialization with the new buffer).
 Furthermore, there is a lot of bureocracy in getting the raw pointers to send
@@ -417,7 +421,7 @@ This foreign function code generation API is exposed by the
 the scope of this tutorial, I will not cover how exactly the compile-time
 code-generation code works, but instead use the API provided by these
 libraries).</p>
-<p>These top-level foreign interaction facilities, coupled with the build tool also
+<p>With these top-level foreign interaction facilities, coupled with the build tool also
 provided by <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>, one can
 easily bootstrap and develop programs mixing Haskell and Swift.</p>
 <p>Let us consider the same example where we define an idiomatic <code>birthday :: User -&gt; User</code> function in Haskell and want to be able to call it from Swift as
@@ -464,12 +468,12 @@ look like:</p>
 <h1 data-number="4" id="remarks"><span class="header-section-number">4</span> Remarks</h1>
 <p>The strategy of marshaling for foreign language boundary crossing is very robust
 and still performant, and is a great fit for the kind of mixed-language
-application we want to develop robustely.</p>
+application we want to develop robustly.</p>
 <p>Even though marshaling is required for robustly traversing the foreign language
 boundary, I will also explore, in a subsequent post, calling Haskell from Swift
 by instead coercing the memory representation of a Haskell value into a Swift
-one – this will mostly be a (very unsafe) and not robust at all curiosity, but
-gives me an excuse to write a bit about low-level details in Haskell!</p>
+one – this will mostly be a (very unsafe) and not-at-all robust curiosity, but
+it will give me an excuse to write a bit about low-level details in Haskell!</p>
 <p>In yet another post, I also intend to introduce the <code>hxs</code> tool for bootstrapping
 Haskell x Swift projects and the libraries that make it so much easier to export
 Haskell functions and import them from Swift.</p>
