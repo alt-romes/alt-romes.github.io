@@ -450,7 +450,7 @@ Template Haskell function. The whole module could look like this:</p>
 <p>The key bit is the last <code>foreignExportSwift</code> call which will expose a C function
 with the marshalling-based calling convention we outlined above.</p>
 <h2 data-number="3.2" id="swifts-perspective-1"><span class="header-section-number">3.2</span> Swift’s perspective</h2>
-<p>On the Swift side, we want to use the dual <code>@ForeignImportSwift</code> macro which
+<p>On the Swift side, we want to use the dual <code>@ForeignImportHaskell</code> macro which
 generates a Swift function wrapper which in turn invokes the C function exposed
 by Haskell with the above marshalling strategy. The Swift file could
 look like:</p>

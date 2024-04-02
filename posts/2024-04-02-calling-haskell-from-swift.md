@@ -485,7 +485,7 @@ with the marshalling-based calling convention we outlined above.
 
 ## Swift's perspective
 
-On the Swift side, we want to use the dual `@ForeignImportSwift` macro which
+On the Swift side, we want to use the dual `@ForeignImportHaskell` macro which
 generates a Swift function wrapper which in turn invokes the C function exposed
 by Haskell with the above marshalling strategy. The Swift file could
 look like:
