@@ -282,6 +282,7 @@ memory that can be understood by Swift as a `Rect` struct.
 give_rect :: Ptr ()
 give_rect =
   let
+    -- WRONG!!! Needs to unsafeCoerce# to Addr#...
     -- Step 1
     tagged_ptr = unsafeCoerce myrect :: Ptr ()
     -- Step 1.5
@@ -297,7 +298,7 @@ foreign export ccall give_rect :: Ptr ()
 On the Swift side we need simply to de-reference a `Rect` from the pointer to
 the Haskell memory. In `ContentView` we add:
 ```swift
-
+// Swift here
 ```
 
 ## Conclusion

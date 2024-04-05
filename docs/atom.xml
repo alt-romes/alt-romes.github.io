@@ -36,6 +36,14 @@
     <summary type="html"><![CDATA[First part of an in-depth guide into developing a native macOS application using Haskell with Swift and SwiftUI. This part covers the set-up required to call Haskell functions from Swift in an XCode project using SwiftUI.]]></summary>
 </entry>
 <entry>
+    <title>Introducing ghc-toolchain to GHC</title>
+    <link href="http://alt-romes.github.io/posts/2023-10-02-ghc-toolchain.html" />
+    <id>http://alt-romes.github.io/posts/2023-10-02-ghc-toolchain.html</id>
+    <published>2023-10-02T00:00:00Z</published>
+    <updated>2023-10-02T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Improving GHC's configuration logic and cross-compilation support with the brand new <code>ghc-toolchain</code> tool.]]></summary>
+</entry>
+<entry>
     <title>Writing prettier Haskell with Unicode Syntax and Vim</title>
     <link href="http://alt-romes.github.io/posts/2023-06-21-haskell-unicode-syntax-vim.html" />
     <id>http://alt-romes.github.io/posts/2023-06-21-haskell-unicode-syntax-vim.html</id>
