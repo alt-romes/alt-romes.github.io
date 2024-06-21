@@ -32,7 +32,7 @@ This write-up has been cross-posted to [Well-Typed's Blog](https://well-typed.co
 
 # Coercing Haskell memory objects to Swift
 
-Welcome to the dark corner (section?) of this blog post: the part where we
+Welcome to the darkest corner in this series of posts: the part where we
 unsafely coerce an object in the Haskell heap in(to) Swift. This section
 will serve to walk the reader through some of the lower level details of
 Haskell, and explore what it could mean to not marshal data between the language
@@ -363,7 +363,7 @@ Let's add it to the body and display both the width and height of our rectangle:
      VStack {
          let user = birthday(user: User(name: "Ellie", age: 24))
 +        let rect = wrap_give_rect()
-        Text("Post-birthday, \(user.name) is: \(user.age)!")
+         Text("Post-birthday, \(user.name) is: \(user.age)!")
 +        Text("myrect: width is \(rect.width) and height is \(rect.height)!")
      }
      .padding()

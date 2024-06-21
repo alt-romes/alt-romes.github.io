@@ -41,6 +41,7 @@ stylesheet = do
   tag "records"     "#6CBB82"
   tag "egraphs"     "#D9903A"
   tag "algorithms"  "#7E3445"
+  tag "low-level"   "#7B403B"
 
 
 -- Output the compact version
