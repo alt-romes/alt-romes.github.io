@@ -7,8 +7,16 @@
         <description><![CDATA[Romes' Blog RSS Feed]]></description>
         <atom:link href="http://alt-romes.github.io/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Tue, 02 Apr 2024 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Wed, 14 Aug 2024 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Planning a Workout Week with 100 lines of Haskell</title>
+    <link>http://alt-romes.github.io/posts/2024-08-14-planning-a-workout-week-with-100-lines-of-haskell.html</link>
+    <description><![CDATA[A lightning post on logic programming in Haskell to construct a workout weekly schedule, given the set of exercises, days and constraints.]]></description>
+    <pubDate>Wed, 14 Aug 2024 00:00:00 UT</pubDate>
+    <guid>http://alt-romes.github.io/posts/2024-08-14-planning-a-workout-week-with-100-lines-of-haskell.html</guid>
+    <dc:creator>Rodrigo Mesquita</dc:creator>
+</item>
+<item>
     <title>Calling Haskell from Swift</title>
     <link>http://alt-romes.github.io/posts/2024-04-02-calling-haskell-from-swift.html</link>
     <description><![CDATA[Crossing the language boundary between Haskell and Swift. This is the second part of an in-depth guide into developing native applications using Haskell with Swift.]]></description>
