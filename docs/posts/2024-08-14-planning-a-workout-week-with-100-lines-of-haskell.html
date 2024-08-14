@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planning Weekly Workouts in 100 lines of Haskell</title>
     
-    <meta name="description" content="A lightning post on logic programming in Haskell to construct a workout weekly schedule, given the set of exercises, days and constraints.">
+    <meta name="description" content="A lightning post on logic programming in Haskell to construct a workout weekly schedule given the set of exercises, days and constraints.">
     
     <link rel="stylesheet" href="../css/default.css" />
     <link rel="stylesheet" href="../css/clay.css" />
@@ -14,7 +14,7 @@
     <!-- open graph -->
     <meta property="og:title" content="Planning Weekly Workouts in 100 lines of Haskell" />
     
-    <meta property="og:description" content="A lightning post on logic programming in Haskell to construct a workout weekly schedule, given the set of exercises, days and constraints." />
+    <meta property="og:description" content="A lightning post on logic programming in Haskell to construct a workout weekly schedule given the set of exercises, days and constraints." />
     
 
     
@@ -53,7 +53,7 @@
     </p>
   </div>
   
-  <p class="description">A lightning post on logic programming in Haskell to construct a workout weekly schedule, given the set of exercises, days and constraints.</p>
+  <p class="description">A lightning post on logic programming in Haskell to construct a workout weekly schedule given the set of exercises, days and constraints.</p>
   
   
   <ul class="tags">
@@ -74,26 +74,27 @@ I also want to start running again, but I’m recovering from a minor knee injur
 until the start of next month.</p>
 <p>Tonight I decided to put together a weekly schedule to start following next
 month. The first pen and paper versions were fine, but, I wasn’t completely
-satisfied – the next logical step was to write a quick program to see what
+satisfied. The next logical step was to write a quick program to see what
 possible plans I was missing.</p>
 <p>The schedule must satisfy a few constraints, but the core of it is that I should
-do, on one axis, one <em>(high-intensity) short run</em> and one <em>long run</em>, and on the
-other axis, have two <em>pull days</em> (as in pull-ups), two <em>push days</em> (as in
-push-ups), and two <em>leg days</em> (as in squats).</p>
+do, every week, on one axis, one <em>short run</em> (high-intensity) and one <em>long run</em>
+(long distance), and, on the other axis, have two <em>pull days</em> (as in pull-ups),
+two <em>push days</em> (as in push-ups), and two <em>leg days</em> (as in squats).</p>
 <p>Finding a weekly workout that satisfies certain constraints is an
 answer-set-programming kind of problem, best solved by some kind of logic
 programming. Rather than turning to Prolog or
-<a href="https://potassco.org/clingo/">Clingo</a>, I decided to just stick to Haskell –
-and use the logic-programming monad from <a href="https://hackage.haskell.org/package/logict">logict</a>!</p>
+<a href="https://potassco.org/clingo/">Clingo</a>, I decided to just stick to Haskell and
+use the logic-programming monad from <a href="https://hackage.haskell.org/package/logict">logict</a>!</p>
 <h1 data-number="1" id="a-workout-planner-in-100-lines-of-haskell"><span class="header-section-number">1</span> A workout planner in 100 lines of Haskell</h1>
 <p>What follows is mostly just the demonstration of using <code>logict</code> applied to this
-particular problem. I believe the <code>weeklySchedule</code> body can be easily understood
-in general, even by anyone unfamiliar with Haskell and/or logic programming.</p>
-<p>This is a <a href="https://cabal.readthedocs.io/en/latest/index.html">cabal</a> shell
-script which can be run by executing the script file (as in
-<code>./ScheduleGen</code>, as long as <code>cabal</code> and <code>ghc</code> are in path). It is standalone
-otherwise, and exactly 100 lines (with comments, shebangs and everything).
-After the full body of code, I explain in brief how it works.</p>
+particular problem. I believe the <code>weeklySchedule</code> function can be easily understood
+in general, even by anyone unfamiliar with Haskell and/or logic programming –
+and that’s the meat of this short post and program.</p>
+<p>Note that the program is a
+<a href="https://cabal.readthedocs.io/en/latest/index.html">cabal</a> shell script which
+can be run by executing the script file (as in <code>./ScheduleExercise</code>, as long as
+<code>cabal</code> is in path). It is standalone, and exactly 100 lines (with comments,
+shebangs and everything). Feel free to try and modify it!</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#!/usr/bin/env cabal</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">{- cabal:</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">build-depends: base, logict</span></span>

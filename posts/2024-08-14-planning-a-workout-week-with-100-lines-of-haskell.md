@@ -3,7 +3,7 @@
 title: Planning Weekly Workouts in 100 lines of Haskell
 
 description: A lightning post on logic programming in Haskell to construct a
-             workout weekly schedule, given the set of exercises, days and constraints.
+             workout weekly schedule given the set of exercises, days and constraints.
 
 tags: haskell
 
@@ -15,31 +15,32 @@ until the start of next month.
 
 Tonight I decided to put together a weekly schedule to start following next
 month. The first pen and paper versions were fine, but, I wasn't completely
-satisfied -- the next logical step was to write a quick program to see what
+satisfied. The next logical step was to write a quick program to see what
 possible plans I was missing.
 
 The schedule must satisfy a few constraints, but the core of it is that I should
-do, on one axis, one *(high-intensity) short run* and one *long run*, and on the
-other axis, have two *pull days* (as in pull-ups), two *push days* (as in
-push-ups), and two *leg days* (as in squats).
+do, every week, on one axis, one *short run* (high-intensity) and one *long run*
+(long distance), and, on the other axis, have two *pull days* (as in pull-ups),
+two *push days* (as in push-ups), and two *leg days* (as in squats).
 
 Finding a weekly workout that satisfies certain constraints is an
 answer-set-programming kind of problem, best solved by some kind of logic
 programming. Rather than turning to Prolog or
-[Clingo](https://potassco.org/clingo/), I decided to just stick to Haskell --
-and use the logic-programming monad from [logict](https://hackage.haskell.org/package/logict)!
+[Clingo](https://potassco.org/clingo/), I decided to just stick to Haskell and
+use the logic-programming monad from [logict](https://hackage.haskell.org/package/logict)!
 
 # A workout planner in 100 lines of Haskell
 
 What follows is mostly just the demonstration of using `logict` applied to this
-particular problem. I believe the `weeklySchedule` body can be easily understood
-in general, even by anyone unfamiliar with Haskell and/or logic programming.
+particular problem. I believe the `weeklySchedule` function can be easily understood
+in general, even by anyone unfamiliar with Haskell and/or logic programming --
+and that's the meat of this short post and program.
 
-This is a [cabal](https://cabal.readthedocs.io/en/latest/index.html) shell
-script which can be run by executing the script file (as in
-`./ScheduleGen`, as long as `cabal` and `ghc` are in path). It is standalone
-otherwise, and exactly 100 lines (with comments, shebangs and everything).
-After the full body of code, I explain in brief how it works.
+Note that the program is a
+[cabal](https://cabal.readthedocs.io/en/latest/index.html) shell script which
+can be run by executing the script file (as in `./ScheduleExercise`, as long as
+`cabal` is in path). It is standalone, and exactly 100 lines (with comments,
+shebangs and everything). Feel free to try and modify it!
 
 ```haskell
 #!/usr/bin/env cabal

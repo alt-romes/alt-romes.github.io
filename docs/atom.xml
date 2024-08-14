@@ -17,7 +17,7 @@
     <id>http://alt-romes.github.io/posts/2024-08-14-planning-a-workout-week-with-100-lines-of-haskell.html</id>
     <published>2024-08-14T00:00:00Z</published>
     <updated>2024-08-14T00:00:00Z</updated>
-    <summary type="html"><![CDATA[A lightning post on logic programming in Haskell to construct a workout weekly schedule, given the set of exercises, days and constraints.]]></summary>
+    <summary type="html"><![CDATA[A lightning post on logic programming in Haskell to construct a workout weekly schedule given the set of exercises, days and constraints.]]></summary>
 </entry>
 <entry>
     <title>Calling Haskell from Swift</title>
