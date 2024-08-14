@@ -14,7 +14,7 @@ I also want to start running again, but I'm recovering from a minor knee injury
 until the start of next month.
 
 Tonight I decided to put together a weekly schedule to start following next
-month. The first pen and paper versions were fine, but, I wasn't completely
+month. The first pen and paper versions were fine, but I wasn't completely
 satisfied. The next logical step was to write a quick program to see what
 possible plans I was missing.
 
