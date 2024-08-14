@@ -1,6 +1,6 @@
 ---
 
-title: Planning a Workout Week with 100 lines of Haskell
+title: Planning Weekly Workouts in 100 lines of Haskell
 
 description: A lightning post on logic programming in Haskell to construct a
              workout weekly schedule, given the set of exercises, days and constraints.
