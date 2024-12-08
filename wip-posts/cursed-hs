@@ -1,0 +1,15 @@
+{-# language DataKinds, OverloadedRecordDot #-}
+module Main where
+import GHC.Records
+
+data Test = Test Int
+
+instance HasField "myfun" Test (Int -> String) where
+  getField (Test i) = show . (+i)
+
+t = Test 4
+
+main =
+  let y = t.myfun(5)
+   in print(y)
+
