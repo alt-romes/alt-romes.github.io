@@ -5,10 +5,9 @@ import qualified Data.Map as M
 import Data.Foldable (minimumBy, maximumBy)
 import Data.Function (on)
 import Data.Maybe
-import Data.List (transpose)
+import Data.List (transpose, sort)
 
-newtype Dist a = Dist { unpackDist :: [(a, Double)] }
-  deriving Functor
+newtype Dist a = Dist { unpackDist :: [(a, Double)] } deriving Functor
 
 instance Applicative Dist where
   pure x = Dist [(x, 1.0)]
@@ -18,7 +17,6 @@ instance Applicative Dist where
     let !fr = f x
     let !pr = px * pf
     return (fr, pr)
-  -- {-# INLINE (<*>) #-}
 
 instance Monad Dist where
   (Dist xs) >>= f = Dist $ do
@@ -26,21 +24,19 @@ instance Monad Dist where
     (y, p') <- unpackDist (f x)
     let !pr = p * p'
     return (y, pr)
-  -- {-# INLINE (>>=) #-}
 
 squishD (Dist xs) = Dist $ M.toList $ M.fromListWith (+) xs
 sumP = sum . map snd
 normP xs = [(x, p / q) | let q = sumP xs, (x, p) <- xs]
 
 instance (Ord a, Show a, PrintfArg a) => Show (Dist a) where
-  show d = concatMap showRow $ (normP . unpackDist . squishD) d
+  show d = concatMap showRow xs
     where
-      -- showRow (elem, prob) = printf "%.2f" elem ++ " | " ++ printf "%.2f" (prob*100) ++ "%\n"
-      showRow (elem, prob) = padded elem ++ " | " ++ printf "%.2f" (prob*100) ++ "%\n"
-      padded elem = replicate (maxElemLen - (length . show) elem) ' ' ++ show elem
-      maxElemLen = maximum $ map (length . show . fst) (unpackDist d)
+      xs = (normP . unpackDist . squishD) d
+      max_prob = snd $ maximumBy (compare `on` snd) xs :: Double
+      showRow (elem, prob) = drawline max_prob prob ++ " | " ++ printf "%.1f (%.1f" elem (prob*100) ++ "%)\n"
 
-uniform xs = Dist . normP $ zip xs (repeat 1)
+-- uniform xs = Dist . normP $ zip xs (repeat 1)
 
 data Expr
   = Num Double | Add Expr Expr | Mul Expr Expr
@@ -72,7 +68,7 @@ instance Floating Expr where
   cos = Cos
 
 instance Show Expr where
-  show = show . collapseIntervals 21 . eval
+  show = show . collapseIntervals 23 . eval
 
 eval :: Expr -> Dist Double
 eval = \case
@@ -101,24 +97,26 @@ eval = \case
     let
       mean = (a + b) / 2
       std_dev = (b - a) / 4
+      step = std_dev / 5
 
-      -- confidence_interval_upper = mean + 1.96*(std_dev/sqrt(fromIntegral $ length samples))
-      -- confidence_interval_lower = mean - 1.96*(std_dev/sqrt(fromIntegral $ length samples))
+    intervals [a-step, a .. b+step] $ normal mean std_dev
 
-    collapseIntervals 22 $ normal mean std_dev
-
+drawline :: Double -> Double -> String
+drawline max n = replicate spaces ' ' ++ replicate normalized ':' where
+  spaces = 35 - normalized
+  normalized = (round ((n/max) * 30))
 
 -- | Draw from a normal distribution
 normal :: Double {-^ Mean -} -> Double {-^ Std dev -} -> Dist Double
 -- generate a handful of discrete samples from this distribution using the Box-Muller transform
 normal mean std_dev = Dist $ normP $
   filter (not . isInfinite . fst) $
-    map (\z -> (z*std_dev + mean, 1)) $ boxMullers haltonSamples
+    map (\z -> (z*std_dev + mean, 1)) $ boxMullers $ take 5000 $ interleave (halton 2) (halton 3)
   -- "probability=1" for every sample because samples are already distributed
   -- according to the probability function (s.t. grouping them into intervals
   -- will already yield higher probability for the intervals near the mean)
 
-intervals :: [Double] -- ^ Each double is a box where all floats less than this number fall, in order (list must be sorted low-to-high).
+intervals :: [Double]    -- ^ Each double is a box where all floats less than this number fall, in order (list must be sorted low-to-high).
           -> Dist Double -- ^ A distribution with arbitrary doubles
           -> Dist Double -- ^ A distribution where all doubles fall into the given discrete categories
 intervals boxes dist = squishD $ do
@@ -133,8 +131,6 @@ collapseIntervals n d@(Dist xs) =
       (high,_) = maximumBy (compare `on` fst) xs
       step = (high - low) / fromIntegral n
    in intervals [low, low+step .. high] d
-
-haltonSamples = take 1000 $ interleave (halton 2) (halton 3)
 
 -- pkg: normaldistribution
 --
@@ -156,25 +152,17 @@ boxMullers (u1:u2:us) = n1:n2:boxMullers us where (n1,n2) = boxMuller u1 u2
 boxMullers _          = []
 
 -- Halton sequence, a low discrepancy sequence to feed boxMullers
--- https://pbr-book.org/3ed-2018/Sampling_and_Reconstruction/The_Halton_Sampler
 -- https://en.wikipedia.org/wiki/Low-discrepancy_sequence
---
--- Halton sequence for given base
-halton :: Int -> [Double]
+halton :: Int {-^ Base -} -> [Double]
 halton b = map (go 1 0) [1..] where
   go :: Double -> Double -> Int -> Double
   go f r i
     | i > 0
-    , let f' = f / (fromIntegral @_ @Double b)
-    , let r' = r + f'*(fromIntegral @_ @Double $ i `mod` b)
+    , let f' = f / (fromIntegral b)
+    , let r' = r + f'*(fromIntegral $ i `mod` b)
     , let i' = floor (fromIntegral i / fromIntegral b)
     = go f' r' i'
     | otherwise
     = r
 
 interleave xs ys = concat (transpose [xs, ys])
-
--- flattened R^2 halton sequence of base b1 and b2 (b1 and b2 are coprimes)
--- halton2 b1 b2 = halton b1 `interleave` halton b2
-
-main = print (4 ~ 20 * 4 ~ 10)
