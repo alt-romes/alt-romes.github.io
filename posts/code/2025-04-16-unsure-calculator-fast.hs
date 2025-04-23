@@ -21,11 +21,8 @@ data Dist a where
 
 instance Functor Dist where
   fmap = liftM
-
 instance Applicative Dist where
-  pure = Return
-  (<*>) = ap
-
+  pure = Return; (<*>) = ap
 instance Monad Dist where
   (>>=) = Bind
 
@@ -47,11 +44,11 @@ instance Sampleable Normal where
 normal :: Double -> Double -> Dist Double
 normal mean std_dev = Primitive $ Normal $ do
   s <- newNormalSample
-  return $ s*std_dev + mean
+  return $! s*std_dev + mean
 
 normalSamples :: IORef [Double]
 normalSamples = unsafePerformIO $ newIORef $
-                  boxMullers $ interleave (halton 2) (halton 3)
+                  boxMullers $ zip (halton 2) (halton 3)
 {-# NOINLINE normalSamples #-}
 newNormalSample :: IO Double
 newNormalSample = do
@@ -60,12 +57,10 @@ newNormalSample = do
   return s
 
 squishP xs = M.toList $ M.fromListWith (+) xs
-sumP = sum . map snd
-normP xs = [(x, p / q) | let q = sumP xs, (x, p) <- xs]
+normP xs = [(x, p / q) | let q = sum (map snd xs), (x, p) <- xs]
 
-showSamples d = concatMap showRow xs
+showSamples xs = concatMap showRow xs
   where
-    xs = (normP . squishP) d
     max_prob = snd $ maximumBy (compare `on` snd) xs :: Double
     showRow (elem, prob) = drawline max_prob prob ++ " | " ++ printf "%.1f (%.1f" elem (prob*100) ++ "%)\n"
 
@@ -80,35 +75,27 @@ data Expr
 (~) = Range
 
 instance Num Expr where
-  (+) = Add
-  (*) = Mul
-  abs = Abs
-  signum = Signum
-  fromInteger = Num . fromInteger
-  negate = Negate
+  (+) = Add; (*) = Mul
+  negate = Negate; abs = Abs;
+  signum = Signum; fromInteger = Num . fromInteger
 
 instance Fractional Expr where
-  (/) = Div
-  fromRational = Num . fromRational
+  (/) = Div; fromRational = Num . fromRational
 
 instance Floating Expr where
-  pi = Num pi
-  exp = Exp
-  log = Log
-  sin = Sin
-  cos = Cos
+  pi = Num pi; exp = Exp; log = Log; sin = Sin; cos = Cos
 
 instance Show Expr where
-  show = showSamples . cumulative . collapseIntervals 20 . sample . sequence . replicate 10000 . eval
+  show = showSamples . cumulative . collapseIntervals 50 . sample . sequence . replicate 250000 . eval
 
 eval :: Expr -> Dist Double
 eval = \case
   Num d       -> return d
   Add e1 e2   -> (+) <$> eval e1 <*> eval e2
   Mul e1 e2   -> (*) <$> eval e1 <*> eval e2
+  Negate e    -> negate <$> eval e
   Abs e       -> abs <$> eval e
   Signum e    -> signum <$> eval e
-  Negate e    -> negate <$> eval e
   Div e1 e2   -> (/) <$> eval e1 <*> eval e2
   Exp e       -> exp <$> eval e
   Log e       -> log <$> eval e
@@ -117,19 +104,9 @@ eval = \case
   Range e1 e2 -> do
     a <- eval e1
     b <- eval e2
-
-    -- Equations:
-    -- μ - 2σ = a
-    -- μ + 2σ = b
-    -- Solutions:
-    -- σ  = (b - a)/4
-    -- μ = b - (b - a)/2 = b - b/2 + a/2 = b/2 + a/2 = (b + a)/2
-
     let
       mean = (a + b) / 2
       std_dev = (b - a) / 4
-      step = std_dev / 5
-
     normal mean std_dev
 
 drawline :: Double -> Double -> String
@@ -137,14 +114,15 @@ drawline max n = replicate spaces ' ' ++ replicate normalized ':' where
   spaces = 35 - normalized
   normalized = (round ((n/max) * 30))
 
-intervals :: [Double] -- ^ Each double is a box where all floats less than this number fall, in order (list must be sorted low-to-high).
-          -> [Double] -- ^ A list of arbitrary Double samples
-          -> [Double] -- ^ A list of samples where all doubles fall into the given discrete categories
+-- intervals :: [Double] -- ^ Each double is a box where all floats less than this number fall, in order (list must be sorted low-to-high).
+--           -> [Double] -- ^ A list of arbitrary Double samples
+--           -> [Double] -- ^ A list of samples where all doubles fall into the given discrete categories
 intervals boxes dist = do
   s <- dist
   return $ fst $ minimumBy (compare `on` snd) $
-    map (\box -> (box, abs (box - s))) {-$ filter (not . isInfinite)-} boxes
+    map (\box -> (box, abs (box - s))) boxes
 
+cumulative :: Ord a => [a] -> [(a, Double)]
 cumulative = normP . squishP . map (,1)
 
 -- | Simplify samples into N intervals
@@ -155,30 +133,16 @@ collapseIntervals n (sort -> samples) =
       step = (high - low) / fromIntegral n
    in intervals [low-step, low .. high+step] samples
 
--- pkg: normaldistribution
---
--- Normal distribution approximation
--- ---------------------------------
--- | Box-Muller method for generating two normally distributed
--- independent random values from two uniformly distributed
--- independent random values.
-boxMuller :: Floating a => a -> a -> (a,a)
 boxMuller u1 u2 = (r * cos t, r * sin t) where r = sqrt (-2 * log u1)
                                                t = 2 * pi * u2
 
--- | Convert a list of uniformly distributed random values into a
--- list of normally distributed random values. The Box-Muller
--- algorithms converts values two at a time, so if the input list
--- has an uneven number of element the last one will be discarded.
-boxMullers :: Floating a => [a] -> [a]
-boxMullers (u1:u2:us) = n1:n2:boxMullers us where (n1,n2) = boxMuller u1 u2
-boxMullers _          = []
+boxMullers ((u1,u2):us) = n1:n2:boxMullers us where (n1,n2) = boxMuller u1 u2
+boxMullers _            = []
 
 -- Halton sequence, a low discrepancy sequence to feed boxMullers
 -- https://en.wikipedia.org/wiki/Low-discrepancy_sequence
 halton :: Int {-^ Base -} -> [Double]
 halton b = map (go 1 0) [1..] where
-  go :: Double -> Double -> Int -> Double
   go f r i
     | i > 0
     , let f' = f / (fromIntegral b)
@@ -188,4 +152,3 @@ halton b = map (go 1 0) [1..] where
     | otherwise
     = r
 
-interleave xs ys = concat (transpose [xs, ys])
