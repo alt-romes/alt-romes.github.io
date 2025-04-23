@@ -1,4 +1,13 @@
-{-# LANGUAGE LambdaCase, GADTs, ViewPatterns #-}
+#!/usr/bin/env cabal
+{- cabal:
+build-depends: base, random, containers
+-}
+{-# LANGUAGE LambdaCase, GADTs, ViewPatterns, GHC2021 #-}
+-- TODO: Try using Kahan numerals arithmetic
+-- TODO: Take the FT of samples and should be flat
+-- TODO: Try random as control
+-- TODO: Possible to write in closed form (would look like AD?)
+--        -- As a follow up blog post
 import Control.Applicative
 import Control.Monad
 import Text.Printf
@@ -9,8 +18,8 @@ import Data.Function (on)
 import Data.Maybe
 import Data.List (transpose, sort)
 import Data.IORef
+import System.Random -- TODO
 import System.IO.Unsafe
-
 
 -- https://mlg.eng.cam.ac.uk/pub/pdf/SciGhaGor15.pdf
 data Dist a where
@@ -27,42 +36,15 @@ instance Monad Dist where
   (>>=) = Bind
 
 class Sampleable d where
-  sample :: d a -> a
+  sample :: StdGen -> d a -> a
 
 instance Sampleable Dist where
-  sample = \case
+  sample g = \case
     Return x -> x
-    Primitive p -> sample p
-    Bind d f -> sample . f $ sample d
-
-data Normal a where
-  Normal :: IO Double -> Normal Double
-
-instance Sampleable Normal where
-  sample (Normal s) = unsafePerformIO s
-
-normal :: Double -> Double -> Dist Double
-normal mean std_dev = Primitive $ Normal $ do
-  s <- newNormalSample
-  return $! s*std_dev + mean
-
-normalSamples :: IORef [Double]
-normalSamples = unsafePerformIO $ newIORef $
-                  boxMullers $ zip (halton 2) (halton 3)
-{-# NOINLINE normalSamples #-}
-newNormalSample :: IO Double
-newNormalSample = do
-  (s:ss) <- readIORef normalSamples
-  writeIORef normalSamples ss
-  return s
-
-squishP xs = M.toList $ M.fromListWith (+) xs
-normP xs = [(x, p / q) | let q = sum (map snd xs), (x, p) <- xs]
-
-showSamples xs = concatMap showRow xs
-  where
-    max_prob = snd $ maximumBy (compare `on` snd) xs :: Double
-    showRow (elem, prob) = drawline max_prob prob ++ " | " ++ printf "%.1f (%.1f" elem (prob*100) ++ "%)\n"
+    Primitive p -> sample g p
+    Bind d f -> sample g1 . f $ sample g2 d
+      where
+        (g1, g2) = splitGen g
 
 data Expr
   = Num Double | Add Expr Expr | Mul Expr Expr
@@ -86,7 +68,7 @@ instance Floating Expr where
   pi = Num pi; exp = Exp; log = Log; sin = Sin; cos = Cos
 
 instance Show Expr where
-  show = showSamples . cumulative . collapseIntervals 50 . sample . sequence . replicate 250000 . eval
+  show = showSamples . cumulative . collapseIntervals 50 . sample (mkStdGen 0) . sequence . replicate 25000 . eval
 
 eval :: Expr -> Dist Double
 eval = \case
@@ -109,14 +91,53 @@ eval = \case
       std_dev = (b - a) / 4
     normal mean std_dev
 
+data Normal a where
+  Normal :: (StdGen -> Double) -> Normal Double
+
+instance Sampleable Normal where
+  sample g (Normal s) = s g
+
+normal :: Double -> Double -> Dist Double
+normal mean std_dev = Primitive $ Normal $ \g0 ->
+  let (u1, g1)  = uniformR (0, 1) g0
+      (u2,  _)  = uniformR (0, 1) g1
+      (n1, _n2) = boxMuller u1 u2
+      !result   = n1*std_dev + mean
+   in result
+
+boxMuller u1 u2 = (r * cos t, r * sin t) where r = sqrt (-2 * log u1)
+                                               t = 2 * pi * u2
+
+-- -- Halton sequence, a low discrepancy sequence to feed boxMullers
+-- -- https://en.wikipedia.org/wiki/Low-discrepancy_sequence
+-- halton :: Int {-^ Base -} -> [Double]
+-- halton b = map (go 1 0) [1..] where
+--   go f r i
+--     | i > 0
+--     , let f' = f / (fromIntegral b)
+--     , let r' = r + f'*(fromIntegral $ i `mod` b)
+--     , let i' = floor (fromIntegral i / fromIntegral b)
+--     = go f' r' i'
+--     | otherwise
+--     = r
+
+--------------------------------------------------------------------------------
+-- Drawing
+--------------------------------------------------------------------------------
+
+squishP xs = M.toList $ M.fromListWith (+) xs
+normP xs = [(x, p / q) | let q = sum (map snd xs), (x, p) <- xs]
+
+showSamples xs = concatMap showRow xs
+  where
+    max_prob = snd $ maximumBy (compare `on` snd) xs :: Double
+    showRow (elem, prob) = drawline max_prob prob ++ " | " ++ printf "%.1f (%.1f" elem (prob*100) ++ "%)\n"
+
 drawline :: Double -> Double -> String
 drawline max n = replicate spaces ' ' ++ replicate normalized ':' where
   spaces = 35 - normalized
   normalized = (round ((n/max) * 30))
 
--- intervals :: [Double] -- ^ Each double is a box where all floats less than this number fall, in order (list must be sorted low-to-high).
---           -> [Double] -- ^ A list of arbitrary Double samples
---           -> [Double] -- ^ A list of samples where all doubles fall into the given discrete categories
 intervals boxes dist = do
   s <- dist
   return $ fst $ minimumBy (compare `on` snd) $
@@ -132,23 +153,4 @@ collapseIntervals n (sort -> samples) =
       high = last samples
       step = (high - low) / fromIntegral n
    in intervals [low-step, low .. high+step] samples
-
-boxMuller u1 u2 = (r * cos t, r * sin t) where r = sqrt (-2 * log u1)
-                                               t = 2 * pi * u2
-
-boxMullers ((u1,u2):us) = n1:n2:boxMullers us where (n1,n2) = boxMuller u1 u2
-boxMullers _            = []
-
--- Halton sequence, a low discrepancy sequence to feed boxMullers
--- https://en.wikipedia.org/wiki/Low-discrepancy_sequence
-halton :: Int {-^ Base -} -> [Double]
-halton b = map (go 1 0) [1..] where
-  go f r i
-    | i > 0
-    , let f' = f / (fromIntegral b)
-    , let r' = r + f'*(fromIntegral $ i `mod` b)
-    , let i' = floor (fromIntegral i / fromIntegral b)
-    = go f' r' i'
-    | otherwise
-    = r
 
