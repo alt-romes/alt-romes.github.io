@@ -9,7 +9,7 @@ import Data.List (sort, minimumBy)
 import System.Random
 import qualified Data.Map as M
 
---- Distribution ---------------------------------------------------------------
+--- Probability Monad ----------------------------------------------------------
 
 -- https://mlg.eng.cam.ac.uk/pub/pdf/SciGhaGor15.pdf
 data Dist a where
@@ -24,7 +24,7 @@ instance Functor     Dist where fmap  = liftM
 sample :: StdGen -> Dist a -> a
 sample g d = case d of
   Return x -> x
-  Normal mean std_dev -> n1*std_dev + mean
+  Normal mean std_dev -> n1 * std_dev + mean
     where ((u1, u2), _) = uniformR ((0,0), (1,1)) g
           (n1,  _)      = boxMuller u1 u2
   Bind d f -> sample g1 (f (sample g2 d))
