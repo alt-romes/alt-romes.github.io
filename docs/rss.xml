@@ -9,7 +9,7 @@
                    type="application/rss+xml" />
         <lastBuildDate>Fri, 25 Apr 2025 00:00:00 UT</lastBuildDate>
         <item>
-    <title>The Unsure Calculator in 100 lines of Haskell</title>
+    <title>Implementing Unsure Calculator in 100 lines of Haskell</title>
     <link>http://alt-romes.github.io/posts/2025-04-25-unsure-calculator-in-100-lines-of-haskell.html</link>
     <description><![CDATA[Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad.]]></description>
     <pubDate>Fri, 25 Apr 2025 00:00:00 UT</pubDate>

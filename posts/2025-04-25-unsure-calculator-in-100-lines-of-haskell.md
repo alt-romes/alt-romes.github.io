@@ -1,6 +1,6 @@
 ---
 
-title: The Unsure Calculator in 100 lines of Haskell
+title: Implementing Unsure Calculator in 100 lines of Haskell
 
 description: Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad.
 
