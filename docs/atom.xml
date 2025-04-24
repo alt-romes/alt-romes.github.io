@@ -10,8 +10,16 @@
         <email>rodrigo.m.mesquita@gmail.com</email>
         
     </author>
-    <updated>2024-08-14T00:00:00Z</updated>
+    <updated>2025-04-25T00:00:00Z</updated>
     <entry>
+    <title>The Unsure Calculator in 100 lines of Haskell</title>
+    <link href="http://alt-romes.github.io/posts/2025-04-25-unsure-calculator-in-100-lines-of-haskell.html" />
+    <id>http://alt-romes.github.io/posts/2025-04-25-unsure-calculator-in-100-lines-of-haskell.html</id>
+    <published>2025-04-25T00:00:00Z</published>
+    <updated>2025-04-25T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad.]]></summary>
+</entry>
+<entry>
     <title>Planning Weekly Workouts in 100 lines of Haskell</title>
     <link href="http://alt-romes.github.io/posts/2024-08-14-planning-a-workout-week-with-100-lines-of-haskell.html" />
     <id>http://alt-romes.github.io/posts/2024-08-14-planning-a-workout-week-with-100-lines-of-haskell.html</id>

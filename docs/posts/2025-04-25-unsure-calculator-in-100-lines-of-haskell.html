@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Unsure Calculator in 100 lines of Haskell</title>
+    
+    <meta name="description" content="Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad.">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="The Unsure Calculator in 100 lines of Haskell" />
+    
+    <meta property="og:description" content="Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad." />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://analytics.mogbit.com/js/script.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <li><a href="../publications.html">publications</a></li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>The Unsure Calculator in 100 lines of Haskell</h1>
+    <p>
+      
+      Apr 25, 2025
+      
+    </p>
+  </div>
+  
+  <p class="description">Implementing a calculator with normal ranges, embedded in Haskell, using a simplified probability monad.</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-probability">#<a href="../tags/probability.html">probability</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#unsure-calculator" id="toc-unsure-calculator"><span class="toc-section-number">1</span> Unsure Calculator</a>
+<ul>
+<li><a href="#sampling-it-up" id="toc-sampling-it-up"><span class="toc-section-number">1.1</span> Sampling it up</a></li>
+<li><a href="#calculator-expressions" id="toc-calculator-expressions"><span class="toc-section-number">1.2</span> Calculator Expressions</a></li>
+<li><a href="#showing-up" id="toc-showing-up"><span class="toc-section-number">1.3</span> Showing up</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">1.4</span> Conclusion</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 data-number="1" id="unsure-calculator"><span class="header-section-number">1</span> Unsure Calculator</h1>
+<p>The recently trendy <a href="https://filiph.github.io/unsure/">Unsure Calculator</a> makes
+reasoning about numbers with some uncertainty just as easy as calculating with
+specific numbers.</p>
+<p>The key idea is to add a new “range” operator (written <code>~</code>) to the vocabulary
+of a standard calculator. The range <code>x~y</code> denotes that a real value is uncertain, but
+we are 95% sure that it falls between <code>x</code> and <code>y</code><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<blockquote>
+<p>Reading the notation is easy: when you see 10~15, you say: “ten to fifteen”.</p>
+</blockquote>
+<p>Arithmetic operations and friends (e.g. <code>sin</code>, or <code>log</code>)
+transparently operate on ranges and literal numbers alike.
+Calculation results in a plot with a range of values that
+the input expression can take, and with what frequency.</p>
+<!--```txt-->
+<!--     above | ▒▒▒▒-->
+<!--       236 | ▒▒▒-->
+<!--       221 | ▒▒▒▒-->
+<!--       205 | ▒▒▒▒▒▒-->
+<!--       190 | ▒▒▒▒▒▒▒▒▒-->
+<!--       175 | ▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--       159 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--       144 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--       129 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--       114 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        98 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        83 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ (79)-->
+<!--        68 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        52 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        37 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        22 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--         6 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--        -9 | ▒▒▒▒▒▒▒▒▒▒▒▒▒▒-->
+<!--       -24 | ▒▒▒▒▒▒▒▒▒▒-->
+<!--       -39 | ▒▒▒▒▒▒▒-->
+<!--       -55 | ▒▒▒▒▒-->
+<!--       -70 | ▒▒▒-->
+<!--     below | ▒▒▒▒-->
+<!--```-->
+<p>The motivation behind the original article is neat, so I’ll just recommend you
+read it <a href="https://filiph.github.io/unsure/">there</a> to learn how and why you’d use such a calculator. Here’s a
+real life example they used:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>1400~1700 * 0.55~0.65 - 600~700 - 100~200 - 30 - 20</span></code></pre></div>
+<p>Now, let’s implement it.</p>
+<h2 data-number="1.1" id="sampling-it-up"><span class="header-section-number">1.1</span> Sampling it up</h2>
+<p>Summon a <a href="https://www.youtube.com/watch?v=qZ4O-1VYv4c">probability monad</a> from the void<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Dist</span> a <span class="kw">where</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Return</span><span class="ot"> ::</span> a <span class="ot">-&gt;</span> <span class="dt">Dist</span> a</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Bind</span><span class="ot">   ::</span> <span class="dt">Dist</span> b <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> <span class="dt">Dist</span> a) <span class="ot">-&gt;</span> <span class="dt">Dist</span> a</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Normal</span><span class="ot"> ::</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Dist</span> <span class="dt">Double</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Monad</span>       <span class="dt">Dist</span> <span class="kw">where</span> (<span class="op">&gt;&gt;=</span>) <span class="ot">=</span> <span class="dt">Bind</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Dist</span> <span class="kw">where</span> <span class="fu">pure</span>  <span class="ot">=</span> <span class="dt">Return</span>; (<span class="op">&lt;*&gt;</span>) <span class="ot">=</span> ap</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Functor</span>     <span class="dt">Dist</span> <span class="kw">where</span> <span class="fu">fmap</span>  <span class="ot">=</span> liftM</span></code></pre></div>
+<p>The monad instance is free: <code>pure = Return</code> and <code>(&gt;&gt;=) = Bind</code>. The <code>Normal</code>
+constructor denotes a normal distribution given the standard deviation and
+mean. With do-notation we can easily construct a complex tree mixing <code>Return</code>s,
+<code>Bind</code>s, and <code>Normal</code>s. For instance:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>d = do</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  s &lt;- Normal 0 1</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  return (5 + s)</span></code></pre></div>
+<p>desugars to</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d = Bind (Normal 0 1) (\s -&gt; Return (5 + s))</span></code></pre></div>
+<p>Then, embue meaning onto a <code>Dist a</code> by allowing an <code>a</code> to be sampled according to the distribution the <code>Dist</code> represents.
+We use <code>StdGen</code> from <code>random</code> as a source of uniform pseudo-randomness:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ot">sample ::</span> <span class="dt">StdGen</span> <span class="ot">-&gt;</span> <span class="dt">Dist</span> a <span class="ot">-&gt;</span> a</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sample g d <span class="ot">=</span> <span class="kw">case</span> d <span class="kw">of</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Return</span> x <span class="ot">-&gt;</span> x</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Normal</span> mean std_dev <span class="ot">-&gt;</span> n1 <span class="op">*</span> std_dev <span class="op">+</span> mean</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> ((u1, u2), _) <span class="ot">=</span> uniformR ((<span class="dv">0</span>,<span class="dv">0</span>), (<span class="dv">1</span>,<span class="dv">1</span>)) g</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>          (n1,  _)      <span class="ot">=</span> boxMuller u1 u2</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Bind</span> d f <span class="ot">-&gt;</span> sample g1 (f (sample g2 d))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">where</span> (g1, g2) <span class="ot">=</span> splitGen g</span></code></pre></div>
+<p>Sampling a distribution is simple:</p>
+<ul>
+<li>For a constant <code>x</code>, return <code>x</code></li>
+<li>For a normal distribution, take a random uniform number and transform it with
+the <a href="https://en.wikipedia.org/wiki/Box–Muller_transform">Box Muller transform</a> which
+transforms pairs of uniformly distributed random numbers in <code>[0, 1]</code> into pairs
+of normally distributed random numbers. Then, scale according to the normal
+distribution parameters (<code>mean</code>, <code>std_dev</code>).</li>
+<li>For <code>Bind</code>, sample <code>a</code> from <code>Dist a</code>, feed it to the continuation, and then sample from the resulting <code>Dist b</code>.
+Do make sure the PRN generator is <a href="https://hackage-content.haskell.org/package/random-1.3.1/docs/System-Random.html#v:splitGen">split</a>.</li>
+</ul>
+<p>Box-Muller is implemented very literally as:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>boxMuller u1 u2 <span class="ot">=</span> (r <span class="op">*</span> <span class="fu">cos</span> t, r <span class="op">*</span> <span class="fu">sin</span> t) <span class="kw">where</span> r <span class="ot">=</span> <span class="fu">sqrt</span> (<span class="op">-</span><span class="dv">2</span> <span class="op">*</span> <span class="fu">log</span> u1)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                                               t <span class="ot">=</span> <span class="dv">2</span> <span class="op">*</span> <span class="fu">pi</span> <span class="op">*</span> u2</span></code></pre></div>
+<p>We can try sampling the example above:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&gt; sample (mkStdGen 3) (Bind (Normal 0 1) (\s -&gt; Return (5+s)))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>5.079952851990287</span></code></pre></div>
+<p>And we can also use <code>sequence . repeat</code> to generate an infinite list of samples:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>&gt; take 5 $ sample (mkStdGen 4) $ sequence $ repeat $ (Bind (Normal 0 1) (\s -&gt; Return (5+s)))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>[4.133071135842417,5.270868355973887,6.9698645379055355,3.8369680071523447,4.2986629449038425]</span></code></pre></div>
+<h2 data-number="1.2" id="calculator-expressions"><span class="header-section-number">1.2</span> Calculator Expressions</h2>
+<p>Conjure up an eDSL for calculator expressions:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Expr</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Num</span> <span class="dt">Double</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span>   <span class="op">|</span> <span class="dt">Mul</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Abs</span> <span class="dt">Expr</span>        <span class="op">|</span> <span class="dt">Signum</span> <span class="dt">Expr</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Negate</span> <span class="dt">Expr</span>     <span class="op">|</span> <span class="dt">Div</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Exp</span> <span class="dt">Expr</span>        <span class="op">|</span> <span class="dt">Log</span> <span class="dt">Expr</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Sin</span> <span class="dt">Expr</span>        <span class="op">|</span> <span class="dt">Cos</span> <span class="dt">Expr</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> <span class="dt">Range</span> <span class="dt">Expr</span> <span class="dt">Expr</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>(<span class="op">~</span>) <span class="ot">=</span> <span class="dt">Range</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Num</span> <span class="dt">Expr</span> <span class="kw">where</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  (<span class="op">+</span>) <span class="ot">=</span> <span class="dt">Add</span>; (<span class="op">*</span>) <span class="ot">=</span> <span class="dt">Mul</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">negate</span> <span class="ot">=</span> <span class="dt">Negate</span>; <span class="fu">abs</span> <span class="ot">=</span> <span class="dt">Abs</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">signum</span> <span class="ot">=</span> <span class="dt">Signum</span>; <span class="fu">fromInteger</span> <span class="ot">=</span> <span class="dt">Num</span> <span class="op">.</span> <span class="fu">fromInteger</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Fractional</span> <span class="dt">Expr</span> <span class="kw">where</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  (<span class="op">/</span>) <span class="ot">=</span> <span class="dt">Div</span>; <span class="fu">fromRational</span> <span class="ot">=</span> <span class="dt">Num</span> <span class="op">.</span> <span class="fu">fromRational</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Floating</span> <span class="dt">Expr</span> <span class="kw">where</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pi</span> <span class="ot">=</span> <span class="dt">Num</span> <span class="fu">pi</span>; <span class="fu">exp</span> <span class="ot">=</span> <span class="dt">Exp</span>; <span class="fu">log</span> <span class="ot">=</span> <span class="dt">Log</span>; <span class="fu">sin</span> <span class="ot">=</span> <span class="dt">Sin</span>; <span class="fu">cos</span> <span class="ot">=</span> <span class="dt">Cos</span></span></code></pre></div>
+<p>By defining <code>~</code> to be <code>Range</code> and overloading math we can immediately write</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>1400~1700 * 0.55~0.65 - 600~700</span></code></pre></div>
+<p>to mean</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>Add (Mul (Range 1400 1700) (Range 0.55 0.65)) (Negate (Range 600 700)))</span></code></pre></div>
+<p>Breathe life into expressions by allowing them to be evaluated to a distribution
+that can later be sampled. This is where the <code>Functor</code>, <code>Applicative</code>, and <code>Monad</code>
+instances for <code>Dist</code> come into play:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ot">eval ::</span> <span class="dt">Expr</span> <span class="ot">-&gt;</span> <span class="dt">Dist</span> <span class="dt">Double</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>eval e <span class="ot">=</span> <span class="kw">case</span> e <span class="kw">of</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Num</span> d       <span class="ot">-&gt;</span> <span class="fu">return</span> d</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Add</span> e1 e2   <span class="ot">-&gt;</span> (<span class="op">+</span>) <span class="op">&lt;$&gt;</span> eval e1 <span class="op">&lt;*&gt;</span> eval e2</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Mul</span> e1 e2   <span class="ot">-&gt;</span> (<span class="op">*</span>) <span class="op">&lt;$&gt;</span> eval e1 <span class="op">&lt;*&gt;</span> eval e2</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Negate</span> e    <span class="ot">-&gt;</span> <span class="fu">negate</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Abs</span> e       <span class="ot">-&gt;</span> <span class="fu">abs</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Signum</span> e    <span class="ot">-&gt;</span> <span class="fu">signum</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Div</span> e1 e2   <span class="ot">-&gt;</span> (<span class="op">/</span>) <span class="op">&lt;$&gt;</span> eval e1 <span class="op">&lt;*&gt;</span> eval e2</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Exp</span> e       <span class="ot">-&gt;</span> <span class="fu">exp</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Log</span> e       <span class="ot">-&gt;</span> <span class="fu">log</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Sin</span> e       <span class="ot">-&gt;</span> <span class="fu">sin</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Cos</span> e       <span class="ot">-&gt;</span> <span class="fu">cos</span> <span class="op">&lt;$&gt;</span> eval e</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">Range</span> e1 e2 <span class="ot">-&gt;</span> <span class="kw">do</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    a <span class="ot">&lt;-</span> eval e1</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    b <span class="ot">&lt;-</span> eval e2</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> mean <span class="ot">=</span> (a <span class="op">+</span> b) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        std_dev <span class="ot">=</span> (b <span class="op">-</span> a) <span class="op">/</span> <span class="dv">4</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">Normal</span> mean std_dev</span></code></pre></div>
+<p>Most cases just recursively <code>eval</code> the sub-expressions into <code>Dist Double</code>s and
+then lift a math operation on <code>Double</code>s into the probability monad.
+The interesting case is <code>Range</code>, which uses the evaluated sub-expressions, referring to
+the lower and upper range bound, to compute the standard deviation and mean of
+the normal distribution – a <code>Dist</code> is returned by applying the “primitive”
+<code>Normal</code> constructor accordingly.</p>
+<p>We can take a few samples of the first example in this post:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>&gt; take 10 $ sample (mkStdGen 5) $ sequence $ repeat $ eval (1400~1700 * 0.55~0.65 - 600~700 - 100~200 - 30 - 20)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>[8.808397505000045,-20.049171720836654,12.753715226577157,-22.77067243260501,-70.3671725933005,-11.610935890955716,157.612422580839,75.61254061496092,88.04359089198991,-37.280109436085866]</span></code></pre></div>
+<p>Even though we are taking samples from the distribution constructed by that compound expression, we cannot make too much sense of these numbers.
+We need to plot them in a histogram, just like the original calculator does, to make this useful.</p>
+<h2 data-number="1.3" id="showing-up"><span class="header-section-number">1.3</span> Showing up</h2>
+<p>I’ll spare the nitty-gritty details, but, lastly, we define a <code>Show</code> instance
+for <code>Expr</code> that plots a number of samples from the distribution resulting from
+the given expression. In order:</p>
+<ul>
+<li>Eval the expression <code>e</code> into a <code>Dist Double</code></li>
+<li>Take 25000 samples</li>
+<li>Group each sample into the interval it is closest to (in <code>collapseIntervals</code>)</li>
+<li>Compute the ratio of samples in each box over the total number of samples, to display as a percentage</li>
+<li>For each box, plot a line (in <code>line</code> and <code>showRow</code>)</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Expr</span> <span class="kw">where</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show</span> e <span class="ot">=</span> <span class="fu">concatMap</span> showRow intervals <span class="kw">where</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    samples <span class="ot">=</span> <span class="fu">take</span> <span class="dv">25000</span> <span class="op">.</span> sample (mkStdGen <span class="dv">0</span>) <span class="op">.</span> <span class="fu">sequence</span> <span class="op">.</span> <span class="fu">repeat</span> <span class="op">.</span> eval</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    intervals <span class="ot">=</span> collapseIntervals <span class="dv">40</span> (samples e)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    line p <span class="ot">=</span> <span class="fu">replicate</span> spaces <span class="ch">' '</span> <span class="op">++</span> <span class="fu">replicate</span> normalized <span class="ch">':'</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span> spaces <span class="ot">=</span> <span class="dv">35</span> <span class="op">-</span> normalized</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>            normalized <span class="ot">=</span> <span class="fu">round</span> ((p<span class="op">/</span>max_prob) <span class="op">*</span> <span class="dv">30</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>            max_prob <span class="ot">=</span> <span class="fu">maximum</span> <span class="op">$</span> <span class="fu">map</span> <span class="fu">snd</span> intervals</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    showRow (<span class="fu">elem</span>, prob) <span class="ot">=</span> line prob <span class="op">++</span> <span class="st">&quot; | &quot;</span> <span class="op">++</span> printf <span class="st">&quot;%.1f (%.1f&quot;</span> <span class="fu">elem</span> (prob<span class="op">*</span><span class="dv">100</span>) <span class="op">++</span> <span class="st">&quot;%)\n&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="ot">collapseIntervals ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Double</span>] <span class="ot">-&gt;</span> [(<span class="dt">Double</span>, <span class="dt">Double</span>)]</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>collapseIntervals n (<span class="fu">sort</span> <span class="ot">-&gt;</span> samples) <span class="ot">=</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span> (low, high) <span class="ot">=</span> (<span class="fu">head</span> samples, <span class="fu">last</span> samples)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>      step  <span class="ot">=</span> (high <span class="op">-</span> low) <span class="op">/</span> <span class="fu">fromIntegral</span> n</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>      boxes <span class="ot">=</span> [low, low<span class="op">+</span>step <span class="op">..</span> high] </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>      total <span class="ot">=</span> <span class="fu">fromIntegral</span> (<span class="fu">length</span> samples)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>   <span class="kw">in</span> M.toList <span class="op">$</span> M.map (<span class="op">/</span>total) <span class="op">$</span> M.fromListWith (<span class="op">+</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        [ (minimumBy (<span class="fu">compare</span> <span class="ot">`on`</span> \box <span class="ot">-&gt;</span> <span class="fu">abs</span> (box <span class="op">-</span> s)) boxes, <span class="dv">1</span>)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">|</span> s <span class="ot">&lt;-</span> samples ]</span></code></pre></div>
+<p>Let’s try to print out the first example now, by simply typing in GHCi:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>&gt; 1400~1700 * 0.55~0.65 - 600~700 - 100~200 - 30 - 20</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                    | -188.2 (0.0%)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                    | -162.2 (0.0%)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                    | -149.2 (0.0%)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                    | -136.1 (0.1%)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                    | -123.1 (0.1%)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                                    | -110.1 (0.1%)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>                                  : | -97.1 (0.2%)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>                                 :: | -84.1 (0.4%)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>                                 :: | -71.1 (0.6%)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>                               :::: | -58.1 (1.1%)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>                            ::::::: | -45.1 (1.7%)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>                            ::::::: | -32.1 (1.8%)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>                        ::::::::::: | -19.0 (2.9%)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>                    ::::::::::::::: | -6.0 (3.8%)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>                  ::::::::::::::::: | 7.0 (4.3%)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>              ::::::::::::::::::::: | 20.0 (5.3%)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>          ::::::::::::::::::::::::: | 33.0 (6.1%)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        ::::::::::::::::::::::::::: | 46.0 (6.7%)</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>     :::::::::::::::::::::::::::::: | 59.0 (7.4%)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>     :::::::::::::::::::::::::::::: | 72.0 (7.5%)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>     :::::::::::::::::::::::::::::: | 85.0 (7.5%)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>       :::::::::::::::::::::::::::: | 98.0 (7.0%)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>         :::::::::::::::::::::::::: | 111.1 (6.6%)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>            ::::::::::::::::::::::: | 124.1 (5.8%)</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>              ::::::::::::::::::::: | 137.1 (5.3%)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>                  ::::::::::::::::: | 150.1 (4.3%)</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>                      ::::::::::::: | 163.1 (3.3%)</span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>                       :::::::::::: | 176.1 (2.9%)</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>                          ::::::::: | 189.1 (2.2%)</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>                            ::::::: | 202.1 (1.7%)</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>                              ::::: | 215.1 (1.2%)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>                                ::: | 228.2 (0.8%)</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>                                 :: | 241.2 (0.6%)</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>                                  : | 254.2 (0.3%)</span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a>                                  : | 267.2 (0.2%)</span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a>                                    | 280.2 (0.1%)</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>                                    | 293.2 (0.0%)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>                                    | 306.2 (0.0%)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>                                    | 319.2 (0.0%)</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>                                    | 332.2 (0.0%)</span></code></pre></div>
+<p>Success! This looks very similar to the original histogram for the same expression.
+Let’s also try Drake’s equation as described in the original article:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>&gt; 1.5~3 * 0.9~1.0 * 0.1~0.4 * 0.1~1.0 * 0.1~1.0 * 0.1~0.2 * 304~10000</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                                    | -307.0 (0.0%)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                                    | -193.4 (0.0%)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                                    | -155.5 (0.0%)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                                    | -117.7 (0.0%)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                                    | -79.8 (0.1%)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>                                  : | -42.0 (0.6%)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                       :::::::::::: | -4.1 (8.3%)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>     :::::::::::::::::::::::::::::: | 33.7 (20.9%)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        ::::::::::::::::::::::::::: | 71.6 (19.1%)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>              ::::::::::::::::::::: | 109.4 (14.6%)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>                    ::::::::::::::: | 147.3 (10.5%)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>                        ::::::::::: | 185.2 (7.4%)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                           :::::::: | 223.0 (5.3%)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>                              ::::: | 260.9 (3.6%)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>                               :::: | 298.7 (2.6%)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>                                ::: | 336.6 (1.9%)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>                                 :: | 374.4 (1.4%)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>                                  : | 412.3 (0.9%)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>                                  : | 450.1 (0.7%)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>                                  : | 488.0 (0.5%)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>                                    | 525.9 (0.3%)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>                                    | 563.7 (0.3%)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>                                    | 601.6 (0.2%)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>                                    | 639.4 (0.1%)</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>                                    | 677.3 (0.1%)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>                                    | 715.1 (0.1%)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>                                    | 753.0 (0.1%)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>                                    | 790.8 (0.0%)</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>                                    | 828.7 (0.0%)</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>                                    | 866.5 (0.0%)</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>                                    | 904.4 (0.0%)</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>                                    | 942.3 (0.0%)</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>                                    | 980.1 (0.0%)</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>                                    | 1018.0 (0.0%)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>                                    | 1055.8 (0.0%)</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>                                    | 1093.7 (0.0%)</span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>                                    | 1169.4 (0.0%)</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>                                    | 1207.2 (0.0%)</span></code></pre></div>
+<p>That’s it!</p>
+<h2 data-number="1.4" id="conclusion"><span class="header-section-number">1.4</span> Conclusion</h2>
+<p>A few final remarks:</p>
+<ul>
+<li>This is a neat and simple implementation. It highlights some of Haskell’s strengths in an interesting task.</li>
+<li>Since our calculator implementation is embeded in Haskell, we
+can leverage the GHCi REPL – most importantly, we can do variable binding and
+define functions with no additional implementation cost.</li>
+<li>You can try the <a href="https://gist.github.com/alt-romes/58346dee164a91ddab48c5a111d1b5ea">full program</a> (exactly 100 lines) on your machine by loading it with <code>cabal repl &lt;file.hs&gt;</code> and typing unsure expressions at will.</li>
+</ul>
+<!--- This could almost certainly use a closed form implementation -->
+<!--- It'd be good to not display too many 0.0% boxes -->
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>More precisely, the range denotes a normal distribution where each end is two standard deviations from the mean.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://mlg.eng.cam.ac.uk/pub/pdf/SciGhaGor15.pdf">Practical Probabilistic Programming with Monads</a>.
+Our version is much simpler than the paper’s because we don’t care about
+conditional probabilities and because we only ever use normal distributions.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2023
+        </small>
+    </footer>
+  </body>
+</html>
