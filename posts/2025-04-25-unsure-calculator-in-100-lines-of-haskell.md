@@ -113,10 +113,10 @@ sample g d = case d of
 Sampling a distribution is simple:
 
 - For a constant `x`, return `x`
-- For a normal distribution, take a random uniform number and transform it with
-  the [Box Muller transform](https://en.wikipedia.org/wiki/Box–Muller_transform) which
-  transforms pairs of uniformly distributed random numbers in `[0, 1]` into pairs
-  of normally distributed random numbers. Then, scale according to the normal
+- For a normal distribution, use the [Box Muller
+  transform](https://en.wikipedia.org/wiki/Box–Muller_transform) to transform a
+  pair of *uniformly* distributed random numbers in `[0, 1]` into a pair of
+  *normally* distributed random numbers. Then, scale according to the normal
   distribution parameters (`mean`, `std_dev`).
 - For `Bind`, sample `a` from `Dist a`, feed it to the continuation, and then sample from the resulting `Dist b`.
   Do make sure the PRN generator is [split](https://hackage-content.haskell.org/package/random-1.3.1/docs/System-Random.html#v:splitGen).
