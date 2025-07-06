@@ -1,6 +1,6 @@
 ---
 title: Automatically Packaging a Haskell Library as a Swift Binary XCFramework
-description: Announcing xcframework -- The happy path for wiring a Haskell
+description: Announcing <code>xcframework</code> or&#58 the happy path for wiring a Haskell
               dependency to your Swift app
 tags: haskell, swift
 ---
@@ -23,7 +23,7 @@ Let's walk the happy path.
 # Announcing: xcframework
 
 Perhaps obvious in retrospect, the *demon-less* way to add a Haskell library to
-the dependencies of a Swift application is to literally build an independent
+the dependencies of a Swift application is to build an independent
 Swift Package wrapping the Haskell library -- something that can be done
 without XCode in sight. Easy peasy:
 
@@ -34,8 +34,9 @@ without XCode in sight. Easy peasy:
 And it turns out that (1) and (2) can be merged together using [Cabal
 SetupHooks](https://well-typed.com/blog/2025/01/cabal-hooks/)!
 
-I'm happy to announce I've neatly packaged and released that automation on
-hackage as a Haskell library called [xcframework](https://hackage.haskell.org/package/xcframework).
+Moreover, I'm happy to announce I've neatly packaged and released that build
+process automation as a Haskell library called
+[xcframework](https://hackage.haskell.org/package/xcframework) on Hackage.
 
 Onwards! -- for what it does and how to use it.
 
@@ -43,8 +44,7 @@ Onwards! -- for what it does and how to use it.
 
 Apple introduced XCFramework bundles back in a [WWDC19
 session](https://developer.apple.com/videos/play/wwdc2019/416/). An XCFramework
-is a [multiplatform binary framework
-bundle](https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle](https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle).
+is a [multiplatform binary framework bundle](https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle).
 
 For our purposes, that means we can create a Swift Package just from a binary
 linkable artifact and a couple of header files. Then, any Swift project can
@@ -78,11 +78,11 @@ In your cabal file, change the `build-type` to `Hooks` (and set `cabal-version:
 
 And add a `setup-depends` stanza with a dependency on `xcframework`:
 
-```diff
-+ custom-setup
-+   setup-depends:
-+     base        >= 4.18 && < 5,
-+     xcframework >= 0.1
+```txt
+custom-setup
+  setup-depends:
+    base        >= 4.18 && < 5,
+    xcframework >= 0.1
 ```
 
 Finally, create a file called `SetupHooks.hs` in the root of your Cabal package
@@ -98,7 +98,7 @@ setupHooks :: SetupHooks
 setupHooks = xcframeworkHooks "_build/MyHaskellLib.xcframework"
 ```
 
-Now, whenever you run `cabal build`, the libraries will also be bundled into an `.xcframework`.
+Now, whenever you run `cabal build`, the built libraries will also be bundled into an `.xcframework`.
 
 ## How to use the XCFramework in XCode
 
@@ -143,7 +143,7 @@ contribute a patch for!)
 
 For example, if your Haskell module looked like:
 
-```
+```haskell
 module MyLib (doSomething) where
 
 fib :: Integral b => Int -> b
@@ -165,7 +165,9 @@ In your Swift module you can now
 ```swift
 import Haskell.Foreign.Exports
 
-let x = doSomething()
+  ...
+  let x = doSomething()
+  ...
 ```
 
 ## Must use Cabal Foreign Library stanza
@@ -174,7 +176,7 @@ Unfortunately, while I don't figure out how to link the right amount of things
 into the `.xcframework` after building a normal `library` component in Cabal,
 the `foreign export`s must be exported from a `foreign-library` Cabal stanza:
 
-```
+```txt
 foreign-library myexample
     type: native-shared
     options: standalone
