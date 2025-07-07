@@ -170,6 +170,56 @@ import Haskell.Foreign.Exports
   ...
 ```
 
+## Building simple Swift package
+
+The `.xcframework` can also be easily used in a standalone swift package built
+with `swift build`.
+
+In your `Package.swift`, add `MyHaskellLib.xcframework` as a binary target and
+make it a dependency of your main target. For instance, a simple library would
+look like:
+
+```swift
+// swift-tools-version: 6.1
+import PackageDescription
+
+let package = Package(
+    name: "MySwiftLib",
+    platforms: [
+        .macOS(.v15)
+    ],
+    products: [
+        .library(name: "MySwiftLib", targets: ["MySwiftLib"])
+    ],
+    targets: [
+        .target(name: "MySwiftLib", dependencies: ["MyHaskellLib"], path: "Swift"),
+        .binaryTarget(
+            name: "MyHaskellLib",
+            path: "haskell/_build/MyHaskellLib.xcframework"
+        )
+    ]
+)
+```
+
+Now you can use the `Haskell.Foreign.Export` import in any module in the
+package as explained above, for instance in `Swift/MySwiftLib.hs`:
+
+```swift
+import Foundation
+import Haskell.Foreign.Exports
+
+public struct Fib {
+  var val: Int64
+}
+
+public func mkFib() -> Fib {
+    let x = doSomething()
+    return Fib(val: x)
+}
+```
+
+Build the Swift package using `swift build` in the project root.
+
 ## Must use Cabal Foreign Library stanza
 
 Unfortunately, while I don't figure out how to link the right amount of things
@@ -200,5 +250,7 @@ Haskell packages by leveraging the `SetupHooks` [very nicely designed
 API](https://hackage-content.haskell.org/package/Cabal-hooks/docs/Distribution-Simple-SetupHooks.html).
 
 This further lowers the bar for integrating Haskell and Swift!
-But there is still a long way to go.
+However marshaling and sharing high-level datatypes remains challenging.
+[Calling Haskell from Swift](2024-04-02-calling-haskell-from-swift.html)
+explains how to use more interesting types across the FFI.
 
