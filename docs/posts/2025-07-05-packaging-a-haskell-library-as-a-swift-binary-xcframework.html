@@ -115,7 +115,7 @@ headers and make sure the bundled library will be linked in with the final
 executable. Specifically, the <code>xcframework</code> Haskell library, for a given
 Haskell library, bundles:</p>
 <ul>
-<li>The shared library (<code>.dylib</code>) resulting from building with GHC/Cabal</li>
+<li>The foreign shared library (<code>.dylib</code>) resulting from building with GHC/Cabal</li>
 <li>The foreign export headers generated from the <code>foreign export &lt;haskell_function&gt;</code> declarations</li>
 <li>The RTS headers
 <ul>
@@ -231,7 +231,7 @@ look like:</p>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">)</span></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">]</span></span>
 <span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span></code></pre></div>
-<p>Now you can use the <code>Haskell.Foreign.Export</code> import in any module in the
+<p>Now you can use the <code>Haskell.Foreign.Exports</code> import in any module in the
 package as explained above, for instance in <code>Swift/MySwiftLib.hs</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">Foundation</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">Haskell</span><span class="op">.</span><span class="im">Foreign</span><span class="op">.</span><span class="im">Exports</span></span>
@@ -265,10 +265,12 @@ robust way of adding a Haskell dependency to a Swift application.</p>
 <p>The <code>xcframework</code> Haskell library makes it easy to create XCFrameworks from
 Haskell packages by leveraging the <code>SetupHooks</code> <a href="https://hackage-content.haskell.org/package/Cabal-hooks/docs/Distribution-Simple-SetupHooks.html">very nicely designed
 API</a>.</p>
-<p>This further lowers the bar for integrating Haskell and Swift!
-However marshaling and sharing high-level datatypes remains challenging.
-<a href="2024-04-02-calling-haskell-from-swift.html">Calling Haskell from Swift</a>
-explains how to use more interesting types across the FFI.</p>
+<p>While this work further lowers the bar for integrating Haskell and Swift,
+marshaling and sharing high-level datatypes remains challenging. <a href="2024-04-02-calling-haskell-from-swift.html">Calling
+Haskell from Swift</a> explored the
+basics of using more interesting types across the FFI, but I’m also working on
+a more automated approach using TH and GHC plugins.</p>
+<p>Finally, I’m looking forward to <a href="https://github.com/alt-romes/haskell-swift">bug reports</a> if you try it out.</p>
 
 </article>
 

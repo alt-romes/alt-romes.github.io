@@ -53,7 +53,7 @@ headers and make sure the bundled library will be linked in with the final
 executable. Specifically, the `xcframework` Haskell library, for a given
 Haskell library, bundles:
 
-- The shared library (`.dylib`) resulting from building with GHC/Cabal
+- The foreign shared library (`.dylib`) resulting from building with GHC/Cabal
 - The foreign export headers generated from the `foreign export <haskell_function>` declarations
 - The RTS headers
     - which are needed to initialize the RTS from Swift
@@ -201,7 +201,7 @@ let package = Package(
 )
 ```
 
-Now you can use the `Haskell.Foreign.Export` import in any module in the
+Now you can use the `Haskell.Foreign.Exports` import in any module in the
 package as explained above, for instance in `Swift/MySwiftLib.hs`:
 
 ```swift
@@ -249,8 +249,10 @@ The `xcframework` Haskell library makes it easy to create XCFrameworks from
 Haskell packages by leveraging the `SetupHooks` [very nicely designed
 API](https://hackage-content.haskell.org/package/Cabal-hooks/docs/Distribution-Simple-SetupHooks.html).
 
-This further lowers the bar for integrating Haskell and Swift!
-However marshaling and sharing high-level datatypes remains challenging.
-[Calling Haskell from Swift](2024-04-02-calling-haskell-from-swift.html)
-explains how to use more interesting types across the FFI.
+While this work further lowers the bar for integrating Haskell and Swift,
+marshaling and sharing high-level datatypes remains challenging. [Calling
+Haskell from Swift](2024-04-02-calling-haskell-from-swift.html) explored the
+basics of using more interesting types across the FFI, but I'm also working on
+a more automated approach using TH and GHC plugins.
 
+Finally, I'm looking forward to [bug reports](https://github.com/alt-romes/haskell-swift) if you try it out.
