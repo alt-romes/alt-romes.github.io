@@ -37,9 +37,10 @@ import Hakyll
 import Hakyll.Images (loadImage, compressJpgCompiler)
 import Data.Functor.Identity
 import qualified Text.Pandoc.Templates as Pandoc
-import Data.Maybe (mapMaybe, isJust, catMaybes)
+import Data.Maybe (mapMaybe, isJust, catMaybes, fromMaybe)
 
 import System.FilePath.Posix
+import Control.Applicative
 
 -- import Media
 
@@ -169,7 +170,12 @@ main = hakyllWith config $ do
                     <> field "year"       (pure . show . (.year) . itemBody)
                     <> field "url"        (pure . (.url) . itemBody)
                     <> field "conference" (pure . (.conference) . itemBody)
-                    <> field "notes"      (pure . (.notes) . itemBody)
+                    <> field "notes"      (\item -> case (itemBody item).notes of
+                                              Nothing -> empty
+                                              Just n  -> pure n)
+                    <> field "video"      (\item -> case (itemBody item).video of
+                                              Nothing -> empty
+                                              Just v  -> pure v)
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/publications.html" pubsCtx
@@ -383,7 +389,8 @@ data Publication
     , year       :: Int
     , url        :: String
     , conference :: String
-    , notes      :: String
+    , notes      :: Maybe String
+    , video      :: Maybe String
     } deriving (Show, Eq, Generic)
       deriving anyclass FromJSON
 

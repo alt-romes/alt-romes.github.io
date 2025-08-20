@@ -32,7 +32,7 @@
         <li class="logo"><a href="./">romes</a></li>
         <li><a href="./posts.html">blog</a></li>
         <li>music</li>
-        <li><a href="./publications.html">publications</a></li>
+        <li><a href="./publications.html">publications &amp; talks</a></li>
         <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
         <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
       </ul>
@@ -42,26 +42,34 @@
   <article class="post">
     <header>
       <h3>
-        <a href>Semantic Linearity in a Lazy Optimising Compiler</a>
+        <a href="https://youtu.be/p-hBweQg42s?si=KdGVg6VUle8csfWh" style="text-decoration:underline">The GHC Debugger <span style="font-family: monospace">↗</span></a>
+        
       </h3>
       <div>
-        Submission to ICFP25 (pending notification)
+        HIW25 - Haskell Implementors' Workshop
       </div>
       <div class="post-metadata">
         <time>2025</time>
         &nbsp;
-        Rodrigo Mesquita, Bernardo Toninho
+        Rodrigo Mesquita, Matthew Pickering, Hannes Siebenhandl
       </div>
     </header>
     <section>
-      <p>Linear type systems guarantee linear resources are used exactly once. Traditionally, using a resource is synonymous with its syntactic occurrence in the program, however, under the lens of non-strict evaluation, linearity can be further understood semantically, where a syntactic occurrence of a resource does not necessarily entail using that resource when the program is executed. Semantic linearity becomes especially vital when considering the internal language of an optimising compiler, where optimisations heavily rewrite the source program in ways that can often break syntactic linearity but that aim to preserve the program's semantics. We present Linear Core, the first type system that understands semantic linearity in the presence of non-strict evaluation, suitable for the Core intermediate language of the Glasgow Haskell Compiler. We prove Linear Core is sound and guarantees linear resource usage and prove multiple optimising transformations preserve linearity in Linear Core while failing to do so in Core. We have implemented Linear Core as a compiler plugin to validate the system against linearity-heavy libraries, including linear-base.</p>
+      <p>While using the Haskell debugger has been possible via GHCi for the last two decades, the lack of a modern integration with IDEs, and incomplete, slow, or unimplemented features, has greatly hindered its adoption.
+In this talk, we introduce our progress and plans to create a first-class debugger for Haskell.  We've developed a standalone application using the GHC library that conforms to the Debug Adaptor Protocol (DAP), making Haskell debugging possible with all compatible IDEs. In the process, we've fixed long-standing performance and usability issues in the existing debugger implementation. Our goal is to bring debugging of Haskell programs to the same level as other language ecosystems. Finally, we’ll also reflect on the architectural limitations of the current debugger and outline our vision for the future of debugging in Haskell.</p>
+      
+      <iframe style="width: 100%; aspect-ratio: 16/9" src="https://www.youtube-nocookie.com/embed/p-hBweQg42s?si=JRhFaHDCMUkXI63P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      
     </section>
   </article>
 
   <article class="post">
     <header>
       <h3>
-        <a href="data/papers/TFP25-paper-022.pdf">Explicit Level Imports</a>
+        <a href="data/papers/TFP25-paper-022.pdf" style="text-decoration:underline">Explicit Level Imports <span style="font-family: monospace">↗</span></a>
+        
+          <span style="font-size: 0.85rem; font-weight: normal">(John McCarthy best paper award)</span>
+        
       </h3>
       <div>
         TFP25 - 26th International Symposium on Trends in Functional Programming
@@ -69,18 +77,20 @@
       <div class="post-metadata">
         <time>2025</time>
         &nbsp;
-        Matthew Pickering, Rodrigo Mesquita, and Adam Gundry
+        Matthew Pickering, Rodrigo Mesquita, Adam Gundry
       </div>
     </header>
     <section>
       <p>Cross-stage persistence rules are commonly admitted in multi-stage programming languages. These rules codify the assumption that all module and package dependencies are available at all stages. However, in practice, only a small number of dependencies may be needed at each particular stage. This paper introduces Explicit Level Imports, a mechanism which gives programmers precise control about which dependencies are required at each stage. Imports are annotated with a modifier which brings identifiers into scope at a specific level. This precision means it is straightforward for the compiler to work out what is exactly needed at each stage, and only provide that. The result is faster compilation times and the potential for improved cross-compilation support. We have implemented these ideas in GHC Haskell, consider a wide variety of practical considerations in the design, and finally demonstrate that the feature solves a real-world issue in a pragmatic way.</p>
+      
     </section>
   </article>
 
   <article class="post">
     <header>
       <h3>
-        <a href="data/papers/master_thesis_rodrigo_mesquita.pdf">Type-checking Linearity in Core: Semantic Linearity for a Lazy Optimising Compiler</a>
+        <a href="data/papers/master_thesis_rodrigo_mesquita.pdf" style="text-decoration:underline">Type-checking Linearity in Core: Semantic Linearity for a Lazy Optimising Compiler <span style="font-family: monospace">↗</span></a>
+        
       </h3>
       <div>
         Master Thesis, FCT-UNL
@@ -93,13 +103,17 @@
     </header>
     <section>
       <p>Linear type systems guarantee linear resources are used exactly once. Traditionally, using a resource is synonymous with its syntactic occurrence in the program, however, under the lens of lazy evaluation, linearity can be further understood semantically, where a syntactic occurrence of a resource does not necessarily entail using that resource when the program is evaluated. Semantic linearity is especially necessary in optimising compilers for languages combining linearity and laziness: optimisations leverage laziness to heavily rewrite the source program, pushing the interaction of linearity and laziness to its limit, regardless of the original program typing linearity conservatively. We present Linear Core, the first type system that understands semantic linearity in the presence of laziness, suit- able for the Core intermediate language of the Glasgow Haskell Compiler. We prove Linear Core is both type safe and that multiple optimising transformations preserve linearity in Linear Core while failing to do so in Core. We have implemented Linear Core as a compiler plugin to validate the system against linearity-heavy libraries, including linear-base, in the heart of the compiler.</p>
+      
     </section>
   </article>
 
   <article class="post">
     <header>
       <h3>
-        <a href="data/papers/INFORUM-2023-3099-CR.pdf">Functional Program Synthesis from Linear Types</a>
+        <a href="data/papers/INFORUM-2023-3099-CR.pdf" style="text-decoration:underline">Functional Program Synthesis from Linear Types <span style="font-family: monospace">↗</span></a>
+        
+          <span style="font-size: 0.85rem; font-weight: normal">(Melhor Artigo de Estudante Ciência e Engenharia de Software)</span>
+        
       </h3>
       <div>
         INForum 2023
@@ -112,13 +126,15 @@
     </header>
     <section>
       <p>Type-driven program synthesis is concerned with automatic generation of programs that satisfy a given specification, formulated as a type. One of the key challenges of program synthesis lies in finding candidate solutions that adhere to both the specification and the user’s intent in an actionable amount of time. In this work, we explore how linear types allow for precise specifications suitable for synthesis, and present a framework for synthesis with linear types that, through the Curry- Howard correspondence, leverages existing proof-search techniques for Linear Logic to efficiently find type-correct programs. We implement the synthesis framework both as a standalone language which supports classical linear types extended with recursive algebraic data types, parametric polymorphism and basic refinements; and as a GHC type-hole plugin that synthesises expressions for Haskell program holes, using the recently introduced linear types feature – showing it can generate precise solutions, remarkably fast.</p>
+      
     </section>
   </article>
 
   <article class="post">
     <header>
       <h3>
-        <a href="data/papers/synthesis-of-linear-functional-programs.pdf">Synthesis of Linear Functional Programs</a>
+        <a href="data/papers/synthesis-of-linear-functional-programs.pdf" style="text-decoration:underline">Synthesis of Linear Functional Programs <span style="font-family: monospace">↗</span></a>
+        
       </h3>
       <div>
         Bachelor Thesis, FCT-UNL
@@ -131,6 +147,7 @@
     </header>
     <section>
       <p></p>
+      
     </section>
   </article>
 
