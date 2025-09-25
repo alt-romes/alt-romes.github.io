@@ -20,6 +20,23 @@
 #   url: ""
 #   conference: "Submission to POPL (pending notification)"
 
+
+- title: "A modern step-through debugger for Haskell"
+  authors: "Rodrigo Mesquita, Matthew Pickering, Hannes Siebenhandl"
+  abstract: "The next step forward in best-in-class tooling for Haskell is a
+    modern step-through debugger. The promise is clear, be it for beginners
+    interactively exploring the execution of a Haskell program, or experts
+    grappling with a challenging bug in a multi-million LOC codebase.
+
+    We will introduce modern debugging in Haskell by example and highlight the
+    features and robustness of the tool on some projects. We aim to convince
+    users that the debugger is effortless to reach for and will become an
+    essential of the future Haskell developer toolbox."
+  year: 2025
+  url: "https://youtu.be/urYtE15ryA0?si=2bEUE_ADM2BsqqkC"
+  conference: "MuniHac 2025"
+  video: https://www.youtube-nocookie.com/embed/urYtE15ryA0?si=qG_kcUPhiHC6pWk7
+
 - title: "The GHC Debugger"
   authors: "Rodrigo Mesquita, Matthew Pickering, Hannes Siebenhandl"
   abstract: "While using the Haskell debugger has been possible via GHCi for the last two decades, the lack
