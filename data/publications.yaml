@@ -1,24 +1,23 @@
-# - title: "Semantic Linearity in a Lazy Optimising Compiler"
-#   authors: "Rodrigo Mesquita, Bernardo Toninho"
-#   abstract: "Linear type systems guarantee linear resources are used exactly
-#     once. Traditionally, using a resource is synonymous with its syntactic
-#     occurrence in the program, however, under the lens of non-strict evaluation,
-#     linearity can be further understood semantically, where a syntactic
-#     occurrence of a resource does not necessarily entail using that resource when
-#     the program is executed. Semantic linearity becomes especially vital when
-#     considering the internal language of an optimising compiler, where
-#     optimisations heavily rewrite the source program in ways that can often break
-#     syntactic linearity but that aim to preserve the program's semantics. We
-#     present Linear Core, the first type system that understands semantic
-#     linearity in the presence of non-strict evaluation, suitable for the Core
-#     intermediate language of the Glasgow Haskell Compiler. We prove Linear Core
-#     is sound and guarantees linear resource usage and prove multiple optimising
-#     transformations preserve linearity in Linear Core while failing to do so in
-#     Core. We have implemented Linear Core as a compiler plugin to validate the
-#     system against linearity-heavy libraries, including linear-base."
-#   year: 2025
-#   url: ""
-#   conference: "Submission to POPL (pending notification)"
+- title: "Lazy Linearity for a Core Functional Language"
+  authors: "Rodrigo Mesquita, Bernardo Toninho"
+  abstract: "Traditionally, in linearly typed languages, consuming a linear
+  resource is synonymous with its syntactic occurrence in the program. However,
+  under the lens of non-strict evaluation, linearity can be further understood
+  semantically, where a syntactic occurrence of a resource does not necessarily
+  entail using that resource when the program is executed. While this
+  distinction has been largely unexplored, it turns out to be inescapable in
+  Haskell's optimising compiler, which heavily rewrites the source program in
+  ways that break syntactic linearity but preserve the program's semantics. We
+  introduce Linear Core, a novel system which accepts the lazy semantics of
+  linearity statically and is suitable for lazy languages such as the Core
+  intermediate language of the Glasgow Haskell Compiler. We prove that Linear
+  Core is sound, guaranteeing linear resource usage, and that multiple
+  optimising transformations preserve linearity in Linear Core while failing to
+  do so in Core. We have implemented Linear Core as a compiler plugin to
+  validate the system against linearity-heavy libraries, including linear-base."
+  year: 2026
+  url: "https://arxiv.org/abs/2511.10361"
+  conference: "POPL26 - 53rd ACM SIGPLAN Symposium on Principles of Programming Languages"
 
 
 - title: "A modern step-through debugger for Haskell"

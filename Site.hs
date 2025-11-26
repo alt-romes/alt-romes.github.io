@@ -30,7 +30,7 @@ import Text.Blaze.Html5 (toHtml, (!), toValue)
 import qualified Text.Blaze.Html5 as H
 
 import Text.Pandoc.Highlighting (styleToCss)
-import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..), Extension(..), enableExtension)
+import Text.Pandoc.Options      (ReaderOptions (..), WriterOptions (..), Extension(..), enableExtension, HighlightMethod (..))
 import Skylighting (Style(..), ToColor(..), TokenType(..), TokenStyle(..), defStyle)
 
 import Hakyll
@@ -295,7 +295,7 @@ pandocCompilerS =
                                    readerExtensions defaultHakyllReaderOptions
             }
         defaultHakyllWriterOptions
-            { writerHighlightStyle  = Just pandocCodeStyle
+            { writerHighlightMethod  = IdiomaticHighlighting -- Skylighting pandocCodeStyle
             , writerTableOfContents = True
             , writerNumberSections  = True
             , writerTOCDepth        = 2
