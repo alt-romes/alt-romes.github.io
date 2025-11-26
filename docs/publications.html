@@ -39,9 +39,9 @@
     </nav>
     <main>
       
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="https://arxiv.org/abs/2511.10361" style="text-decoration:underline">Lazy Linearity for a Core Functional Language <span style="font-family: monospace">↗</span></a>
         
       </h3>
@@ -54,15 +54,16 @@
         Rodrigo Mesquita, Bernardo Toninho
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>Traditionally, in linearly typed languages, consuming a linear resource is synonymous with its syntactic occurrence in the program. However, under the lens of non-strict evaluation, linearity can be further understood semantically, where a syntactic occurrence of a resource does not necessarily entail using that resource when the program is executed. While this distinction has been largely unexplored, it turns out to be inescapable in Haskell's optimising compiler, which heavily rewrites the source program in ways that break syntactic linearity but preserve the program's semantics. We introduce Linear Core, a novel system which accepts the lazy semantics of linearity statically and is suitable for lazy languages such as the Core intermediate language of the Glasgow Haskell Compiler. We prove that Linear Core is sound, guaranteeing linear resource usage, and that multiple optimising transformations preserve linearity in Linear Core while failing to do so in Core. We have implemented Linear Core as a compiler plugin to validate the system against linearity-heavy libraries, including linear-base.</p>
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="https://youtu.be/urYtE15ryA0?si=2bEUE_ADM2BsqqkC" style="text-decoration:underline">A modern step-through debugger for Haskell <span style="font-family: monospace">↗</span></a>
         
       </h3>
@@ -75,7 +76,7 @@
         Rodrigo Mesquita, Matthew Pickering, Hannes Siebenhandl
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>The next step forward in best-in-class tooling for Haskell is a modern step-through debugger. The promise is clear, be it for beginners interactively exploring the execution of a Haskell program, or experts grappling with a challenging bug in a multi-million LOC codebase.
 We will introduce modern debugging in Haskell by example and highlight the features and robustness of the tool on some projects. We aim to convince users that the debugger is effortless to reach for and will become an essential of the future Haskell developer toolbox.</p>
       
@@ -83,10 +84,11 @@ We will introduce modern debugging in Haskell by example and highlight the featu
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="https://youtu.be/p-hBweQg42s?si=KdGVg6VUle8csfWh" style="text-decoration:underline">The GHC Debugger <span style="font-family: monospace">↗</span></a>
         
       </h3>
@@ -99,7 +101,7 @@ We will introduce modern debugging in Haskell by example and highlight the featu
         Rodrigo Mesquita, Matthew Pickering, Hannes Siebenhandl
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>While using the Haskell debugger has been possible via GHCi for the last two decades, the lack of a modern integration with IDEs, and incomplete, slow, or unimplemented features, has greatly hindered its adoption.
 In this talk, we introduce our progress and plans to create a first-class debugger for Haskell.  We've developed a standalone application using the GHC library that conforms to the Debug Adaptor Protocol (DAP), making Haskell debugging possible with all compatible IDEs. In the process, we've fixed long-standing performance and usability issues in the existing debugger implementation. Our goal is to bring debugging of Haskell programs to the same level as other language ecosystems. Finally, we’ll also reflect on the architectural limitations of the current debugger and outline our vision for the future of debugging in Haskell.</p>
       
@@ -107,10 +109,11 @@ In this talk, we introduce our progress and plans to create a first-class debugg
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="data/papers/TFP25-paper-022.pdf" style="text-decoration:underline">Explicit Level Imports <span style="font-family: monospace">↗</span></a>
         
           <span style="font-size: 0.85rem; font-weight: normal">(John McCarthy best paper award)</span>
@@ -125,15 +128,16 @@ In this talk, we introduce our progress and plans to create a first-class debugg
         Matthew Pickering, Rodrigo Mesquita, Adam Gundry
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>Cross-stage persistence rules are commonly admitted in multi-stage programming languages. These rules codify the assumption that all module and package dependencies are available at all stages. However, in practice, only a small number of dependencies may be needed at each particular stage. This paper introduces Explicit Level Imports, a mechanism which gives programmers precise control about which dependencies are required at each stage. Imports are annotated with a modifier which brings identifiers into scope at a specific level. This precision means it is straightforward for the compiler to work out what is exactly needed at each stage, and only provide that. The result is faster compilation times and the potential for improved cross-compilation support. We have implemented these ideas in GHC Haskell, consider a wide variety of practical considerations in the design, and finally demonstrate that the feature solves a real-world issue in a pragmatic way.</p>
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="data/papers/master_thesis_rodrigo_mesquita.pdf" style="text-decoration:underline">Type-checking Linearity in Core: Semantic Linearity for a Lazy Optimising Compiler <span style="font-family: monospace">↗</span></a>
         
       </h3>
@@ -146,15 +150,16 @@ In this talk, we introduce our progress and plans to create a first-class debugg
         Rodrigo Mesquita, Advisor: Bernardo Toninho
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>Linear type systems guarantee linear resources are used exactly once. Traditionally, using a resource is synonymous with its syntactic occurrence in the program, however, under the lens of lazy evaluation, linearity can be further understood semantically, where a syntactic occurrence of a resource does not necessarily entail using that resource when the program is evaluated. Semantic linearity is especially necessary in optimising compilers for languages combining linearity and laziness: optimisations leverage laziness to heavily rewrite the source program, pushing the interaction of linearity and laziness to its limit, regardless of the original program typing linearity conservatively. We present Linear Core, the first type system that understands semantic linearity in the presence of laziness, suit- able for the Core intermediate language of the Glasgow Haskell Compiler. We prove Linear Core is both type safe and that multiple optimising transformations preserve linearity in Linear Core while failing to do so in Core. We have implemented Linear Core as a compiler plugin to validate the system against linearity-heavy libraries, including linear-base, in the heart of the compiler.</p>
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="data/papers/INFORUM-2023-3099-CR.pdf" style="text-decoration:underline">Functional Program Synthesis from Linear Types <span style="font-family: monospace">↗</span></a>
         
           <span style="font-size: 0.85rem; font-weight: normal">(Melhor Artigo de Estudante Ciência e Engenharia de Software)</span>
@@ -169,15 +174,16 @@ In this talk, we introduce our progress and plans to create a first-class debugg
         Rodrigo Mesquita, Bernardo Toninho
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p>Type-driven program synthesis is concerned with automatic generation of programs that satisfy a given specification, formulated as a type. One of the key challenges of program synthesis lies in finding candidate solutions that adhere to both the specification and the user’s intent in an actionable amount of time. In this work, we explore how linear types allow for precise specifications suitable for synthesis, and present a framework for synthesis with linear types that, through the Curry- Howard correspondence, leverages existing proof-search techniques for Linear Logic to efficiently find type-correct programs. We implement the synthesis framework both as a standalone language which supports classical linear types extended with recursive algebraic data types, parametric polymorphism and basic refinements; and as a GHC type-hole plugin that synthesises expressions for Haskell program holes, using the recently introduced linear types feature – showing it can generate precise solutions, remarkably fast.</p>
       
     </section>
   </article>
+  <hr>
 
-  <article class="post">
+  <article class="post" style="margin-bottom: 2em;">
     <header>
-      <h3>
+      <h3 style="margin-bottom: 1em;">
         <a href="data/papers/synthesis-of-linear-functional-programs.pdf" style="text-decoration:underline">Synthesis of Linear Functional Programs <span style="font-family: monospace">↗</span></a>
         
       </h3>
@@ -190,11 +196,12 @@ In this talk, we introduce our progress and plans to create a first-class debugg
         Rodrigo Mesquita, Advisor: Bernardo Toninho
       </div>
     </header>
-    <section>
+    <section style="margin-left: 2em; margin-top: 2em;">
       <p></p>
       
     </section>
   </article>
+  <hr>
 
 
     </main>

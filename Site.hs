@@ -41,6 +41,7 @@ import Data.Maybe (mapMaybe, isJust, catMaybes, fromMaybe)
 
 import System.FilePath.Posix
 import Control.Applicative
+import Text.Read
 
 -- import Media
 
@@ -284,7 +285,10 @@ renderLink tag (Just url) = Just $ do
 
 -- | Styled pandoc compiler with emoji support and much more!
 pandocCompilerS :: Compiler (Item String)
-pandocCompilerS =
+pandocCompilerS = do
+    ident <- getUnderlying
+    toc  <- getMetadataField ident "toc"
+    let useToc = maybe True (== "true") toc
     pandocCompilerWith
         defaultHakyllReaderOptions
             { readerExtensions = enableExtension Ext_tex_math_dollars $
@@ -295,11 +299,11 @@ pandocCompilerS =
                                    readerExtensions defaultHakyllReaderOptions
             }
         defaultHakyllWriterOptions
-            { writerHighlightMethod  = IdiomaticHighlighting -- Skylighting pandocCodeStyle
-            , writerTableOfContents = True
+            { writerHighlightMethod = NoHighlighting
+            , writerTableOfContents = useToc
             , writerNumberSections  = True
             , writerTOCDepth        = 2
-            , writerTemplate        = Just tocTemplate
+            , writerTemplate        = if useToc then Just tocTemplate else Nothing
             }
 
 -- | Custom style inspired by mexican-light

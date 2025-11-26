@@ -42,6 +42,9 @@ stylesheet = do
   tag "egraphs"     "#D9903A"
   tag "algorithms"  "#7E3445"
   tag "low-level"   "#7B403B"
+  tag "linear-types" "#323aa8"
+  tag "laziness"     "#eb86d2"
+  tag "ghc"          "#730f41"
 
 
 -- Output the compact version
