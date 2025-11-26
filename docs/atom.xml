@@ -10,8 +10,16 @@
         <email>rodrigo.m.mesquita@gmail.com</email>
         
     </author>
-    <updated>2025-07-05T00:00:00Z</updated>
+    <updated>2025-11-26T00:00:00Z</updated>
     <entry>
+    <title>Lazy Linearity for a Core Functional Language (POPL 2026)</title>
+    <link href="http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html" />
+    <id>http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html</id>
+    <published>2025-11-26T00:00:00Z</published>
+    <updated>2025-11-26T00:00:00Z</updated>
+    <summary type="html"><![CDATA[A brief announcement about my first paper published to the POPL conference]]></summary>
+</entry>
+<entry>
     <title>Automatically Packaging a Haskell Library as a Swift Binary XCFramework</title>
     <link href="http://alt-romes.github.io/posts/2025-07-05-packaging-a-haskell-library-as-a-swift-binary-xcframework.html" />
     <id>http://alt-romes.github.io/posts/2025-07-05-packaging-a-haskell-library-as-a-swift-binary-xcframework.html</id>

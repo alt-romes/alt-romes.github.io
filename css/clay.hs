@@ -43,7 +43,7 @@ stylesheet = do
   tag "algorithms"  "#7E3445"
   tag "low-level"   "#7B403B"
   tag "linear-types" "#323aa8"
-  tag "laziness"     "#eb86d2"
+  tag "laziness"     "#e68b1c"
   tag "ghc"          "#730f41"
 
 

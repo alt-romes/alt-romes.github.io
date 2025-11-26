@@ -377,7 +377,7 @@ ul.inline-tags {
    ----- */
 
 .post > header > h3 {
-  margin-bottom: 0;
+  margin-bottom: 0.5em;
 }
 
 .post > header > h3 > a {

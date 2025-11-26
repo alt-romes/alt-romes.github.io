@@ -7,8 +7,16 @@
         <description><![CDATA[Romes' Blog RSS Feed]]></description>
         <atom:link href="http://alt-romes.github.io/rss.xml" rel="self"
                    type="application/rss+xml" />
-        <lastBuildDate>Sat, 05 Jul 2025 00:00:00 UT</lastBuildDate>
+        <lastBuildDate>Wed, 26 Nov 2025 00:00:00 UT</lastBuildDate>
         <item>
+    <title>Lazy Linearity for a Core Functional Language (POPL 2026)</title>
+    <link>http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html</link>
+    <description><![CDATA[A brief announcement about my first paper published to the POPL conference]]></description>
+    <pubDate>Wed, 26 Nov 2025 00:00:00 UT</pubDate>
+    <guid>http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html</guid>
+    <dc:creator>Rodrigo Mesquita</dc:creator>
+</item>
+<item>
     <title>Automatically Packaging a Haskell Library as a Swift Binary XCFramework</title>
     <link>http://alt-romes.github.io/posts/2025-07-05-packaging-a-haskell-library-as-a-swift-binary-xcframework.html</link>
     <description><![CDATA[Announcing <code>xcframework</code> or&#58 the happy path for wiring a Haskell dependency to your Swift app]]></description>
