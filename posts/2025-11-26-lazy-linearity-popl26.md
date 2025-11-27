@@ -28,7 +28,7 @@ possible by linearity. Arnaud was quick to tell me:
 intermediate compiler language to which source Haskell is desugared and to
 which optimisations are applied]
 
-Linearity is ignored in Core because, as soon as its optimised,
+Linearity is ignored in Core because, as soon as it's optimised,
 previously valid linear programs become invalid.
 <!---->
 It turns out that traditional linear type systems are too syntactic, or
