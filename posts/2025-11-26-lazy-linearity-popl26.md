@@ -33,7 +33,7 @@ previously valid linear programs become invalid.
 <!---->
 It turns out that traditional linear type systems are too syntactic, or
 *strict*, about understanding linearity -- but Haskell, regardless of linear
-types, is lazily evaluated.
+types, is lazily evaluated. Improving optimisations would have to wait.
 
 Our paper presents a system which, in contrast, also accepts programs that can
 only be understood as linear under non-strict evaluation. Including the vast
