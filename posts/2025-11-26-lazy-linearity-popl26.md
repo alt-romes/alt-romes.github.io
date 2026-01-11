@@ -9,8 +9,8 @@ toc: false
 
 ---
 
-I'm very proud to announce that "Lazy Linearity for a Core Functional
-Language", a paper by myself and [Bernardo
+I'm very proud to announce that [Lazy Linearity for a Core Functional
+Language](https://doi.org/10.1145/3776711), a paper by myself and [Bernardo
 Toninho](https://web.tecnico.ulisboa.pt/bernardo.toninho/), will be published
 at [POPL 26](https://popl26.sigplan.org/track/POPL-2026-popl-research-papers)!
 
