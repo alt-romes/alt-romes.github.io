@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Haskell Debugger for GHC 9.14</title>
+    
+    <meta name="description" content="Announcing the brand new Haskell Debugger, which I've been working on for the past year. It is first compatible with GHC 9.14.">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="Haskell Debugger for GHC 9.14" />
+    
+    <meta property="og:description" content="Announcing the brand new Haskell Debugger, which I've been working on for the past year. It is first compatible with GHC 9.14." />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://analytics.mogbit.com/js/script.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <li class="hidden-small"><a href="../publications.html">publications &amp; talks</a></li>
+        <li class="visible-small"><a href="../publications.html">pubs.</a></li>
+        <li><a href="../rss.xml">rss</a></li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Haskell Debugger for GHC 9.14</h1>
+    <p>
+      
+      Jan  7, 2026
+      
+    </p>
+  </div>
+  
+  <p class="description">Announcing the brand new Haskell Debugger, which I've been working on for the past year. It is first compatible with GHC 9.14.</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-debugger">#<a href="../tags/debugger.html">debugger</a></li><li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <p>This post was first published inline to the <a href="https://discourse.haskell.org/">Haskell
+Discourse</a>, where there was some <a href="https://discourse.haskell.org/t/the-haskell-debugger-for-ghc-9-14/13499">discussion
+about the debugger</a>:</p>
+<h1 data-number="1" id="the-haskell-debugger-for-ghc-9.14"><span class="header-section-number">1</span> The Haskell Debugger for GHC 9.14</h1>
+<p><strong>The Haskell Debugger is ready to use with GHC-9.14!</strong></p>
+<p>The installation, configuration, and talks can be found in <a href="https://well-typed.github.io/haskell-debugger">the official
+website</a>. The tl;dr first step
+is installing the debugger:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ghc <span class="at">--version</span> <span class="co"># MUST BE GHC 9.14</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> Glorious Glasgow Haskell Compilation System, version 9.14.1</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cabal install haskell-debugger <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">--allow-newer</span><span class="op">=</span>base,time,containers,ghc,ghc-bignum,template-haskell <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">--enable-executable-dynamic</span> <span class="co"># ON WINDOWS, DO NOT PASS --enable-executable-dynamic</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ~/.local/bin/hdb <span class="at">--version</span> <span class="co"># VERIFY IT'S THE LATEST!</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Haskell</span> Debugger, version 0.11.0.0</span></code></pre></div>
+<p>The second step is configuring your editor to use the debugger via the <strong>D</strong>ebug <strong>A</strong>dapter <strong>P</strong>rotocol (DAP).
+- For VSCode, install <a href="https://marketplace.visualstudio.com/items?itemName=Well-Typed.haskell-debugger-extension">the haskell debugger extension</a>.
+- For Neovim, install <code>nvim-dap</code> and <a href="https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#haskell-hdb">configure it for haskell-debugger</a>
+- For other editors, consult your DAP documentation and let others know how!</p>
+<p>Bug reports and discussions are welcome in the <a href="https://github.com/well-typed/haskell-debugger">haskell-debugger issue
+tracker</a>.</p>
+<p>My MuniHac 2025 talk also walks through the installation, usage, and design of
+the debugger. Do note much has been improved since the talk was given, and much
+more will still improve.</p>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/urYtE15ryA0?si=6LtSEfXfCOSJFG11" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+</iframe>
+<h2 data-number="1.1" id="a-little-bit-more-info"><span class="header-section-number">1.1</span> A little bit more info</h2>
+<p>The debugger work is sponsored by Mercury. It’s the project in which I’ve spent
+most of my full working days (for almost a full year now), with the invaluable
+help from my team at Well-Typed.</p>
+<p>The debugger is meant to work both on trivial files and on large and complex
+codebases<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.
+It is a GHC application so <em>all features are supported</em>. Like HLS, it also uses
+<code>hie-bios</code> to automatically configure the session based on your cabal or stack
+project.</p>
+<p>Robustness is a main goal of the debugger. If anything doesn’t work, or if you
+have performance issues, or something crashes, please don’t hesitate to submit
+a bug. We’ve got a small but respectable testsuite, and have tested performance
+by debugging GHC itself, but there’s much still to be fixed and improved.</p>
+<p><strong>Roadmap</strong>: There’s a lot to do. I’m currently working on callstacks and
+multi-threaded support. Do let me know what features would be most important to
+you, so I can also factor that into the future planning.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Although, for large codebases, the usability is still rough around
+the edges because of possibly long bytecode compilation times, and library code
+not being interpreted. We’ve made considerable progress to improve this with
+the <a href="https://discourse.haskell.org/t/rfc-introduce-a-serialisable-bytecode-format-and-corresponding-bytecode-way/12678">bytecode artifacts work</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2026
+        </small>
+    </footer>
+  </body>
+</html>

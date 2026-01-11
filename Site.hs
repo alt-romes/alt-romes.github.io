@@ -299,7 +299,7 @@ pandocCompilerS = do
                                    readerExtensions defaultHakyllReaderOptions
             }
         defaultHakyllWriterOptions
-            { writerHighlightMethod = NoHighlighting
+            { writerHighlightMethod = Skylighting pandocCodeStyle
             , writerTableOfContents = useToc
             , writerNumberSections  = True
             , writerTOCDepth        = 2

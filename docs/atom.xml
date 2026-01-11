@@ -10,8 +10,16 @@
         <email>rodrigo.m.mesquita@gmail.com</email>
         
     </author>
-    <updated>2025-11-26T00:00:00Z</updated>
+    <updated>2026-01-07T00:00:00Z</updated>
     <entry>
+    <title>Haskell Debugger for GHC 9.14</title>
+    <link href="http://alt-romes.github.io/posts/2026-01-07-haskell-debugger-for-ghc914.html" />
+    <id>http://alt-romes.github.io/posts/2026-01-07-haskell-debugger-for-ghc914.html</id>
+    <published>2026-01-07T00:00:00Z</published>
+    <updated>2026-01-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Announcing the brand new Haskell Debugger, which I've been working on for the past year. It is first compatible with GHC 9.14.]]></summary>
+</entry>
+<entry>
     <title>Lazy Linearity for a Core Functional Language (POPL 2026)</title>
     <link href="http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html" />
     <id>http://alt-romes.github.io/posts/2025-11-26-lazy-linearity-popl26.html</id>

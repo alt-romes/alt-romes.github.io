@@ -45,6 +45,7 @@ stylesheet = do
   tag "linear-types" "#323aa8"
   tag "laziness"     "#e68b1c"
   tag "ghc"          "#730f41"
+  tag "debugger"     "#A41f68"
 
 
 -- Output the compact version
