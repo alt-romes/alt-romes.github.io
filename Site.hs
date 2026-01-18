@@ -156,6 +156,14 @@ main = hakyllWith config $ do
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
+    -- WIP Posts
+    match "wip-posts/**" $ do
+        route $ setExtension "html"
+        compile $ pandocCompilerS
+            >>= loadAndApplyTemplate "templates/post.html" postCtx
+            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= relativizeUrls
+
     -- Publications page
     match "data/publications.yaml" $ do
         route $ constRoute "publications.html"

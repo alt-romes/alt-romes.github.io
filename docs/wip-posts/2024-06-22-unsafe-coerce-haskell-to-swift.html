@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Unsafe Coercing Haskell to Swift</title>
+    
+    <meta name="description" content="An in-depth look at unsafe coercing Haskell memory to Swift. Crossing the language boundary between Haskell and Swift in the most dangerous, but fun, way possible. Here be dragons!">
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="Unsafe Coercing Haskell to Swift" />
+    
+    <meta property="og:description" content="An in-depth look at unsafe coercing Haskell memory to Swift. Crossing the language boundary between Haskell and Swift in the most dangerous, but fun, way possible. Here be dragons!" />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://analytics.mogbit.com/js/script.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <li class="hidden-small"><a href="../publications.html">publications &amp; talks</a></li>
+        <li class="visible-small"><a href="../publications.html">pubs.</a></li>
+        <li><a href="../rss.xml">rss</a></li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>Unsafe Coercing Haskell to Swift</h1>
+    <p>
+      
+      Jun 22, 2024
+      
+    </p>
+  </div>
+  
+  <p class="description">An in-depth look at unsafe coercing Haskell memory to Swift. Crossing the language boundary between Haskell and Swift in the most dangerous, but fun, way possible. Here be dragons!</p>
+  
+  
+  <ul class="tags">
+    <li class="tag-haskell">#<a href="../tags/haskell.html">haskell</a></li><li class="tag-low-level">#<a href="../">low-level</a></li><li class="tag-swift">#<a href="../tags/swift.html">swift</a></li>
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#coercing-haskell-memory-objects-to-swift" id="toc-coercing-haskell-memory-objects-to-swift"><span class="toc-section-number">1</span> Coercing Haskell memory objects to Swift</a>
+<ul>
+<li><a href="#memory-representation-of-datatype-in-haskell" id="toc-memory-representation-of-datatype-in-haskell"><span class="toc-section-number">1.1</span> Memory representation of datatype in Haskell</a></li>
+<li><a href="#memory-representation-of-struct-in-swift" id="toc-memory-representation-of-struct-in-swift"><span class="toc-section-number">1.2</span> Memory representation of struct in Swift</a></li>
+<li><a href="#interpreting-haskell-memory-in-swift" id="toc-interpreting-haskell-memory-in-swift"><span class="toc-section-number">1.3</span> Interpreting Haskell memory in Swift</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">1.4</span> Conclusion</a></li>
+</ul></li>
+</ul>
+</div>
+<p>This is the third installment of the in-depth series of blog-posts on
+developing native macOS and iOS applications using both Haskell and
+Swift/SwiftUI. This post is a detour into the low-level world of Haskell and
+serves to explore an alternative approach. It is mostly a (very unsafe)
+curiosity, for those interested in these matters.</p>
+<p>You may find the other blog posts in this series interesting:</p>
+<ol type="1">
+<li><a href="2023-11-10-creating-a-macos-app-with-haskell-and-swift.html">Creating a macOS app with Haskell and Swift</a></li>
+<li><a href="2024-04-02-calling-haskell-from-swift.html">Calling Haskell from Swift</a></li>
+</ol>
+<p>The series of blog posts is further accompanied by a <a href="https://github.com/alt-romes/haskell-x-swift-project-steps">github
+repository</a> where
+each commit matches a step of this tutorial. If in doubt regarding any step,
+check the matching commit to make it clearer. Additionally, I’m writing a build
+tool and libraries to facilitate the interoperability between Haskell and Swift
+at <a href="https://github.com/alt-romes/haskell-swift">haskell-swift</a>.</p>
+<p>This write-up has been cross-posted to <a href="https://well-typed.com/blog/">Well-Typed’s Blog</a>.</p>
+<h1 data-number="1" id="coercing-haskell-memory-objects-to-swift"><span class="header-section-number">1</span> Coercing Haskell memory objects to Swift</h1>
+<p>Welcome to the darkest corner in this series of posts: the part where we
+unsafely coerce an object in the Haskell heap in(to) Swift. This section
+will serve to walk the reader through some of the lower level details of
+Haskell, and explore what it could mean to not marshal data between the language
+boundary.</p>
+<p>Even though we will avoid serialization and unsafely coerce memory
+representations, we will still go through the C foreign function interface. In
+theory, it may be possible (but incredibly hard) to figure out the ABI/how to
+call Haskell symbols and somehow load and call them in the Swift program
+accordingly, but I didn’t go that far.</p>
+<p>Changing up the data types a bit, in particular to avoid Strings because their
+memory representations both in Haskell and Swift are complex to figure out, we
+have a Haskell program:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Rect</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Rect</span> {<span class="ot"> width ::</span> <span class="dt">Int</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>         ,<span class="ot"> height ::</span> <span class="dt">Int</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>         }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>myrect <span class="ot">=</span> <span class="dt">Rect</span>{width<span class="ot">=</span><span class="dv">12</span>, height<span class="ot">=</span><span class="dv">24</span>}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ot">double ::</span> <span class="dt">Rect</span> <span class="ot">-&gt;</span> <span class="dt">Rect</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>double <span class="dt">Rect</span>{width<span class="ot">=</span>x, height<span class="ot">=</span>y} <span class="ot">=</span> <span class="dt">Rect</span>{width<span class="ot">=</span>x<span class="op">*</span><span class="dv">2</span>, height<span class="ot">=</span>y<span class="op">*</span><span class="dv">2</span>}</span></code></pre></div>
+<p>In Swift, we’ll want to inspect the <code>myrect</code> value <em>without</em> serialising it
+across the foreign interface. We want to look directly at Haskell’s memory for
+<code>myrect</code>, as though it were a Swift object.</p>
+<h2 data-number="1.1" id="memory-representation-of-datatype-in-haskell"><span class="header-section-number">1.1</span> Memory representation of datatype in Haskell</h2>
+<p>In Haskell, most values are heap-allocated. In the following
+program, <code>myrect</code> is a pointer to a heap object of type <code>Rect</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>myrect <span class="ot">=</span> <span class="dt">Rect</span>{width<span class="ot">=</span><span class="dv">12</span>, height<span class="ot">=</span><span class="dv">24</span>}</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>area <span class="ot">=</span> <span class="fu">putStrLn</span> (<span class="st">&quot;Area: &quot;</span> <span class="op">++</span> <span class="fu">show</span> (width myrect <span class="op">*</span> height myrect))</span></code></pre></div>
+<p>We can actually inspect the memory representation of <code>myrect</code> by looking at the <code>C--</code>
+code resulting from compiling this program standalone (<code>C--</code> is an intermediate
+representation used by the Glasgow Haskell Compiler, which sits somewhere
+between C and Assembly, and will eventually be transformed into Assembly by the
+native code generator in subsequent steps). Conjure up the invocation:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ghc</span> <span class="at">-fforce-recomp</span> <span class="at">-ddump-cmm</span> Memory.hs <span class="op">&gt;</span> Memory.cmm</span></code></pre></div>
+<p>Opening <code>Memory.cmm</code> we can find the closure of the symbol <code>myrect</code>, with
+<em>closure</em> in this context meaning the object in static or heap memory, static in
+this case:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>section <span class="st">&quot;&quot;</span>data<span class="st">&quot; . Memory.myrect_closure&quot;</span> <span class="op">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>     Memory<span class="op">.</span>myrect_closure<span class="op">:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         <span class="dt">const</span> Memory<span class="op">.</span>Rect_con_info<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         <span class="dt">const</span> stg_INTLIKE_closure<span class="op">+</span><span class="dv">449</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         <span class="dt">const</span> stg_INTLIKE_closure<span class="op">+</span><span class="dv">641</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>         <span class="dt">const</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Essentially, the <code>myrect_closure</code> label points to 4 contiguous words:
+* a <code>con_info</code> which is metadata about the constructor used,
+* 2 words have an <code>stg_INTLIKE_closure</code>, which are the (boxed) integers <code>12</code> and <code>24</code> that we used in the source definition
+* and the last word is the static link field (grep for <code>Note [STATIC_LINK fields]</code> in
+the GHC codebase for details) – it can often be optimised away.</p>
+Note that the integers are not their literal number because the <code>Int</code> datatype
+is also heap allocated (as almost everything else in Haskell). Instead, they are
+static pointers to known integer values (two occurrences of the same integer
+will use share the same location and pointer).
+<details>
+<summary>
+Here’s a short GHC note about integer closures
+</summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Note [CHARLIKE and INTLIKE closures]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>These are static representations of Chars and small Ints, so that</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>we can remove dynamic Chars and Ints during garbage collection and</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>replace them with references to the static objects.</span></code></pre></div>
+</details>
+<h2 data-number="1.2" id="memory-representation-of-struct-in-swift"><span class="header-section-number">1.2</span> Memory representation of struct in Swift</h2>
+<p>In Swift’s side we can try a similar thing, let’s compile a standalone Swift
+program with the <code>Rect</code> struct defininition and with a top-level binding:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">makeRect</span><span class="op">(</span><span class="va">w</span><span class="op">:</span> <span class="dt">Int</span><span class="op">,</span> <span class="va">h</span><span class="op">:</span> <span class="dt">Int</span><span class="op">)</span> -&gt; <span class="fu">Rect</span> <span class="op">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> Rect<span class="op">(</span>width<span class="op">:</span> <span class="dv">533</span><span class="op">,</span> height<span class="op">:</span><span class="dv">6464</span><span class="op">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>and chant the invocation with the flag to print the LLVM IR generated code:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">swiftc</span> Rect.swift <span class="at">-emit-ir</span> <span class="at">-o</span> <span class="at">-</span> <span class="kw">|</span> <span class="ex">swift</span> demangle <span class="op">&gt;</span> Rect.S</span></code></pre></div>
+<p>Grepping <code>Rect.S</code> for <code>Rect</code> you should find:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode llvm"><code class="sourceCode llvm"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">%T4main4RectV</span> = <span class="kw">type</span> &lt;{ <span class="fu">%TSi</span>, <span class="fu">%TSi</span> }&gt;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">%TSi</span> = <span class="kw">type</span> &lt;{ <span class="dt">i64</span> }&gt;</span></code></pre></div>
+This syntax identifies the LLVM type of <code>Rect</code> to be a <a href="https://llvm.org/docs/LangRef.html#t-struct">packed
+structure</a> of two 64bit integers.
+<details>
+<summary>
+Here’s an excerpt from the LLVM documentation on packed structures
+</summary>
+<div class="sourceCode" id="cb9"><pre class="sourceCode llvm"><code class="sourceCode llvm"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">; Syntax</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">%T1</span> = <span class="kw">type</span> { &lt;<span class="kw">type</span> list&gt; }     <span class="co">; Identified normal struct type</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">%T2</span> = <span class="kw">type</span> &lt;{ &lt;<span class="kw">type</span> list&gt; }&gt;   <span class="co">; Identified packed struct type</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">; Examples:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">i32</span>, <span class="dt">i32</span>, <span class="dt">i32</span> } <span class="co">; A triple of three i32 values</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>{ <span class="dt">float</span>, ptr } <span class="co">; A pair, where the first element is a float and the second element is a pointer.</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>&lt;{ <span class="dt">i8</span>, <span class="dt">i32</span> }&gt; <span class="co">; A packed struct known to be 5 bytes in size.</span></span></code></pre></div>
+</details>
+<p>In short, the <code>Rect</code> type is a <code>type &lt;{ i64, i64 }&gt;</code> which means 8*2 bytes in memory.
+To double check, we can look for the <code>makeRect</code> function that should return
+exactly a 16 byte structure.</p>
+<h2 data-number="1.3" id="interpreting-haskell-memory-in-swift"><span class="header-section-number">1.3</span> Interpreting Haskell memory in Swift</h2>
+<p>Summarising, a <code>Rect</code> value in Swift will look like (A) in memory, and a Haskell
+<code>Rect</code> value will look like (B) in memory:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    ┌────┬────┐</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>(A) │ 533│6464│</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    └────┴────┘</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    ┌────┐                        </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>(B) │    │                        </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    └─┬──┘                        </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>      │   ┌────┬────┬────┬────┐   </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>      └──►│Rect│    │    │  3 │   </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>          └────┴┬───┴─┬──┴────┘   </span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                │     │           </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>          ┌─────┘     └─┐         </span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>          │             │         </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>         ┌▼───┬────┐   ┌▼───┬────┐</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>         │ I# │ 12 │   │ I# │ 12 │</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>         └────┴────┘   └────┴────┘</span></code></pre></div>
+<p>The first thing we can do to bring one representation closer to the other is
+store the integers <em>unboxed</em> in the fields of the Haskell datatype, instead of
+using static closures to boxed integers. This can be done by making the field strict
+with the <code>!</code> annotation, and using an <code>{-# UNPACK #-}</code> pragma to guarantee it the
+unboxing when compiling with optimisations (although it is likely that compiling
+with optimisations will unbox the strict integer anyway without the pragma<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>). That is, update <code>Rect</code> to the following, recompile,
+and check the <code>C--</code> representation again – using optimisations this time
+(adding <code>-O</code> to the invocation).</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">data</span> <span class="dt">Rect</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="ot">=</span> <span class="dt">Rect</span> {<span class="ot"> width ::</span> <span class="ot">{-# UNPACK #-}</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>         ,<span class="ot"> height ::</span> <span class="ot">{-# UNPACK #-}</span> <span class="op">!</span><span class="dt">Int</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>         }</span></code></pre></div>
+<p>You’ll see that compiling with optimisations will get rid of the static link
+field and store literal integers in the fields of the datatype:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Memory<span class="op">.</span>myrect_closure<span class="op">:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> Memory<span class="op">.</span>Rect_con_info<span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dv">12</span><span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dv">24</span><span class="op">;</span></span></code></pre></div>
+<p>The Haskell memory now looking like</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode txt"><code class="sourceCode default"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>       ┌────┐                        </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>myrect │    │                        </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>       └─┬──┘                        </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         │   ┌────┬────┬────┐</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>         └──►│Rect│ 12 │ 24 │  </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>             └────┴────┴────┘   </span></code></pre></div>
+<h3 data-number="1.3.1" id="unsafe-coercing"><span class="header-section-number">1.3.1</span> Unsafe Coercing</h3>
+<p>With this simpler memory representation for <code>Rect</code>, the task of unsafely
+coercing it to a Swift struct becomes more straightforward.
+Ultimately, we’ll want to return from exported Haskell function a pointer which
+Swift can de-reference to get a <code>struct Rect</code>.
+The steps are:</p>
+<ol type="1">
+<li>Unsafely coerce <code>myrect :: Rect</code> into a <code>myrect_ptr :: Ptr ()</code>, a pointer to the beginning of
+the <code>Rect</code>-typed heap<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> object.</li>
+<li>Add the size of a word to the <code>myrect_ptr</code> pointer, to get a pointer pointing
+directly to the beginning of the integer data rather than one which points to
+the info table.</li>
+</ol>
+<p>This won’t work trivially, however.</p>
+<p>The next difficulty is caused by a code-generation “optimisation” called
+<em>pointer-tagging</em>. Briefly, pointer tagging will insert additional information
+into the 3 lower bits of an address (on a 64bit machine) since these are
+guaranteed to be unused due to alignment constraints. This optimisation makes
+Haskell programs access a lot less memory since certain checks, like a pattern
+match on a constructor, can be done just by looking at some bits in the address,
+removing the need to load from that address.</p>
+<p>Specifically, a tag of <code>0</code> means the object is either unevaluated or we don’t
+know which constructor constructed it. A number tag (<code>1</code> through <code>7</code>) means the
+constructor of that value is known and the number matches the constructor index.</p>
+<p>In the following example, the <code>myrect</code> value will be <em>tagged</em> with <code>1</code>, since
+the compiler can statically see <code>myrect</code> is constructed with <code>Rect</code> (the 1st
+(and only) constructor, hence the tag <code>1</code>). We can see this by looking again at
+<code>C--</code> for this simple function:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">giveMyRect ::</span> () <span class="ot">-&gt;</span> <span class="dt">Rect</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>giveMyRect () <span class="ot">=</span> myrect</span></code></pre></div>
+<p>The corresponding <code>C--</code> code looks like:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>Memory<span class="op">.</span>giveMyRect_entry<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>   <span class="co">// ...</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>   R1 <span class="op">=</span> Memory<span class="op">.</span>myrect_closure<span class="op">+</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>   Sp <span class="op">=</span> Sp <span class="op">+</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>   call <span class="op">(</span>P64<span class="op">[</span>Sp<span class="op">])(</span>R1<span class="op">)</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Note how we return <code>myrect_closure+1</code>, the pointer to the
+<code>myrect_closure</code> plus the tag, rather than just in register <code>R1</code>.</p>
+<details>
+<summary>
+Slightly mover verbose explanation of pointer tagging
+</summary>
+<p>GHC will use an optimisation technique called <a href="https://en.wikipedia.org/wiki/Tagged_pointer"><em>pointer tagging</em></a> to add a tag to every
+heap pointer denoting which of the datatype constructors was used to construct
+that value, or whether the value has not yet been evaluated:</p>
+<ul>
+<li>If the tag is <code>0</code> then the pointed-to value is either unevaluated or we don’t
+know its constructor</li>
+<li>If the tag is <code>1</code> then we know the pointed-to value to have been constructed
+with the first constructor of the datatype</li>
+<li>If the tag is <code>2</code> then we know the pointed-to value to have been constructed
+with the second constructor of the datatype, and on and on up until <code>7</code>,
+which is the last possible tag<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</li>
+</ul>
+This is a very cool optimisation because it allows us to choose the branch of
+a case expression without needing to de-reference the pointer to check which
+constructor the value used, as long as it has already been evaluated, because we
+can simply check the tag, or e.g. avoiding memory accesses to check if a value
+has already been evaluated as we can know, again, simply by looking at the tag.
+</details>
+<p>Effectively, we need a step between steps 1 and 2:</p>
+<p>1.5. Subtract the tag (i.e <code>1</code>) from the unsafe-coerced <code>myrect :: Ptr ()</code>.</p>
+<p>Let us write the Haskell function that we will export in the Haskell foreign
+library <code>MyForeignLib.hs</code> (after copying over the last <code>Rect</code> definition). This
+function returns a <code>Ptr ()</code>, and that pointer points to a <code>Rect</code> in memory that
+can be directly understood by Swift as a <code>Rect</code> struct.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">give_rect ::</span> <span class="dt">Ptr</span> ()</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>give_rect <span class="ot">=</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">let</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Step 1</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    tagged_ptr <span class="ot">=</span> rectToAddr<span class="ot"> myrect ::</span> <span class="dt">Ptr</span> ()</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Step 1.5</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    untagged_ptr <span class="ot">=</span> wordPtrToPtr (complement <span class="dv">7</span> <span class="op">.&amp;.</span> ptrToWordPtr tagged_ptr)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">-- Step 2</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    ptr_final <span class="ot">=</span> untagged_ptr <span class="ot">`plusPtr`</span> <span class="dv">8</span><span class="ot"> ::</span> <span class="dt">Ptr</span> () <span class="co">-- 8 bytes</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>   <span class="kw">in</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    ptr_final</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>foreign export ccall<span class="ot"> give_rect ::</span> <span class="dt">Ptr</span> ()</span></code></pre></div>
+<p>The first step, <code>rectToAddr</code> is the hardest. One can’t trivially cast <code>Rect</code> to <code>Ptr ()</code> using
+<code>unsafeCoerce</code>, since we really want the <code>Addr#</code> that points to the <code>Rect</code>
+memory object. <code>unsafeCoerce#</code> from <code>Rect</code> to <code>Addr#</code> is closer, but in my
+attempts it seemed to trigger some infinite loop, or worse. The more correct way
+to do this incredibly unsafe operation is <code>anyToAddr#</code>, which converts any
+Haskell value <code>a</code> into the underlying <code>Addr#</code> which points to it. The
+implementation for this depends on <code>GHC.Exts</code>, <code>GHC.IO</code>, and <code>{-# LANGUAGE MagicHash, UnboxedTuples #-}</code>. Explaining it further is out of scope:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">rectToAddr ::</span> <span class="dt">Rect</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> ()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>rectToAddr x <span class="ot">=</span> unsafePerformIO <span class="op">$</span> <span class="dt">IO</span> <span class="op">$</span> \rw <span class="ot">-&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">case</span> anyToAddr<span class="op">#</span> x rw <span class="kw">of</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    (<span class="op">#</span> rw, addr <span class="op">#</span>) <span class="ot">-&gt;</span> (<span class="op">#</span> rw, <span class="dt">Ptr</span> addr <span class="op">#</span>)</span></code></pre></div>
+<p>The second step binary <em>ands</em> (the C bit-operator <code>&amp;</code>) the complement of <code>7 = 0b111</code> and the pointer to mask out the tag. The third step adds 8 bytes to the
+pointer to get the pointer to point at the data rather than the info header.</p>
+<p>Note: we’re essentially ignoring garbage collection in this all. If <code>rectToAddr</code>
+were applied to a heap-allocated Haskell object, rather than a static one, said
+heap object would likely be collected before Swift could get any look at it.
+Just to add to the brittleness of this strategy :). Using some strategy like
+<code>StablePtr</code>s we could keep the heap objects live, but we’d also be forfeiting
+any useful de-allocation strategy.</p>
+<h3 data-number="1.3.2" id="de-referencing-it-from-swift"><span class="header-section-number">1.3.2</span> De-referencing it from Swift</h3>
+<p>On the Swift side we need simply to de-reference a <code>Rect</code> from the pointer to
+the Haskell memory given by <code>give_rect</code>. In <code>ContentView</code> we add:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode swift"><code class="sourceCode swift"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Rect <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">width</span><span class="op">:</span> Int</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">height</span><span class="op">:</span> Int</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> <span class="fu">wrap_give_rect</span><span class="op">()</span> -&gt; <span class="fu">Rect</span> <span class="op">{</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="va">y</span> <span class="op">=</span> give_rect<span class="op">()</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">return</span> y<span class="op">!.</span>load<span class="op">(</span><span class="kw">as</span><span class="op">:</span> Rect<span class="op">.</span><span class="kw">self</span><span class="op">)</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>We call <code>give_rect</code> to get the <code>Ptr ()</code> to the Haskell object in the Haskell
+memory. Then, simply load a Swift <code>Rect</code> from it.</p>
+<p>Let’s add it to the body and display both the width and height of our rectangle:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a> var body: some View {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>     VStack {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         let user = birthday(user: User(name: &quot;Ellie&quot;, age: 24))</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="va">+        let rect = wrap_give_rect()</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>         Text(&quot;Post-birthday, \(user.name) is: \(user.age)!&quot;)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="va">+        Text(&quot;myrect: width is \(rect.width) and height is \(rect.height)!&quot;)</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>     }</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>     .padding()</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a> }</span></code></pre></div>
+<p>Great success!</p>
+<figure>
+<img src="../images/unsafe-coerce-haskell-to-swift/fig1.png" alt="Fig 1. Swift app displays Rect loaded from Haskell memory" />
+<figcaption aria-hidden="true">Fig 1. Swift app displays Rect loaded from Haskell memory</figcaption>
+</figure>
+<h2 data-number="1.4" id="conclusion"><span class="header-section-number">1.4</span> Conclusion</h2>
+<p>As you may have come to understand, this approach in practice, despite fun, is
+pretty much the horrifying opposite of robust – given how much we are relying
+on the undefined memory layout of Swift, GHC optimisations, unsafe coerce, and
+just so much undefined behaviour in general.</p>
+<p>We only skimmed the surface of it despite having simplified it
+massively. For example, if we weren’t using a top-level binding, we’d have to
+worry about the garbage collector getting to the heap object before Swift could.</p>
+<p>The veredict is that this is not a reasonable option to be considered for the
+large robust applications mixing Haskell and Swift that are our goal.</p>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>As
+an exercise, check this by looking at the <code>C--</code> representation of the program
+compiled with optimisations, with the integer fields being strict, but without
+using the <code>UNPACK</code> pragma<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Really, the <code>myrect</code> value is not in the heap as it is static
+data put by the compiler in the data section, but for our purposes that
+difference does not matter<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Why <code>7</code>? In a 64bit system, memory is
+aligned to 64 bits, meaning that pointers to heap allocated memory will
+always have 3 bits that are necessarily <code>0</code> valued – so we can use these 3
+bits for tags – that is, we can use tags from 0 to 7.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2026
+        </small>
+    </footer>
+  </body>
+</html>

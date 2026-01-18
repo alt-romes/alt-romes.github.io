@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1999-01-02-haskell-tooling-notes</title>
+    
+    <link rel="stylesheet" href="../css/default.css" />
+    <link rel="stylesheet" href="../css/clay.css" />
+    <link rel="stylesheet" href="../css/syntax.css" />
+
+    <!-- open graph -->
+    <meta property="og:title" content="1999-01-02-haskell-tooling-notes" />
+    
+
+    
+    
+    
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="manifest" href="../site.webmanifest">
+
+    <script defer data-domain="alt-romes.github.io" src="https://analytics.mogbit.com/js/script.js"></script>
+
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li class="logo"><a href="../">romes</a></li>
+        <li><a href="../posts.html">blog</a></li>
+        <li>music</li>
+        <li class="hidden-small"><a href="../publications.html">publications &amp; talks</a></li>
+        <li class="visible-small"><a href="../publications.html">pubs.</a></li>
+        <li><a href="../rss.xml">rss</a></li>
+        <li class="hidden-small"><a href="https://github.com/alt-romes" target="_blank">github</a></li>
+        <li class="hidden-small"><a href="https://gitlab.haskell.org/alt-romes" target="_blank">ghc</a></li>
+      </ul>
+    </nav>
+    <main>
+      <header>
+  <div class="title">
+    <h1>1999-01-02-haskell-tooling-notes</h1>
+    <p>
+      
+      Jan  2, 1999
+      
+    </p>
+  </div>
+  
+  
+  <ul class="tags">
+    
+  </ul>
+  
+</header>
+
+
+<article>
+  <div class="toc"><div class="header">Contents</div>
+<ul>
+<li><a href="#using-cabal-packages-with-head-ghc-through-head.hackage" id="toc-using-cabal-packages-with-head-ghc-through-head.hackage"><span class="toc-section-number">1</span> Using cabal packages with HEAD GHC through head.hackage</a></li>
+<li><a href="#installing-development-builds" id="toc-installing-development-builds"><span class="toc-section-number">2</span> Installing development builds</a></li>
+</ul>
+</div>
+<h2 data-number="1" id="using-cabal-packages-with-head-ghc-through-head.hackage"><span class="header-section-number">1</span> Using cabal packages with HEAD GHC through head.hackage</h2>
+<p>head.hackage is infrastructure to test hackage packages during GHC development,
+but it can also serve the purpose of compiling cabal projects using the</p>
+<p>You can find the full instructions and links to documentation <a href="https://ghc.gitlab.haskell.org/head.hackage/">here</a>, but the short version is to run</p>
+<pre><code>curl https://ghc.gitlab.haskell.org/head.hackage/cabal.project &gt;&gt; cabal.project.local
+cabal update</code></pre>
+<p>and that’s it.
+Your cabal project will now use the patched packages from head.hackage before
+trying the usual hackage.</p>
+<h2 data-number="2" id="installing-development-builds"><span class="header-section-number">2</span> Installing development builds</h2>
+<p>You can <a href="https://www.haskell.org/ghcup/guide/#installing-custom-bindists">manually install</a> a ghc bindist using ghcup!</p>
+<pre><code>ghcup install ghc -u 'file:///Users/romes/ghc-dev/fixes/_build/bindist/ghc-9.9.20230723-aarch64-apple-darwin.tar.xz' 9.9-linear-core-patch</code></pre>
+<p>If you’re developing on GHC, or have checked out a branch, you can build a
+binary distribution by instructing the build system (hadrian) to do so:</p>
+<pre><code>./hadrian/build -j --freeze1 --flavour=default+no_profiled_libs+omit_pragmas binary-dist</code></pre>
+
+</article>
+
+    </main>
+    <footer>
+        <small>
+            Rodrigo Mesquita &copy; 2022-2026
+        </small>
+    </footer>
+  </body>
+</html>
