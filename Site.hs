@@ -258,17 +258,19 @@ main = hakyllWith config $ do
     create ["rss.xml"] $ do
         route idRoute
         compile $ do
+          let feedCtx = bodyField "description" <> postCtx
           posts <- recentFirst =<< loadAllSnapshots "posts/**" "content"
           -- All our posts have a description
-          renderRss feedConfiguration postCtx posts
+          renderRss feedConfiguration feedCtx posts
 
     -- Atom Feed
     create ["atom.xml"] $ do
         route idRoute
         compile $ do
+          let feedCtx = bodyField "description" <> postCtx
           posts <- recentFirst =<< loadAllSnapshots "posts/**" "content"
           -- All our posts have a description
-          renderAtom feedConfiguration postCtx posts
+          renderAtom feedConfiguration feedCtx posts
 
 --------------------------------------------------------------------------------
 
