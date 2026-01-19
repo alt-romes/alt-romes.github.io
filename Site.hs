@@ -211,7 +211,7 @@ main = hakyllWith config $ do
 
     -- Music page
     match "data/albums.yaml" $ do
-      route $ constRoute "music.html"
+      route $ constRoute "albums.html"
       compile $ do
         albums <- readItemsList @Album
         let albumsCtx =
