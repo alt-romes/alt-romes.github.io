@@ -152,6 +152,7 @@ main = hakyllWith config $ do
     match "posts/**" $ do
         route $ setExtension "html"
         compile $ pandocCompilerS
+            >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/post.html" postCtx
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
@@ -257,16 +258,16 @@ main = hakyllWith config $ do
     create ["rss.xml"] $ do
         route idRoute
         compile $ do
-          posts <- recentFirst =<< loadAll "posts/**"
-          -- All our posts have a description, so no snapshots are needed
+          posts <- recentFirst =<< loadAllSnapshots "posts/**" "content"
+          -- All our posts have a description
           renderRss feedConfiguration postCtx posts
 
     -- Atom Feed
     create ["atom.xml"] $ do
         route idRoute
         compile $ do
-          posts <- recentFirst =<< loadAll "posts/**"
-          -- All our posts have a description, so no snapshots are needed
+          posts <- recentFirst =<< loadAllSnapshots "posts/**" "content"
+          -- All our posts have a description
           renderAtom feedConfiguration postCtx posts
 
 --------------------------------------------------------------------------------

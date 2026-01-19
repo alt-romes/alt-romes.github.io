@@ -418,7 +418,7 @@ otherwise doesn’t take any arguments.</p>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="ot">    readSalary ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Salary</span></span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    readSalary <span class="ot">=</span> <span class="fu">read</span> <span class="op">.</span> unpack</span></code></pre></div>
 <ul>
-<li><code>input</code> is a helper function defined in our module with type <code>Text -&gt; Widget x     (Dynamic Text)</code>. It takes a text to display above the input, and returns the
+<li><code>input</code> is a helper function defined in our module with type <code>Text -&gt; Widget x   (Dynamic Text)</code>. It takes a text to display above the input, and returns the
 DOM-building computation that returns a behavior of the value inside the
 input box.</li>
 <li>We make three input boxes and get three behaviors of text.</li>
@@ -495,7 +495,7 @@ short, we’re making use of an extension called <code>RecursiveDo</code> that a
 do these logic-defying things.</p>
 <ul>
 <li>[5] Simplified version of the signature for our purposes… The actual one is
-<code>simpleList :: (Adjustable t m, MonadHold t m, PostBuild t m, MonadFix m) =&gt;     Dynamic t [v] -&gt; (Dynamic t v -&gt; m a) -&gt; m (Dynamic t [a])</code></li>
+<code>simpleList :: (Adjustable t m, MonadHold t m, PostBuild t m, MonadFix m) =&gt;   Dynamic t [v] -&gt; (Dynamic t v -&gt; m a) -&gt; m (Dynamic t [a])</code></li>
 </ul>
 <!-- Acknowledgments -->
 <!-- =============== -->

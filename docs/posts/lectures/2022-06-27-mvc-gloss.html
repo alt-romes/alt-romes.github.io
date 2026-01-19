@@ -165,12 +165,12 @@ frames per second, and each time the function would be passed <code>1/60 = 0.016
 seconds as an argument.</p></li>
 <li><p>The <code>world</code> type variable stands for our model. This parameter is the initial
 state of our model. We’d use some <code>initialCompany :: Company</code> here.</p></li>
-<li><p>The <code>world -&gt; Picture</code> function is our view function. We’d pass <code>view ::     Company -&gt; Picture</code> here.</p></li>
+<li><p>The <code>world -&gt; Picture</code> function is our view function. We’d pass <code>view ::   Company -&gt; Picture</code> here.</p></li>
 <li><p>The <code>Event -&gt; world -&gt; world</code> function is half of our controller. Given an event,
 we update the model. We’d pass <code>handleEvent :: Event -&gt; Company -&gt; Company</code>.</p></li>
 <li><p>The <code>(Float -&gt; world -&gt; world)</code> function is the other half of the controller.
 It is called every step/frame of our application (the frame rate is defined
-in the <code>Int</code> parameter above). We’d pass <code>frameUpdate :: Float -&gt; Company -&gt;     Company</code> here.</p></li>
+in the <code>Int</code> parameter above). We’d pass <code>frameUpdate :: Float -&gt; Company -&gt;   Company</code> here.</p></li>
 </ul>
 <p>And the return type is <code>IO ()</code>! Meaning we can call this directly from main. The
 main program would look like:</p>
