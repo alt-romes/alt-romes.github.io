@@ -12,10 +12,10 @@ toc: false
 I'm very proud to announce that [Lazy Linearity for a Core Functional
 Language](https://doi.org/10.1145/3776711), a paper by myself and [Bernardo
 Toninho](https://web.tecnico.ulisboa.pt/bernardo.toninho/), will be published
-at [POPL 26](https://popl26.sigplan.org/track/POPL-2026-popl-research-papers)!
+at [POPL 26](https://popl26.sigplan.org/track/POPL-2026-popl-research-papers)! \[[DOI](https://doi.org/10.1145/3776711), [ACM](https://dl.acm.org/doi/10.1145/3776711)\].
 
 The extended version of the paper, which includes all proofs, is available
-here \[[arXiv](https://arxiv.org/abs/2511.10361), [PDF](/data/papers/popl26-extended-version-2511.10361v2.pdf)\].
+here \[[arXiv](https://arxiv.org/abs/2511.10361), [PDF](/data/papers/popl26-extended-version-2511.10361v2.pdf), [DOI](https://doi.org/10.1145/3776711)\].
 
 **The short-ish story**: In 2023, for my Master's thesis, I reached out to [Arnaud
 Spiwack](https://assert-false.science/arnaud/) to discuss how Linear Types had

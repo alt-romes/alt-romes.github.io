@@ -81,9 +81,9 @@ the <a href="https://discourse.haskell.org/t/rfc-introduce-a-serialisable-byteco
     <summary type="html"><![CDATA[<p>I’m very proud to announce that <a href="https://doi.org/10.1145/3776711">Lazy Linearity for a Core Functional
 Language</a>, a paper by myself and <a href="https://web.tecnico.ulisboa.pt/bernardo.toninho/">Bernardo
 Toninho</a>, will be published
-at <a href="https://popl26.sigplan.org/track/POPL-2026-popl-research-papers">POPL 26</a>!</p>
+at <a href="https://popl26.sigplan.org/track/POPL-2026-popl-research-papers">POPL 26</a>! [<a href="https://doi.org/10.1145/3776711">DOI</a>, <a href="https://dl.acm.org/doi/10.1145/3776711">ACM</a>].</p>
 <p>The extended version of the paper, which includes all proofs, is available
-here [<a href="https://arxiv.org/abs/2511.10361">arXiv</a>, <a href="/data/papers/popl26-extended-version-2511.10361v2.pdf">PDF</a>].</p>
+here [<a href="https://arxiv.org/abs/2511.10361">arXiv</a>, <a href="/data/papers/popl26-extended-version-2511.10361v2.pdf">PDF</a>, <a href="https://doi.org/10.1145/3776711">DOI</a>].</p>
 <p><strong>The short-ish story</strong>: In 2023, for my Master’s thesis, I reached out to <a href="https://assert-false.science/arnaud/">Arnaud
 Spiwack</a> to discuss how Linear Types had
 been implemented in GHC. I wanted to research compiler optimisations made
