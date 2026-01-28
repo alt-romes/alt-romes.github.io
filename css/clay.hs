@@ -46,6 +46,7 @@ stylesheet = do
   tag "laziness"     "#e68b1c"
   tag "ghc"          "#730f41"
   tag "debugger"     "#A41f68"
+  tag "kanjideck"    "#90b44b"
 
 
 -- Output the compact version

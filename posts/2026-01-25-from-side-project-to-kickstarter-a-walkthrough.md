@@ -167,7 +167,7 @@ and designing the product. Two other important things I tackled at this time wer
 
 The second order, on October 19th, included three copies of the same deck
 of cards, properly packaged, using various different sizes/textures for the
-cards and for the boxes. The price for printing a single deck of 90 cards with
+cards and for the boxes. The price for printing each single deck of 90 cards with
 a rigid box was close to 50€, without shipping. The values are much more
 reasonable when buying at scale, but for that I need the backing through Kickstarter:
 
@@ -180,4 +180,91 @@ they arrived^[Here you may also notice a typo in the boxes, using ぉ rather tha
 
 ![Fig 10. Three Kanjidecks just arrived](/images/kanjideck/IMG_8449.webp)
 
+I iterated on the design a few more times, then tested all three physical boxes
+(for JLPT-5, JLPT-4, and JLPT-3 decks). Originally, I had three decks where
+each tier contained all cards from all previous tiers. That was a bad idea and
+at some point I pivoted to having each of the three decks correspond to a
+single JLPT level.
+
+In the end, the final physical decks look like this:
+
+![Fig 11. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3](/images/kanjideck/three_kd.webp)
+
+# Starting a Company in the US (October 2024)
+
+I was dismayed when I found out that Kickstarters can only be run from [a few
+specific
+countries](https://help.kickstarter.com/hc/en-us/articles/115005128594-Who-can-use-Kickstarter).
+Portugal's not in that list! Kickstarter [suggests](https://help.kickstarter.com/hc/en-us/articles/4415123219995) one
+could open a business in the United States (a supported country) using [Stripe Atlas](https://stripe.com/en-pt/atlas/).
+
+The exact details of how to setup a company through Stripe Atlas are now
+unfortunately forgotten^[I do remember cycling in a hurry to catch the last
+slot for making a new Passport (a requirement for opening a US company).]. I
+just have to say that it is remarkable how they will handle everything for you
+and deliver you the business legal documents after a few days. At the time,
+that cost $300. I also opened a US bank account with
+[Mercury](https://mercury.com/) as per Stripe's recommendation, which went (and has been) fantastically good.
+
+(On a side note, Mercury are famously known in the Haskell circles for, well,
+[using Haskell in
+production](https://serokell.io/blog/haskell-in-production-mercury). They are
+also sponsoring all my work on the [new and improved Haskell
+debugger](/posts/2026-01-07-haskell-debugger-for-ghc914.html)!).
+
+![Fig 12. Incorporating my Company with Stripe Atlas](/images/kanjideck/IMG_8411.webp)
+
+## Accounting and Taxes
+
+Having a company comes with some responsibilities. The kind which you typically
+delegate, unless of course you're hell bent on doing everything yourself to
+keep expenses down. Notably, one has to keep books and eventually report taxes
+according to them (and they better be correct!).
+
+Luckily, some years prior, I decided to keep my personal finances using a
+proper ledger with double-entry bookkeeping, accounting accounts, and the
+standard reports (balance statement, income sheet, cash flow). Most of what I
+studied applies to personal finance just as well as to accounting for a simple
+business, so I knew roughly what to do with the books from the start and picked
+the rest as I went.
+
+Perhaps interestingly, I keep my books using [Plain Text
+Accounting](https://plaintextaccounting.org/) (PTA), a discipline of
+bookkeeping which uses plain text files and CLI-friendly software to read and
+operate on them. My PTA tool of choice is [hledger](https://hledger.org/) (a
+great tool that also happens to be written in Haskell). That said, the
+transactions and postings formats are quite similar across the existing PTA
+tools, so the documentation and guides on accounting with a particular tool
+typically generalise well to PTA tools at large. I recommend [Beancount's "The
+Double-Entry Counting
+Method"](https://docs.google.com/document/d/100tGcA4blh6KSXPRGCZpUlyxaRUwFHEvnz_k9DyZFn4/edit?tab=t.0#heading=h.uqoebvl2qxjs)
+for those curious about double-entry bookkeeping, Plain Text Accounting, or just both.
+
+Secondly, the books are used to produce reports from which you should have
+sufficient and correct information to fill in the Tax Reports. Now, I was used
+to filing taxes in Portugal using the government's official website form --
+many fields can come pre-filled in, and the ones you fill in yourself are
+validated for consistency with one another. I never thought much of it until I
+had to file taxes for my foreign owned LLC in the United States.
+
+Tax reports in the U.S. are submitted by faxing the forms to a government
+number. Filing them feels a bit like playing ["Keep Talking and Nobody
+Explodes"](https://keeptalkinggame.com), a fantastic game where one player is
+given a bomb to defuse and the other a manual with (contrived) instructions on
+how to do so (but can't see the bomb!)^[If you haven't played it, I heartily
+recommend it]. In this case, you get to see both [the
+bomb](https://www.irs.gov/pub/irs-pdf/f5472.pdf) and [the
+instructions](https://www.irs.gov/pub/irs-pdf/f5472.pdf), but the difficulty is
+Classic Doom Nightmare^[it "isn't even remotely fair"], and there are [hidden
+bombs](https://www.irs.gov/pub/irs-pdf/f1120.pdf), and [hidden
+instructions](https://www.irs.gov/pub/irs-pdf/i1120.pdf). Good luck! You should
+*probably* pay someone to do it.
+
+# Digital Infrastructure for the Business
+
+# Everything that can go wrong, will go wrong
+
+- The hour I sent my first emails, Google Spam Filters had a bug which classified all mail as spam
+- The second day I sent my mails, Microsoft's Outlook blacklisted my mail server's IP
+- On the Kickstarter's launch day, Kickstarter had an outage!!!
 
