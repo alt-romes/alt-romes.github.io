@@ -190,13 +190,14 @@ In the end, the final physical decks look like this:
 
 ![Fig 11. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3](/images/kanjideck/three_kd.webp)
 
-# Starting a Company in the US (October 2024)
+# Starting a Company in the U.S. (October 2024)
 
 I was dismayed when I found out that Kickstarters can only be run from [a few
 specific
 countries](https://help.kickstarter.com/hc/en-us/articles/115005128594-Who-can-use-Kickstarter).
 Portugal's not in that list! Kickstarter [suggests](https://help.kickstarter.com/hc/en-us/articles/4415123219995) one
 could open a business in the United States (a supported country) using [Stripe Atlas](https://stripe.com/en-pt/atlas/).
+That's what I ended up doing.
 
 The exact details of how to setup a company through Stripe Atlas are now
 unfortunately forgotten^[I do remember cycling in a hurry to catch the last
@@ -223,10 +224,10 @@ according to them (and they better be correct!).
 
 Luckily, some years prior, I decided to keep my personal finances using a
 proper ledger with double-entry bookkeeping, accounting accounts, and the
-standard reports (balance statement, income sheet, cash flow). Most of what I
-studied applies to personal finance just as well as to accounting for a simple
+standard reports (balance statement, income sheet, cash flow). Mostly, what I
+studied applies to personal finance just as well as accounting for a simple
 business, so I knew roughly what to do with the books from the start and picked
-the rest as I went.
+the rest up as I went.
 
 Perhaps interestingly, I keep my books using [Plain Text
 Accounting](https://plaintextaccounting.org/) (PTA), a discipline of
@@ -260,7 +261,7 @@ bombs](https://www.irs.gov/pub/irs-pdf/f1120.pdf), and [hidden
 instructions](https://www.irs.gov/pub/irs-pdf/i1120.pdf). Good luck! You should
 *probably* pay someone to do it.
 
-# Digital Infrastructure for the Business
+# Digital Infrastructure
 
 # Everything that can go wrong, will go wrong
 
