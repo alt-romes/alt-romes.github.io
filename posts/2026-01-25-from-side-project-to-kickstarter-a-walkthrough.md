@@ -317,13 +317,56 @@ multiplier which I tweaked to interactively experiment and see what my margins
 could look like if I sold more than that baseline. FWIW, the numbers in the
 spreadsheet image are for the baseline exactly.
 
-# Digital Infrastructure
+# Digital Infrastructure (December 2024)
+
+I got a domain [kanjideck.com](https://kanjideck.com) and, at the start of
+December, started hosting a handful of services on a simple
+[Hetzner](https://www.hetzner.com/) machine. The whole machine is configured
+from scratch using [NixOS](https://nixos.org/) and I can build the full machine
+derivation on my macOS machine and then copy and apply it to the remote
+machine. Some services I'm now self-hosting for the business:
+
+- [Plausible](https://plausible.io/), analytics for the Kanjideck website and this blog
+- [Listmonk](https://listmonk.app/), for managing mailing lists (many
+      recommended having a mailing list of interested people to build good initial
+      momentum when the Kickstarter launches, so I did)
+- [Grafana](https://github.com/grafana/grafana), for monitoring the status of my services
+- [fail2ban](https://github.com/fail2ban/fail2ban), after noticing just how many attempts there were to log into my mail server
+- [NixOS Mailserver](https://nixos-mailserver.readthedocs.io/), for self-hosting my own mail server
+- `scrollsent`, a small custom service which "wraps" listmonk and receives the
+  mailing-list subscribe requests instead^[Listmonk has some limitations I had to work around to get better e-mail scores.
+   Namely, being able to configure the e-mail sent for the subscription confirmation request.].
+
+Wait, what?! Are you self-hosting e-mail? Is that not insane?!
+
+TL;DR: Yes.
+
+Originally, despite setting everything up s.t. my e-mails get 10/10 on
+[mail-tester.com](https://www.mail-tester.com/), too many e-mails went straight
+to spam. I kept up at it, and encouraged people on the website to confirm their
+subscription by checking their spam inbox. I think this improved my mail
+server's deliverability, as more e-mails (as far as I could tell) were being
+delivered after many confirmed subscriptions.
+
+I use it reliably to get e-mail. When sending direct e-mail using my mail
+client there's no feedback whatsoever on deliverability (right?), except if
+they're answered. Replying to e-mails seems OK.
+
+But, sending promotional e-mails in bulk? I was very wrong to think I had
+succeeded in setting everything up perfectly and building reputation... it does
+not matter! See Murphy's Law section below.
+
+# Marketing and Ads
+
+...
+
+# Burn-out
 
 I'll include it in this section for the lack of a better place; Guide and Kickstarter page (myb the latter somewhere else?).
 
-## Don't do it: or, Self-Hosting E-Mail
+# Launch Day on Kickstarter
 
-# Everything that can go wrong, will go wrong
+## Murphy's Law
 
 - The hour I sent my first emails, Google Spam Filters had a bug which classified all mail as spam
 - The second day I sent my mails, Microsoft's Outlook blacklisted my mail server's IP
