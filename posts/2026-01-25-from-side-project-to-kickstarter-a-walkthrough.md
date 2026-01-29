@@ -1,6 +1,6 @@
 ---
 
-title: "From Side Project to the Kickstarter for Kanjideck: A Walkthrough"
+title: "From Side Project to the Kickstarter for Kanjideck: Full Walkthrough"
 
 tags: kanjideck
 description: "The full account of how I created Kanjideck, started a business, and launched a Kickstarter"
@@ -256,16 +256,76 @@ how to do so (but can't see the bomb!)^[If you haven't played it, I heartily
 recommend it]. In this case, you get to see both [the
 bomb](https://www.irs.gov/pub/irs-pdf/f5472.pdf) and [the
 instructions](https://www.irs.gov/pub/irs-pdf/f5472.pdf), but the difficulty is
-Classic Doom Nightmare^[it "isn't even remotely fair"], and there are [hidden
+Nightmare^[it "isn't even remotely fair"], and there are [hidden
 bombs](https://www.irs.gov/pub/irs-pdf/f1120.pdf), and [hidden
 instructions](https://www.irs.gov/pub/irs-pdf/i1120.pdf). Good luck! You should
 *probably* pay someone to do it.
 
+# Spreadsheets and Pricing (November 2024)
+
+How do you price a product? (Really, how? Do recommend some theory if you can).
+
+Moreover, Kickstarter projects have to set a goal for how many dollars the
+project must raise in pledges for it to be deemed successful. When that goal is
+achieved, the pledged money is charged to the clients and the "Rewards" (which
+you can think of like a pre-order) must be fulfilled. If the project doesn't
+reach the goal, no money is charged and no Rewards are to be delivered. This is
+[Kickstarter's all-or-nothing funding](https://help.kickstarter.com/hc/en-us/articles/115005047893-Why-is-funding-all-or-nothing) model.
+
+With that in mind, my challenge was to:
+
+- Price three different products, considering discounts and bundles;
+- With a manufacturing cost dependent on the variable amount of units sold of each type;
+- Across the world, with variable VAT/sales tax and shipping per country.
+
+I'm going to skip ahead to the better and refined final iteration of my
+spreadsheet, which I used to make the final decisions about the price and Kickstarter goal:
+
+![Fig 13. Final costs and profits spreadsheet](/images/kanjideck/spreadsheet.webp)
+
+I'm not a spreadsheet expert by any means (though I know how to implement a poor man's one in a *single line* of Haskell^[`loeb x = xs where xs =
+fmap ($xs) x`, see the fantastic Dan Piponi's [From Löb's Theorem to
+Spreadsheet
+Evaluation](http://blog.sigfpe.com/2006/11/from-l-theorem-to-spreadsheet.html)]),
+so don't take this as a necessarily good way of approaching this problem. In
+fact, if you know how I could've done this better I'll gladly take some pointers.
+
+My strategy was to have one row per deck type, with a different row for the
+early bird discounted deck (EBN5) vs. the N5 deck vs. the N5+N4 combination.
+Rows are grouped by regions which have similar VATs (picking a worst-case-ish
+approximation for the region) and the same shipping. For each deck I table in
+green the revenue from each sale of one unit (i.e. unit price and shipping
+charged) and in red the costs of selling that unit (i.e. manufacturing,
+shipping cost, Kickstarter fee, Stripe fee, and VAT). In blue are key derived
+metrics per unit (i.e. profit, profit %, and how much shipping I'm charging as
+a % of the unit price).
+
+Note: In Kickstarter, there is no way to differentiate pricing per region, so some
+differentiation which takes into account e.g. VAT is made via the shipping
+charged, which, in contrast, is per country.^[An alternative here, that would result
+in less approximations, would be to charge VAT and shipping per customer after
+the Kickstarter campaign is finished. I opted for charging everything upfront
+as I don't think it's always clear to many customers that there will be
+(sometimes considerably large) additional charges after the campaign ends otherwise.]
+
+To manage the variable number of orders per deck, I set a baseline: 250 copies
+of the JLPT-5 deck (90 cards), 250 copies of the JLPT-4 deck (177 cards), and
+100 copies of the JLPT-3 deck (390 cards). Those amounts were sufficient to
+have a positive margin. The Kickstarter funding goal was derived roughly from
+the price charged for those orders summed. In a separate cell, I had a
+multiplier which I tweaked to interactively experiment and see what my margins
+could look like if I sold more than that baseline. FWIW, the numbers in the
+spreadsheet image are for the baseline exactly.
+
 # Digital Infrastructure
+
+I'll include it in this section for the lack of a better place; Guide and Kickstarter page (myb the latter somewhere else?).
+
+## Don't do it: or, Self-Hosting E-Mail
 
 # Everything that can go wrong, will go wrong
 
 - The hour I sent my first emails, Google Spam Filters had a bug which classified all mail as spam
 - The second day I sent my mails, Microsoft's Outlook blacklisted my mail server's IP
-- On the Kickstarter's launch day, Kickstarter had an outage!!!
+- On the Kickstarter's launch day, Kickstarter had an outage!!! (link to status.kickstarter...)
 
