@@ -106,7 +106,7 @@ print the decks out at a reasonable price per unit.
 
 I just needed a physical version of Kanjideck first! And a project title: Kanjideck.
 
-# Manufacturing playing cards (September 2024)
+# Manufacturing physical cards (September 2024)
 
 I called a few local printing companies (location: Portugal), when I was first
 trying to figure out how to print the cards. Without knowing exactly who to
