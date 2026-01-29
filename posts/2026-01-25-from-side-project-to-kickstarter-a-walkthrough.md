@@ -356,9 +356,11 @@ But, sending promotional e-mails in bulk? I was very wrong to think I had
 succeeded in setting everything up perfectly and building reputation... it does
 not matter! See Murphy's Law section below.
 
-# Marketing and Ads
+# Marketing and Ads (January 2025)
 
-...
+I first started paying ads on January 2025.
+The goal was to build a mailing list to which I'd send my Kickstarter when it
+launched, with the goal of creating momentum on launch day.
 
 # Burn-out
 
