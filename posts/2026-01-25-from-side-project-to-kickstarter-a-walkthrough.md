@@ -475,6 +475,10 @@ As I'm writing this post, the Kickstarter page displays $8,808 raised from 136 b
 
 ![Fig 22. At 16% of the goal on the 3rd day](/images/kanjideck/kickstarter_3.webp)
 
+There's of course more to do until the campaign is over, and especially more to
+do afterwards if the campaign is successful. But I'll leave that for a follow
+up post.
+
 ## Murphy's Law
 
 To go over a few of the things that did go wrong near the launch:
