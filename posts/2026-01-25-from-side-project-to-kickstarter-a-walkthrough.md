@@ -425,11 +425,35 @@ Fig 18. Received the final prototypes |  Fig 19. Announced suspension few days l
 :-------------------------:|:-------------------------:
 ![Fig 18. Received the final prototypes](/images/kanjideck/received_decks.webp)  |  ![Fig 19. Announced suspension few days later](/images/kanjideck/tariffs.webp)
 
-# Reaching for help ()
+# Reaching out for help (October 2025)
 
+I think I eventually came to the realization that I couldn't, nor needed, to do
+all of this alone.
 
+My sister's an excellent artist. Here's a recent painting of hers:
 
-# Launch Day on Kickstarter
+![Fig 20. S/Título - Catarina Mesquita](/images/kanjideck/IMG_7260.webp)
+
+I floated the idea of having her film and edit the video for the Kickstarter at
+some point and she was happy to help me. Moreover, she would handle all of the
+social media content and management. That took a huge burden off of my hands,
+and I was suddenly free to tackle the parts of the project I was enthusiastic
+about (like finishing the explanations of how to study with
+Kanjideck, finalizing the prices, and actually launching!).
+
+After some iterations of filming me, the cards, and a lot of time editing, in
+December 2025 we had a fantastic Kickstarter video for Kanjideck:
+
+<iframe width="100%" height="315" src="https://www.youtube-nocookie.com/embed/5z3gNS9OrpA?si=iannuE4qbo-DEu0m" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+Also then, my partner started taking care of making Ad creatives (all of which
+were significantly better looking than mine). And my mom wrote a few draft
+e-mails in preparation for the launch!
+
+(Seriously, I wouldn't have been able to ever launch were it not for all your
+help!)
+
+# Launch Day on Kickstarter (January 2026)
 
 ## Murphy's Law
 
