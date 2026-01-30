@@ -17,7 +17,7 @@ from zero.
 I want to go over the initial side project, how that turned into a more
 ambitious idea, manufacturing and testing a physical product, setting up a
 company, spreadsheets, setting up the digital infrastructure for the business,
-marketing and ads, burn-out, the future, and reaching out for help as a solo
+marketing and ads, burn-out, launching, and reaching out for help as a solo
 entrepreneur.
 
 # The initial idea (August 2024)
@@ -390,7 +390,7 @@ every single turn of the road. It is truly baffling how the Core Product of a
 trillion-dollar company is this bad. If you suffer through this horrendous
 experience, you get to watch your hard earned money being drained by Meta for
 often questionable results^[For example, if you don't restrict the countries to
-which ads are shown, your entire budget is blown in one go and your website
+which ads are shown, your entire budget can be blown in one go and your website
 gets a 99% bounce-rate giant wave of visitors with zero conversions].
 
 ![Fig 16. Meta AI variations of your Ad original image (also, half of them are broken)](/images/kanjideck/horrendous_meta.webp)
@@ -499,4 +499,9 @@ That sounds amusingly unlucky, but on the other hand it might just be that,
 when it was my product on the line, I noticed all the internet issues that I
 wouldn't typically care about.
 
+# Conclusion
+
+It was worth it.
+
+![Fig 23. Our cat named Anki](/images/kanjideck/anki.webp)
 
