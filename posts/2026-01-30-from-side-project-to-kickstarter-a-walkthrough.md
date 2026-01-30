@@ -1,6 +1,6 @@
 ---
 
-title: "From Side Project to the Kickstarter for Kanjideck: Full Walkthrough"
+title: "From Side Project to Kickstarter: A Walkthrough"
 
 tags: kanjideck
 description: "The full account of how I created Kanjideck, started a business, and launched a Kickstarter"
