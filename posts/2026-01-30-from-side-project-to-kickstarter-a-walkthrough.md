@@ -31,7 +31,7 @@ that's due to Kanji, one of the three types of characters used in written
 Japanese. [Hiragana](https://en.wikipedia.org/wiki/Hiragana) and
 [Katakana](https://en.wikipedia.org/wiki/Katakana) are phonetic scripts, where
 to each symbol corresponds exactly one sound, and there are about 50 of each
-(these can be learnt in about a week). OTOH, there are about 2,136
+(these can be learnt in about a week). On the other hand, there are about 2,136
 [Kanji](https://en.wikipedia.org/wiki/Kanji) needed for fluency^[Listed by the
 Japanese Ministry of Education as [Jōyō
 kanji](https://en.wikipedia.org/wiki/J%C5%8Dy%C5%8D_kanji)]. Each Kanji is a
@@ -478,6 +478,11 @@ As I'm writing this post, the Kickstarter page displays $8,808 raised from 136 b
 There's of course more to do until the campaign is over, and especially more to
 do afterwards if the campaign is successful. But I'll leave that for a follow
 up post.
+
+In the meantime, I'll continue studying. I'm at 1130 Kanji learned over 434
+consecutive days, but there's still about a thousand more to go!
+
+<!-- ![Fig 23. Anki heatmap shows all a full year of reviews](/images/kanjideck/anki_heatmap.webp) -->
 
 ## Murphy's Law
 
