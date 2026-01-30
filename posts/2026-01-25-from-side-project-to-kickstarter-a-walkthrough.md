@@ -132,7 +132,7 @@ print feature on September 10th. That was about 15€ at the time.
 
 <!-- ![Fig 4. Plastic-wrapped cards order](/images/kanjideck/order1.webp) -->
 
-While waiting for the cards to arrive, I started learning the 3D modelling tool
+While waiting for the cards to arrive, I started learning the 3D modeling tool
 [Blender](https://www.blender.org/). I had seen many Kickstarter videos which
 used pretty amazing animations to showcase their product. I was decided to
 attempt this myself. A few days in I was able to model the cards and render
@@ -356,15 +356,63 @@ But, sending promotional e-mails in bulk? I was very wrong to think I had
 succeeded in setting everything up perfectly and building reputation... it does
 not matter! See Murphy's Law section below.
 
+During this time, I also started working on the
+[kanjideck.com](https://kanjideck.com) website, on the [guide to using the
+cards](https://kanjideck.com/guide) and on the [Kickstarter
+page](https://www.kickstarter.com/projects/rromes/kanjideck).
+
+Fig 14. Landing page in December |  Fig 15. Plausible analytics on website
+:-------------------------:|:-------------------------:
+![Fig 14. Landing page in December](/images/kanjideck/IMG_8594.webp)  |  ![Fig 15. Plausible analytics on website](/images/kanjideck/IMG_8928.webp)
+
 # Marketing and Ads (January 2025)
 
-I first started paying ads on January 2025.
-The goal was to build a mailing list to which I'd send my Kickstarter when it
-launched, with the goal of creating momentum on launch day.
+Marketing is challenging.
 
-# Burn-out
+I got started with the mindset of a one-man-band who is determined to learn
+everything that's necessary. I started an Instagram page to promote the project
+and started paying for ads shortly after to drive people to my website. The
+goal was to build a mailing list which would help create momentum on launch
+day.
 
-I'll include it in this section for the lack of a better place; Guide and Kickstarter page (myb the latter somewhere else?).
+Social media management is not for me (more generally, social media isn't).
+Creating new content regularly to Feed The Beast wasn't fun and the effort
+never really seemed to pay off. I suppose that if you're able to create
+engaging content then perhaps the algorithm will reward you (you're at its
+mercy!), but posting simple photographs or short videos about a resource for
+Japanese study never made it past 10 likes naturally.
+
+The alternative is to pay Meta, Google, TikTok, Reddit, etc.
+
+I should devote an entire section to just how awful it is to work with Meta
+Ads. It is atrociously buggy, and they try to shove AI down your throat at
+every single turn of the road. It is truly baffling how the Core Product of a
+trillion-dollar company is this bad. If you suffer through this horrendous
+experience, you get to watch your hard earned money being drained by Meta for
+often questionable results^[For example, if you don't restrict the countries to
+which ads are shown, your entire budget is blown in one go and your website
+gets a 99% bounce-rate giant wave of visitors with zero conversions].
+
+![Fig 16. Meta AI variations of your Ad original image (also, half of them are
+just broken)](/images/kanjideck/horrendous_meta.webp)
+
+The worst part is that Meta has, in my experience, the best results by far out
+of the alternatives. All my attempts with Google, TikTok, and Reddit were an
+even bigger waste of money. For instance, just today I tried running an Ad on
+Reddit again: it was easy to setup, but it blew past my $50 budget in an hour
+and went on to consume $78 for a total of 47 link clicks and 0 purchases.
+
+![Fig 17. Reddit burns through 150% of my daily budget in an hour](/images/kanjideck/reddit_bad.webp)
+
+Spending money on ads really makes me wonder what my goal is. At least
+something became clear to me: regardless of the goal, this is not how I want to
+achieve it.
+
+# Burn-out (April 2025)
+
+
+
+# Reaching for help
 
 # Launch Day on Kickstarter
 
