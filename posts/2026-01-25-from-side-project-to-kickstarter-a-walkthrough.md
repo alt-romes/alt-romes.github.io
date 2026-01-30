@@ -393,12 +393,11 @@ often questionable results^[For example, if you don't restrict the countries to
 which ads are shown, your entire budget is blown in one go and your website
 gets a 99% bounce-rate giant wave of visitors with zero conversions].
 
-![Fig 16. Meta AI variations of your Ad original image (also, half of them are
-just broken)](/images/kanjideck/horrendous_meta.webp)
+![Fig 16. Meta AI variations of your Ad original image (also, half of them are broken)](/images/kanjideck/horrendous_meta.webp)
 
 The worst part is that Meta has, in my experience, the best results by far out
 of the alternatives. All my attempts with Google, TikTok, and Reddit were an
-even bigger waste of money. For instance, just today I tried running an Ad on
+even bigger waste of money. For instance, today I tried running an Ad on
 Reddit again: it was easy to setup, but it blew past my $50 budget in an hour
 and went on to consume $78 for a total of 47 link clicks and 0 purchases.
 
@@ -408,11 +407,27 @@ Spending money on ads really makes me wonder what my goal is. At least
 something became clear to me: regardless of the goal, this is not how I want to
 achieve it.
 
-# Burn-out (April 2025)
+# Burn-out (March 2025)
+
+Marketing the project became wearisome. In between struggling to build momentum
+for the project, creating more media content of the cards, preparing the
+Kickstarter page, the money spent on ads, and the looming task of filming and
+editing the project video for Kickstarter, I slowly started losing interest in
+the project and being fatigued from making any decision about it. I missed the
+launch deadline I set for myself, with no video anywhere near completed.
+
+Add to this the instability in trade caused by the Trump tariffs, considering
+my manufacturer was in China, I felt even less motivated to continue working on
+the project. On April 9th, I posted to Instagram saying Kanjideck was suspended
+indefinitely.
+
+Fig 18. Received the final prototypes |  Fig 19. Announced suspension few days later
+:-------------------------:|:-------------------------:
+![Fig 18. Received the final prototypes](/images/kanjideck/received_decks.webp)  |  ![Fig 19. Announced suspension few days later](/images/kanjideck/tariffs.webp)
+
+# Reaching for help ()
 
 
-
-# Reaching for help
 
 # Launch Day on Kickstarter
 
