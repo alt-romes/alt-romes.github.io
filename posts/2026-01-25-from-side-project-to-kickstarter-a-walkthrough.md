@@ -453,11 +453,50 @@ e-mails in preparation for the launch!
 (Seriously, I wouldn't have been able to ever launch were it not for all your
 help!)
 
-# Launch Day on Kickstarter (January 2026)
+# Launching on Kickstarter (January 2026)
+
+Kanjideck [launched on Kickstarter](https://www.kickstarter.com/projects/rromes/kanjideck) on the 27th of January.
+
+A few days prior to the launch, I sent two e-mails announcing the date and time
+at which the project would be live. Backing early would ensure an early bird
+discount and help the project gain momentum. The funding goal is $55,000.
+
+On launch day at 13:00 GMT+0 we sent e-mails to everyone subscribed, posted on social media, and opened the Kickstarter!
+
+In the first hour we received about $1,500 in pledges and until the end of the
+first day we had raised about $5,000 in total. On the second we raised
+about $2,500, and on the third $1,100. That's still far from the all-or-nothing
+goal! It's certainly not clear, but I still believe it might be possible to
+reach the funding goal before the campaign ends (on February 26).
+
+![Fig 21. Kickstarter pledges](/images/kanjideck/backers.webp)
+
+As I'm writing this post, the Kickstarter page displays $8,808 raised from 136 backers:
+
+![Fig 22. At 16% of the goal on the 3rd day](/images/kanjideck/kickstarter_3.webp)
 
 ## Murphy's Law
 
-- The hour I sent my first emails, Google Spam Filters had a bug which classified all mail as spam
-- The second day I sent my mails, Microsoft's Outlook blacklisted my mail server's IP
-- On the Kickstarter's launch day, Kickstarter had an outage!!! (link to status.kickstarter...)
+To go over a few of the things that did go wrong near the launch:
+
+- Right when I sent the first round of e-mails ever to my subscribers, Google
+  was having an [incident](https://www.google.com/appsstatus/dashboard/incidents/NNnDkY9CJ36annsfytjQ)
+  where a bug caused misclassification of most e-mails as spam
+
+- Remember when I said that hosting my own mail server had gone wrong?
+  When I sent the second round of e-mails, on the day before the launch, to my
+  1400 subscribers, I immediately received some 300 "undelivered mail"
+  notifications justified by Microsoft having blocklisted my mail server's IP.
+
+  I hastily migrated my mailing list to [SendGrid](https://sendgrid.com/en-us)
+  to make sure I would have proper deliverability on the launch day.
+
+- On the day I launched, Kickstarter had an outage and [was
+  down](https://status.kickstarter.com/incidents/w6kv8yt78w2j) for about an
+  hour
+
+That sounds amusingly unlucky, but on the other hand it might just be that,
+when it was my product on the line, I noticed all the internet issues that I
+wouldn't typically care about.
+
 
