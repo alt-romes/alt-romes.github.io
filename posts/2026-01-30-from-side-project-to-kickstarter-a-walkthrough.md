@@ -1,10 +1,12 @@
 ---
 
-title: "Launching my Side Project as a Solo Dev: The Walkthrough"
+title: "How I launched my Side Project as a Solo Dev"
 # title: "From Side Project to Kickstarter: A Walkthrough"
 
 tags: kanjideck
-description: "The full account of how I created Kanjideck, started a business, and launched a Kickstarter"
+description: "The full account of how I created a physical studying resource
+            for Japanese, started a business in the U.S., and launched a
+            Kickstarter. In excruciating detail."
 
 toc: true
 
