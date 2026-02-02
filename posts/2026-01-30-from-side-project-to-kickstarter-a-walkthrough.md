@@ -1,6 +1,7 @@
 ---
 
-title: "Kanjideck: The full walkthrough from zero to launch"
+title: "Making physical Japanese cards: The full walkthrough from zero to launch"
+# title: "Kanjideck: The full walkthrough from zero to launch"
 # title: "From Side Project to Kickstarter: A Walkthrough"
 
 tags: kanjideck
