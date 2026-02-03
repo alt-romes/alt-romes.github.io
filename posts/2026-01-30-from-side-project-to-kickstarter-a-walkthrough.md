@@ -1,13 +1,16 @@
 ---
 
-title: "The Making Of Kanjideck: From Anki to Kickstarter"
+title: "The Making Of Kanjideck"
+# title: "The Making Of Kanjideck: From Anki to Kickstarter"
 # title: "Kanjideck: The full walkthrough from zero to launch"
 # title: "From Side Project to Kickstarter: A Walkthrough"
 
 tags: kanjideck
-description: "The full account of how I created a physical studying resource
-        for Japanese, started a business in the U.S. from Portugal, and launched a
-        Kickstarter in under 2 years (in a lot of detail!)."
+description: "I want to go over the initial side
+project, how that turned into a more ambitious idea, manufacturing and testing
+a physical product, setting up a company, spreadsheets, setting up the digital
+infrastructure for the business, marketing and ads, burn-out, launching, and
+reaching out for help as a solo entrepreneur."
 
 toc: true
 
