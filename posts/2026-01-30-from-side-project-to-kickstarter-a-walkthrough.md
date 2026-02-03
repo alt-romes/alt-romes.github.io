@@ -1,6 +1,6 @@
 ---
 
-title: "The Making Of Kanjideck"
+title: "The Making Of Kanjideck: From Anki to Kickstarter"
 # title: "Kanjideck: The full walkthrough from zero to launch"
 # title: "From Side Project to Kickstarter: A Walkthrough"
 
