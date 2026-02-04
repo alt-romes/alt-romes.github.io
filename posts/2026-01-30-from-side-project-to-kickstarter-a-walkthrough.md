@@ -194,7 +194,11 @@ single JLPT level.
 
 In the end, the final physical decks look like this:
 
-![Fig 11. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3](/images/kanjideck/three_kd.webp)
+![Fig 11.1. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3](/images/kanjideck/three_kd.webp)
+
+![Fig 11.2. Final Kanjideck JLPT-4](/images/kanjideck/_MG_4824.webp)
+
+![Fig 11.3. Final Kanjideck JLPT-3](/images/kanjideck/_MG_4791.webp)
 
 # Starting a Company in the U.S. (October 2024)
 
