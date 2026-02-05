@@ -1,7 +1,7 @@
 ---
 
-title: "From Anki to Kickstarter: The Making Of Kanjideck"
-# title: "The Making Of Kanjideck: From Anki to Kickstarter"
+title: "How I turned my Anki side project into $15K raised on Kickstarter"
+# title: "From Anki to Kickstarter: The Making Of Kanjideck"
 # title: "Kanjideck: The full walkthrough from zero to launch"
 # title: "From Side Project to Kickstarter: A Walkthrough"
 
