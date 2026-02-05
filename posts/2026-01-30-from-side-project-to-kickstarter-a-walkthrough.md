@@ -485,6 +485,8 @@ As I'm writing this post, the Kickstarter page displays $8,808 raised from 136 b
 
 ![Fig 22. At 16% of the goal on the 3rd day](/images/kanjideck/kickstarter_3.webp)
 
+(And, a week later, we're at $15K (28%) from 254 backers...!)
+
 There's of course more to do until the campaign is over, and especially more to
 do afterwards if the campaign is successful. But I'll leave that for a follow
 up post.
