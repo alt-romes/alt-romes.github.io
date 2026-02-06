@@ -12,7 +12,7 @@
     </author>
     <updated>2026-01-30T00:00:00Z</updated>
     <entry>
-    <title>The Making Of Kanjideck</title>
+    <title>How I turned my Anki side project into a Kickstarter: A Walkthrough</title>
     <link href="http://alt-romes.github.io/posts/2026-01-30-from-side-project-to-kickstarter-a-walkthrough.html" />
     <id>http://alt-romes.github.io/posts/2026-01-30-from-side-project-to-kickstarter-a-walkthrough.html</id>
     <published>2026-01-30T00:00:00Z</published>
@@ -224,8 +224,16 @@ at some point I pivoted to having each of the three decks correspond to a
 single JLPT level.</p>
 <p>In the end, the final physical decks look like this:</p>
 <figure>
-<img src="/images/kanjideck/three_kd.webp" alt="Fig 11. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3" />
-<figcaption aria-hidden="true">Fig 11. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3</figcaption>
+<img src="/images/kanjideck/three_kd.webp" alt="Fig 11.1. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3" />
+<figcaption aria-hidden="true">Fig 11.1. Final Kanjidecks for JLPT-5, JLPT-4, and JLPT-3</figcaption>
+</figure>
+<figure>
+<img src="/images/kanjideck/IMG_4824.webp" alt="Fig 11.2. Final Kanjideck JLPT-4" />
+<figcaption aria-hidden="true">Fig 11.2. Final Kanjideck JLPT-4</figcaption>
+</figure>
+<figure>
+<img src="/images/kanjideck/IMG_4791.webp" alt="Fig 11.3. Final Kanjideck JLPT-3" />
+<figcaption aria-hidden="true">Fig 11.3. Final Kanjideck JLPT-3</figcaption>
 </figure>
 <h1 data-number="3" id="starting-a-company-in-the-u.s.-october-2024"><span class="header-section-number">3</span> Starting a Company in the U.S. (October 2024)</h1>
 <p>I was dismayed when I found out that Kickstarters can only be run from <a href="https://help.kickstarter.com/hc/en-us/articles/115005128594-Who-can-use-Kickstarter">a few
@@ -493,6 +501,7 @@ reach the funding goal before the campaign ends (on February 26).</p>
 <img src="/images/kanjideck/kickstarter_3.webp" alt="Fig 22. At 16% of the goal on the 3rd day" />
 <figcaption aria-hidden="true">Fig 22. At 16% of the goal on the 3rd day</figcaption>
 </figure>
+<p>(And, a week later, we’re at $15K (28%) from 254 backers…!)</p>
 <p>There’s of course more to do until the campaign is over, and especially more to
 do afterwards if the campaign is successful. But I’ll leave that for a follow
 up post.</p>
