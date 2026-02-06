@@ -17,7 +17,8 @@ toc: true
 ---
 
 I think this is my first non-Haskell related post on this blog! This time, I
-want to walk through how I successfully launched Kanjideck on Kickstarter
+want to walk through how I successfully launched
+[Kanjideck](https://kanjideck.com/) [on Kickstarter](https://www.kickstarter.com/projects/rromes/kanjideck)
 starting from zero, in my spare time.
 
 I want to go over the initial side project, how that turned into a more
