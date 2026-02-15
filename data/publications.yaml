@@ -18,6 +18,7 @@
   year: 2026
   url: "https://arxiv.org/abs/2511.10361"
   conference: "POPL26 - 53rd ACM SIGPLAN Symposium on Principles of Programming Languages"
+  video: https://www.youtube-nocookie.com/embed/8fLXKNBN8_c?si=m20tshiusjtzxwWM
 
 
 - title: "A modern step-through debugger for Haskell"
