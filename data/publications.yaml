@@ -16,7 +16,7 @@
   do so in Core. We have implemented Linear Core as a compiler plugin to
   validate the system against linearity-heavy libraries, including linear-base."
   year: 2026
-  url: "https://arxiv.org/abs/2511.10361"
+  url: "https://dl.acm.org/doi/10.1145/3776711"
   conference: "POPL26 - 53rd ACM SIGPLAN Symposium on Principles of Programming Languages"
   video: https://www.youtube-nocookie.com/embed/8fLXKNBN8_c?si=m20tshiusjtzxwWM
 
