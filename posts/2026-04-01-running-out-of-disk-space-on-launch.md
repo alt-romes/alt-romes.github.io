@@ -27,7 +27,7 @@ hundreds of customers visited my server all at once.
 As the logs started flying off of my screen with all the accesses, I started
 noticing a particularly interesting message, repeated over and over again:
 
-```
+```txt
 Mar 31 20:43:03 mogbit kanjideck-fulfillment[2528300]: user error
 (Unexpected reply to: MAIL "<...> at kanjideck.com",
 Expected reply code: 250, Got this instead: 452 "4.3.1 Insufficient system storage\r\n")
@@ -54,7 +54,8 @@ Delete *everything* that I can.
 
 First off, the `/nix/store` may have unnecessary executables and past
 configurations. This should be a big win. Drop it all with
-```
+
+```txt
 $ nix-collect-garbage -d
 ...
 removing old generations of profile /nix/var/nix/profiles/system
@@ -67,7 +68,7 @@ over again to download the files which keep giving them errors).
 
 OK, let's kill the logs first.
 
-```
+```txt
 journalctl --vacuum-time=1s
 ```
 
@@ -75,7 +76,7 @@ This restored enough space for me to clear the nix store.
 Next big item on the list is the clickhouse database. Some googling tells me I
 can truncate some of the logs tables to reduce the size. Let's try it:
 
-```
+```txt
 clickhouse-client -q "TRUNCATE TABLE system.query_log"
   Received exception from server (version 24.3.7):
   Code: 243. DB::Exception: Received from localhost:9000. DB::Exception: Cannot reserve 1.00 MiB, not enough space. (NOT_ENOUGH_SPACE)
@@ -100,14 +101,25 @@ their nix stores on separate drives before. It was also the largest system
 component at 12GB now. A perfect candidate.
 
 Luckily (rather, due to NixOS) everything went smoothly with this transition.
-The ["Moving the store instructions in the NixOS
+Following the instructions on ["Moving the store" in the NixOS
 Wiki](https://nixos.wiki/wiki/Storage_optimization#Moving_the_store) worked
-flawlessly.
+flawlessly. The new Volume was labeled `nix` with `mkfs.ext4 -L nix /dev/sdb`
+and the mounting migration first done manually, but at the end of the day we
+have a final declarative configuration of the system:
 
-After rebooting the server, the `/nix/store` is living in a separate volume
-and my root drive finally has enough space to reply to the users.
+```nix
+  fileSystems."/nix" = {
+     device = "/dev/disk/by-label/nix";
+     fsType = "ext4";
+     neededForBoot = true;
+     options = [ "noatime" ];
+   };
+```
 
-Grafana is no longer red all over and the logs were no longer streaming error
+After rebooting the server, the `/nix/store` was living in a separate volume
+and the root drive finally had enough space to reply to the users.
+
+Grafana was no longer red all over and the logs were no longer streaming error
 messages. The filesystem was still 50% used up and it seemed to increase up to
 around 60-65% when various users were downloading the large 2.2GB file. But. Working.
 
@@ -126,9 +138,11 @@ The large file bug was important to fix promptly.
 - Recall from the server architecture that nginx proxies to the program which serves the files.
 - With some investigation I found
   [proxy_max_temp_file_size](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_max_temp_file_size), which defaults to
-  ```
+
+  ```txt
   Default: proxy_max_temp_file_size 1024m;
   ```
+
 - Increasing the value to `5000m` allowed the 2.2GB file to be served successfully by the proxy!
 - Have you read the documentation for this option? I just skimmed.
 
@@ -139,7 +153,8 @@ The `lsof +L1` command finds unlinked open files (see `man lsof`), i.e. files
 to which there are no links from the file system but are still referenced by
 some process and thus can't be collected. Files which wouldn't ever show up
 with `ds -h`. I was greeted by 14.5 GB of deleted files held by `nginx`!
-```
+
+```txt
 [nix-shell:~]# lsof +L1 | grep nginx
   nginx     4659       nginx mem    REG    0,1   10485760     0    1187 /dev/zero
   nginx     4659       nginx mem    REG    0,1       4096     0    1188 /dev/zero
@@ -198,7 +213,7 @@ In the disk usage graph images you can find the sudden drop to acceptable levels
 
 # Conclusion
 
-- The server couldn't serve access requests from 20:43:03 to sometime around
+- The server couldn't serve access requests from 20:40 to sometime around
 23:00, i.e. for about the first 2 hours immediately after launch.
 
 - Secondly, users couldn't download the large file despite the remaining ones being available.
