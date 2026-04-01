@@ -18,7 +18,7 @@ The matter at hand boils down to a simple Haskell program which serves static
 files (with some extra steps regarding authorization) plus an nginx reverse
 proxy which proxies requests to a certain "virtual host" to the Haskell program.
 
-![Simplified server architecture](/images/running-out-of-disk-space-on-launch/architecture.svg)
+![Fig 1. Simplified server architecture](/images/running-out-of-disk-space-on-launch/architecture.svg)
 
 # First, Panic
 
@@ -190,9 +190,9 @@ Oh dear. Let's fix that:
 
 Grafana immediately cheered up, the server was finally fresh and lean and disk usage jumped to 20% with no more spikes:
 
-![Green grafana instruments, disk usage below 20%](/images/running-out-of-disk-space-on-launch/instruments.png)
-![Disk space usage graph when I first fixed the bug](/images/running-out-of-disk-space-on-launch/disk_usage_1.png)
-![Disk space usage graph after a few hours](/images/running-out-of-disk-space-on-launch/disk_usage_2.png)
+![Fig 2. Green grafana instruments, disk usage below 20%](/images/running-out-of-disk-space-on-launch/instruments.png)
+![Fig 3. Disk space usage graph when I first fixed the bug](/images/running-out-of-disk-space-on-launch/disk_usage_1.png)
+![Fig 4. Disk space usage graph after a few hours](/images/running-out-of-disk-space-on-launch/disk_usage_2.png)
 
 In the disk usage graph images you can find the sudden drop to acceptable levels, which now reigns.
 
