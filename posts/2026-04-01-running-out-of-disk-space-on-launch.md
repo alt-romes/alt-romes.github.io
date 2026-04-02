@@ -1,6 +1,6 @@
 ---
 
-title: "Running out of Disk Space on Launch"
+title: "Running out of Disk Space in Production"
 
 tags: systems
 description: "A tale about misconfiguring nginx, from adventures in production"
