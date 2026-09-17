@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Romes' Blog RSS Feed</title>
+    <subtitle><![CDATA[Romes' Blog RSS Feed]]></subtitle>
     <link href="http://alt-romes.github.io/atom.xml" rel="self" />
     <link href="http://alt-romes.github.io" />
     <id>http://alt-romes.github.io/atom.xml</id>
